@@ -1,0 +1,19 @@
+{
+  "name": "ais-server",
+  "version": "1.0.0",
+  "description": "Process AIS messages and serve as REST API and WebSocket",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3epnm/ais-server.git"
+  },
+  "author": "Marcel Bretschneider <marcel.bretschneider@gmail.com> (http://mb.aquarius.uberspace.de/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/3epnm/ais-server/issues"
+  },
+  "homepage": "https://github.com/3epnm/ais-server#readme"
+}
