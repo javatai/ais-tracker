@@ -1,7 +1,5 @@
 var Receiver = require('ais-receiver');
 
-console.log(receiver);
-
 var receiver = new Receiver({
   udp_port: '29421'
 });
