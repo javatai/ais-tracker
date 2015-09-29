@@ -1,0 +1,17 @@
+{
+  "development": {
+    "dialect": "sqlite",
+    "storage": "./db.ais-messages.sqlite"
+    ,"logging": false
+  },
+  "test": {
+    "dialect": "sqlite",
+    "storage": "./db.ais-messages.sqlite",
+    "logging": false
+  },
+  "production": {
+    "dialect": "sqlite",
+    "storage": "./db.ais-messages.sqlite",
+    "logging": false
+  }
+}
