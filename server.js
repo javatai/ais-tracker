@@ -7,8 +7,6 @@ var Sequelize = require('sequelize');
 var sequelize = new Sequelize('', '', '', config);
 
 var epilogue = require('epilogue');
-epilogue.Controllers.list.prototype.fetch = require('./lib/epilogue.Controllers.list.fetch');
-
 var restify = require('restify');
 
 // Initialize server
