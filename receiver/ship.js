@@ -29,7 +29,7 @@ module.exports = function (receiver) {
       Ship.findOrCreate({
         where: { userid: shipdata.get('userid') }
       }).spread(function(ship, created) {
-        ship.setShipData(shipdata);
+        ship.setShipdata(shipdata);
       });
     });
   });

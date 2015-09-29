@@ -1,3 +1,5 @@
+"use strict";
+
 var _ = require('underscore');
 
 var Position = require('../models/position');
@@ -5,6 +7,7 @@ var ShipData = require('../models/shipdata');
 var Ship = require('../models/ship');
 
 var Format = function (track, type) {
+
   var formats = {
     linestring: function (track) {
       var coordinates = _.map(track, function (position) {
@@ -49,10 +52,13 @@ var Format = function (track, type) {
       });
     }
   };
+
   return (formats[type] || formats['json'])(track);
+
 }
 
 module.exports = function (server, epilogue) {
+
   server.get('/api/track/:shipid', function (req, res, next) {
     var datetime__greater_than;
 
@@ -78,4 +84,5 @@ module.exports = function (server, epilogue) {
 
     return next();
   });
+
 }

@@ -21,10 +21,10 @@ var Ship = sequelize.define("ship", {
   tableName: 'ship'
 });
 
-Ship.belongsTo(Position, { as: 'Position', foreignKey: 'positionid' });
-Ship.belongsTo(ShipData, { as: 'ShipData', foreignKey: 'shipdataid' });
+Ship.belongsTo(Position, { as: 'position', foreignKey: 'positionid' });
+Ship.belongsTo(ShipData, { as: 'shipdata', foreignKey: 'shipdataid' });
 
-Ship.belongsToMany(Position, { through: 'track', as: 'Track', foreignKey: 'shipid', timestamps: false });
-Position.belongsToMany(Ship, { through: 'track', as: 'Track', foreignKey: 'positionid', timestamps: false });
+Ship.belongsToMany(Position, { through: 'track', as: 'track', foreignKey: 'shipid', timestamps: false });
+Position.belongsToMany(Ship, { through: 'track', as: 'track', foreignKey: 'positionid', timestamps: false });
 
 module.exports = Ship;
