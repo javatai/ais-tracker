@@ -42,7 +42,7 @@ module.exports = function (receiver) {
           limit: 1
         }).then(function(track) {
           var last = track[0];
-          if (!last || distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude')) > 50) {
+          if (!last || distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude')) > 5) {
             ship.addTrack(position);
           }
         });

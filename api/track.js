@@ -9,17 +9,16 @@ var Ship = require('../models/ship');
 var Format = function (track, type) {
 
   var formats = {
-    linestring: function (track) {
+    'geojson-line': function (track) {
       var coordinates = _.map(track, function (position) {
         return [ position.get('longitude'), position.get('latitude') ]
       });
-
       return {
         "type": "LineString",
         "coordinates": coordinates
       }
     },
-    points: function (track) {
+    'geojson-features': function (track) {
       var features = _.map(track, function (position) {
         return {
           "type": "Feature",
@@ -71,6 +70,10 @@ module.exports = function (server, epilogue) {
     }
 
     Ship.findById(req.params.shipid).then(function (ship) {
+      if (_.isNull(ship)) {
+        res.send(404);
+        return;
+      }
       ship.getTrack({
         where: {
           datetime: {

@@ -1,16 +1,21 @@
 "use strict";
 
-var env = process.env.NODE_ENV || "development";
-var config = require(__dirname + '/config/config.json')[env];
-
-var Sequelize = require('sequelize');
-var sequelize = new Sequelize('', '', '', config);
+var sequelize = require('./lib/init');
 
 var epilogue = require('epilogue');
 var restify = require('restify');
 
 // Initialize server
 var server = restify.createServer();
+
+server.use(
+  function crossOrigin(req,res,next){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    return next();
+  }
+);
+
 server.use(restify.dateParser());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
@@ -27,14 +32,9 @@ require('./api/shipdata')(server, epilogue);
 require('./api/ship')(server, epilogue);
 require('./api/track')(server, epilogue);
 
-// Create database and listen
-sequelize
-  .sync({ force: false })
-  .then(function() {
-    server.listen(3000, function() {
-      var host = server.address().address,
-          port = server.address().port;
+server.get(/\/app\/?.*/, restify.serveStatic({
+  directory: __dirname,
+  default: 'index.html'
+}));
 
-      console.log('listening at http://%s:%s', host, port);
-    });
-  });
+module.exports = server;
