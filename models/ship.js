@@ -14,11 +14,12 @@ var Ship = sequelize.define("ship", {
   },
   userid: Sequelize.INTEGER
 }, {
-  timestamps: true,
-  createdAt: false,
-  updatedAt: 'datetime',
   freezeTableName: true,
-  tableName: 'ship'
+  tableName: 'ship',
+
+  timestamps: true,
+  createdAt: 'datetime',
+  updatedAt: false
 });
 
 Ship.belongsTo(Position, { as: 'position', foreignKey: 'positionid' });

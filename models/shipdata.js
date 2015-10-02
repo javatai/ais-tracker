@@ -24,15 +24,17 @@ var ShipData = sequelize.define("shipdata", {
   etaday: Sequelize.INTEGER,
   etahour: Sequelize.INTEGER,
   etaminute: Sequelize.INTEGER,
-  draught: Sequelize.DECIMAL,
+  draught: Sequelize.DECIMAL(5,2),
   destination: Sequelize.TEXT,
   dte: Sequelize.INTEGER,
-  datetime: Sequelize.DATE,
   raw: Sequelize.TEXT
 }, {
-  timestamps: false,
   freezeTableName: true,
-  tableName: 'shipdata'
+  tableName: 'shipdata',
+
+  timestamps: true,
+  createdAt: 'datetime',
+  updatedAt: false
 });
 
 module.exports = ShipData;

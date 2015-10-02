@@ -2,10 +2,7 @@
   "name": "ais-server",
   "version": "1.0.0",
   "description": "Process AIS messages and serve as REST API and WebSocket",
-  "main": "server.js",
-  "scripts": {
-    "test": "mocha test"
-  },
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/3epnm/ais-server.git"
@@ -18,7 +15,11 @@
   "homepage": "https://github.com/3epnm/ais-server#readme",
   "dependencies": {
     "ais-receiver": "git://github.com/3epnm/ais-receiver.git",
+    "backbone": "^1.2.3",
     "epilogue": "^0.6.1",
+    "jquery": "^2.1.4",
+    "moment": "^2.10.6",
+    "mysql": "^2.9.0",
     "restify": "^4.0.3",
     "sequelize": "^3.9.0",
     "socket.io": "^1.3.7",
@@ -26,8 +27,13 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "backbone-relational": "^0.10.0",
+    "browserify": "^11.2.0",
     "grunt": "^0.4.5",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-livereload": "^0.1.3"
+    "watchify": "^3.4.0"
+  },
+  "scripts": {
+    "build-js": "browserify app/main.js > app/bundle.js",
+    "watch-js": "watchify app/main.js -o app/bundle.js"
   }
 }

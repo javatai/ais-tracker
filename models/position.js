@@ -12,19 +12,21 @@ var Position = sequelize.define("position", {
   userid: Sequelize.INTEGER,
   navigationstatus: Sequelize.INTEGER,
   rot: Sequelize.INTEGER,
-  sog: Sequelize.DECIMAL,
+  sog: Sequelize.DOUBLE,
   positionaccuracy: Sequelize.INTEGER,
-  longitude: Sequelize.DECIMAL,
-  latitude: Sequelize.DECIMAL,
-  cog: Sequelize.DECIMAL,
-  trueheading: Sequelize.DECIMAL,
+  longitude: Sequelize.DECIMAL(9,6),
+  latitude: Sequelize.DECIMAL(8,6),
+  cog: Sequelize.DOUBLE,
+  trueheading: Sequelize.DOUBLE,
   timestamp: Sequelize.INTEGER,
-  datetime: Sequelize.DATE,
   raw: Sequelize.TEXT
 }, {
-  timestamps: false,
   freezeTableName: true,
-  tableName: 'position'
+  tableName: 'position',
+
+  timestamps: true,
+  createdAt: 'datetime',
+  updatedAt: false
 });
 
 module.exports = Position;

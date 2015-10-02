@@ -1,7 +1,10 @@
 {
   "development": {
-    "dialect": "sqlite",
-    "storage": "./db.ais-messages.sqlite"
+    "dialect": "mysql",
+    "database": "ais",
+    "host": "localhost",
+    "username": "ais",
+    "password": "myAIS!123"
   },
   "test": {
     "dialect": "sqlite",
