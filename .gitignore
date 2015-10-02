@@ -30,3 +30,4 @@ db.ais-messages.sqlite
 db.ais-messages.sqlite-journal
 docs
 test.js
+app/bundle.js

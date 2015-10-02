@@ -51,7 +51,7 @@ var Position = Backbone.RelationalModel.extend({
 
   label: null,
   showLabel: function (map) {
-    this.label = new mapboxgl.Popup()
+    this.label = new mapboxgl.Popup({ closeOnClick: false })
       .setLngLat(this.getCoordinates())
       .setHTML(this.toTitle())
       .addTo(map);
