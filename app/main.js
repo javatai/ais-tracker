@@ -4,7 +4,7 @@ var Backbone = require('backbone');
 require('backbone-relational');
 Backbone.$ = $;
 
-var BackboneRelational = require('backbone');
+var MapUtil = require('./lib/MapUtil');
 
 var map = require('./map/map');
 
@@ -21,83 +21,85 @@ map.on('style.load', function () {
     ships.addTo(map);
   });
 
-  var debounceShipLabel = _.debounce(function (err, features) {
-    if (err) throw err;
+  map.on('mousemove', function (e) {
+    var bounds = map.getBounds();
+    var nw = bounds.getNorthWest();
+    var ne = bounds.getNorthEast();
 
-    map.getCanvas().style.cursor = features.length ? "pointer" : "";
+    var dist = Math.round(MapUtil.distance(nw.lat, nw.lng, ne.lat, ne.lng));
+    var width = $('#map').width();
 
-    var ids = _.map(features, function (feature) { return feature.properties.id });
-    _.each(ids, function (id) {
-      var ship = ships.get(id);
-      if (_.isNull(ship.label)) {
-        ship.showLabel(map);
-      }
-    });
+    var models = ships.getShipsForLngLat(e.lngLat, 10 * (dist/width));
 
-    ships.each(function (ship) {
-      if (!_.isNull(ship.label) && _.indexOf(ids, ship.get('id')) < 0) {
-        ship.hideLabel();
-      }
-    });
-  }, 50);
-
-  var debouncePositionLabel = _.debounce(function (err, features) {
-    if (err) throw err;
-
-    map.getCanvas().style.cursor = features.length ? "pointer" : "";
-
-    if (!_.isEmpty(features)) {
-      var feature = _.first(features);
-      var id = feature.properties.id;
-      var shipid = feature.properties.shipid;
-
-      var ship = ships.get(shipid);
-      var position = ship.get('track').get(id);
-
-      if (_.isNull(position.label)) {
-        position.showLabel(map);
-      }
-
-      ship.get('track').each(function (position) {
-        if (!_.isNull(position.label) && position.get('id') != id) {
-          position.hideLabel();
+    if (_.isEmpty(models)) {
+      ships.each(function (ship) {
+        if (!_.isEmpty(ship.get('track'))) {
+          var positions = ship.get('track').getPositionsForLngLat(e.lngLat, 10 * (dist/width));
+          _.each(positions, function (position) {
+            models.push(position);
+          });
         }
       });
     }
 
-  }, 50);
-
-  var showTrack = function (err, features) {
-    if (err) throw err;
-
-    if (!_.isEmpty(features)) {
-      var feature = _.first(features);
-      map.flyTo({ center: feature.geometry.coordinates, zoom: 15 });
-
-      var id = feature.properties.id;
-
-      var ship = ships.get(id);
-      ship.showLabel(map);
-
-      ship.fetchTrack().done(function () {
-        ship.get('track').addTo(map);
-      });
+    var cur = null;
+    if (!_.isEmpty(models)) {
+      map.getCanvas().style.cursor = "pointer";
+      cur = _.first(models);
+      cur.showLabel(map);
+    } else {
+      map.getCanvas().style.cursor = "";
     }
+
+    ships.each(function (model) {
+      if (cur && !_.isEqual(cur, model)) {
+        model.hideLabel();
+      }
+    });
+
+    ships.each(function (ship) {
+      if (ship.get('track').length) {
+        ship.get('track').each(function (position) {
+          if (cur && !_.isEqual(cur, position)) {
+           position.hideLabel();
+          }
+        });
+      }
+    });
+  });
+
+  var current = {
+    track: null,
+    ship: null
   }
-
-  map.on('mousemove', function (e) {
-    map.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, debounceShipLabel);
-  });
-
   map.on('click', function (e) {
-    map.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, showTrack);
-  });
+    map.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, function (err, features) {
+      if (err) throw err;
 
-  map.on('mousemove', function (e) {
-    map.featuresAt(e.point, { layer: 'positions', radius: 10, includeGeometry: true }, debouncePositionLabel);
+      if (!_.isEmpty(features)) {
+        var feature = _.first(features);
+        map.flyTo({ center: feature.geometry.coordinates, zoom: 15 });
+
+        if (current.track) {
+          current.track.removeFrom(map);
+        }
+        if (current.ship) {
+          current.ship.selected(map, false);
+        }
+
+        var id = feature.properties.id;
+        current.ship = ships.get(id);
+        current.ship.selected(map, true);
+
+        current.ship.fetchTrack().done(function () {
+          if (current.ship.get('track').length > 1) {
+            current.track = current.ship.get('track');
+            current.track.addTo(map);
+          }
+        });
+      }
+    });
   });
 
   ships.fetch();
 });
-
-// var model = ships.get(1);

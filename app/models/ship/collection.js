@@ -9,6 +9,12 @@ var Ships = Backbone.Collection.extend({
   source: null,
   layer: null,
 
+  initialize: function () {
+    this.on('sync', function () {
+      console.log('foobar');
+    })
+  },
+
   addTo: function (map, options) {
     options = options || {};
 
@@ -30,24 +36,33 @@ var Ships = Backbone.Collection.extend({
 
     this.layer = map.addLayer(_.extend({
       "id": "ships",
-      "type": "symbol",
+      "type": "circle",
       "source": "ships",
       "interactive": true,
       "layout": {
-        "icon-image": "{marker-symbol}-11",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-      },
-      "paint": {
-        "icon-halo-color": "rgba(0, 0, 0, 0)",
-        "icon-color": "rgba(0, 0, 0, 1)"
+        "circle-color": "rgba(200,200,200,1)"
       }
     }, options));
+
+    _.each(ships, function (ship) {
+      if (ship.has('position')) {
+        ship.addTo(map);
+      }
+    });
   },
 
   removeFrom: function (map) {
     map.removeSource("ships");
     map.removeLayer("ships");
+  },
+
+  getShipsForLngLat: function (LngLat, min) {
+    return this.filter(function (ship) {
+      if (ship.has('position')) {
+        return ship.distanceTo(LngLat) < min;
+      }
+      return false;
+    });
   }
 });
 

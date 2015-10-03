@@ -1,6 +1,9 @@
+var _ = require('underscore');
 var moment = require('moment');
 var Backbone = require('backbone');
 var MapUtil = require('../../lib/MapUtil');
+
+var Popup = require('../../map/popup');
 
 var Position = Backbone.RelationalModel.extend({
   url: '/api/position',
@@ -14,7 +17,7 @@ var Position = Backbone.RelationalModel.extend({
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": this.getCoordinates()
+        "coordinates": this.getCoordinate()
       },
       "properties": {
         "id": this.get('id'),
@@ -23,11 +26,18 @@ var Position = Backbone.RelationalModel.extend({
     }
   },
 
-  getCoordinates: function () {
+  getCoordinate: function () {
     return [
       this.get('longitude'),
       this.get('latitude')
     ]
+  },
+
+  getLngLat: function () {
+    return {
+      lng: this.get('longitude'),
+      lat: this.get('latitude')
+    }
   },
 
   get: function (name) {
@@ -51,10 +61,18 @@ var Position = Backbone.RelationalModel.extend({
 
   label: null,
   showLabel: function (map) {
-    this.label = new mapboxgl.Popup({ closeOnClick: false })
-      .setLngLat(this.getCoordinates())
+    if (this.label) {
+      return;
+    }
+    this.label = new Popup()
+      .setLngLat(this.getCoordinate())
       .setHTML(this.toTitle())
+      .addClass('position-label')
       .addTo(map);
+
+    this.label.once('remove', _.bind(function (label) {
+      delete this.label;
+    }, this))
   },
 
   hideLabel: function () {
@@ -65,6 +83,11 @@ var Position = Backbone.RelationalModel.extend({
       this.label.remove();
       delete this.label;
     } catch (ex) { }
+  },
+
+  distanceTo: function (LngLat) {
+    var coords = this.getLngLat();
+    return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
   }
 });
 

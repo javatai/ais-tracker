@@ -24,7 +24,7 @@ var Track = Positions.extend({
     var trackdata = {
       "type": "LineString",
       "coordinates": this.map(function (position) {
-        return position.getCoordinates();
+        return position.getCoordinate();
       })
     };
 
@@ -77,15 +77,28 @@ var Track = Positions.extend({
   },
 
   removeFrom: function (map) {
-    map.removeSource("track");
-    map.removeLayer("track");
-    map.removeSource("positions");
-    map.removeLayer("positions");
+    if (map.getSource("track")) {
+      map.removeSource("track");
+      map.removeLayer("track");
+    }
+
+    if (map.getSource("positions")) {
+      map.removeSource("positions");
+      map.removeLayer("positions");
+    }
 
     delete this.trackSource;
     delete this.trackLayer;
     delete this.PositionSource;
     delete this.PositionLayer;
+
+    this.reset();
+  },
+
+  getPositionsForLngLat: function (LngLat, min) {
+    return this.filter(function (position) {
+      return position.distanceTo(LngLat) < min;
+    });
   }
 });
 
