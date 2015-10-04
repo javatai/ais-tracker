@@ -3,7 +3,8 @@
 var Receiver = require('ais-receiver');
 
 var receiver = new Receiver({
-  udp_port: '29421'
+  port: '29421',
+  address: '0.0.0.0'
 });
 
 require('./receiver/position')(receiver);

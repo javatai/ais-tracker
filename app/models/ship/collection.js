@@ -9,12 +9,6 @@ var Ships = Backbone.Collection.extend({
   source: null,
   layer: null,
 
-  initialize: function () {
-    this.on('sync', function () {
-      console.log('foobar');
-    })
-  },
-
   addTo: function (map, options) {
     options = options || {};
 
