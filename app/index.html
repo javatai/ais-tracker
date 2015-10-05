@@ -5,43 +5,10 @@
   <title>AIS Receiver</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-  <script src='contrib/mapbox-gl-js/mapbox-gl.js'></script>
-  <link href='contrib/mapbox-gl-js/mapbox-gl.css' rel='stylesheet' />
+  <script src='contrib/mapbox-gl-dev.js'></script>
+  <link href='contrib/mapbox-gl.css' rel='stylesheet' />
+  <link href='style/style.css' rel='stylesheet' />
 
-  <style>
-    body { margin:0; padding:0; }
-    #map { position:absolute; top:0; bottom:0; width:100%; }
-    .position-label .mapboxgl-popup-content,
-    .ship-label .mapboxgl-popup-content {
-      font-size: 11px;
-      line-height: 14px;
-      padding: 5px;
-      padding-top: 20px;
-
-      border-radius: 0px;
-      box-shadow: none;
-    }
-
-    .ship-label .mapboxgl-popup-content { background: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip { border-bottom-color: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip { border-bottom-color: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip { border-top-color: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip { border-top-color: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: rgba(255,255,255,0.9); }
-    .ship-label.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: rgba(255,255,255,0.9); }
-
-    .position-label .mapboxgl-popup-content { background: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip { border-bottom-color: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip { border-bottom-color: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip { border-top-color: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip { border-top-color: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: rgba(255,200,0,0.6); }
-    .position-label.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: rgba(255,200,0,0.6); }
-  </style>
 </head>
 <body>
   <div id='map'></div>

@@ -1,3 +1,5 @@
+'use strict';
+
 var config = require('../config.json');
 
 mapboxgl.accessToken = config.map.accessToken;
@@ -9,6 +11,8 @@ var map = new mapboxgl.Map({
   zoom: config.map.zoom
 });
 
-// map.addControl(new mapboxgl.Navigation());
+window._map = map;
+
+map.addControl(new mapboxgl.Navigation());
 
 module.exports = map;

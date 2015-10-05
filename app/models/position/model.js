@@ -1,29 +1,19 @@
+'use strict';
+
 var _ = require('underscore');
-var moment = require('moment');
+_.str = require("underscore.string");
 var Backbone = require('backbone');
+var moment = require('moment');
 var MapUtil = require('../../lib/MapUtil');
 
 var Popup = require('../../map/popup');
 
 var Position = Backbone.RelationalModel.extend({
   url: '/api/position',
+
   parse: function (data, xhr) {
     data.raw = data.raw && JSON.parse(data.raw) || data.raw;
     return Backbone.RelationalModel.prototype.parse.call(this, data, xhr);
-  },
-
-  toFeature: function () {
-    return {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": this.getCoordinate()
-      },
-      "properties": {
-        "id": this.get('id'),
-        "mapid": "position-" + this.get('id')
-      }
-    }
   },
 
   getCoordinate: function () {
@@ -49,40 +39,45 @@ var Position = Backbone.RelationalModel.extend({
     return Backbone.RelationalModel.prototype.get.apply(this, arguments);
   },
 
-  toTitle: function () {
+  getCOG: function () {
+    if (this.has('cog')) {
+      return _.str.sprintf('%03d&deg;', this.get('cog'));
+    }
+    return;
+  },
+
+  getSOG: function () {
+    if (this.has('sog')) {
+      return _.str.sprintf('%0.1f kts', this.get('sog'));
+    }
+    return;
+  },
+
+  toTitel: function () {
     var title = [
-      MapUtil.decimalLngToDms(this.get('longitude')),
-      MapUtil.decimalLatToDms(this.get('latitude')),
-      this.get('timestamp')
+      'Lat: ' + MapUtil.decimalLatToDms(this.get('latitude')),
+      'Lon: ' + MapUtil.decimalLngToDms(this.get('longitude')),
     ];
 
+    var cog = this.getCOG();
+    var sog = this.getSOG();
+
+    if (cog && sog) {
+      title.push('Course/speed: ' + cog + ' at ' + sog);
+    } else if (cog) {
+      title.push('Course: ' + cog);
+      title.push('Speed: n/a');
+    } else if (sog) {
+      title.push('Course:  n/a');
+      title.push('Speed: ' + sog);
+    } else {
+      title.push('Course/speed: n/a');
+    }
+
+    title.push('');
+    title.push(this.get('timestamp'));
+
     return title.join('<br>');
-  },
-
-  label: null,
-  showLabel: function (map) {
-    if (this.label) {
-      return;
-    }
-    this.label = new Popup()
-      .setLngLat(this.getCoordinate())
-      .setHTML(this.toTitle())
-      .addClass('position-label')
-      .addTo(map);
-
-    this.label.once('remove', _.bind(function (label) {
-      delete this.label;
-    }, this))
-  },
-
-  hideLabel: function () {
-    if (!this.label) {
-      return;
-    }
-    try {
-      this.label.remove();
-      delete this.label;
-    } catch (ex) { }
   },
 
   distanceTo: function (LngLat) {

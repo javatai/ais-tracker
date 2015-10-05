@@ -25,7 +25,7 @@ mapboxgl.Popup.prototype.addClass = function (className) {
 var _update = mapboxgl.Popup.prototype._update;
 
 mapboxgl.Popup.prototype._update = function () {
-  _update.call(this);
+  var ret = _update.call(this);
   if (this._container) {
     var $_container = $(this._container);
     _.each(this.classNames, function (className) {
@@ -34,6 +34,7 @@ mapboxgl.Popup.prototype._update = function () {
       }
     });
   }
+  return ret;
 }
 
 module.exports = mapboxgl.Popup;
