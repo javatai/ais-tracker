@@ -19,6 +19,7 @@ var ShipsLayer = Backbone.Collection.extend({
   initialize: function (attributes, options) {
     this.mapgl = options.map;
     this.ships = options.ships;
+    this.appevents = options.appevents;
 
     this.shipLabel = new ShipLabel(this.mapgl);
 
@@ -37,22 +38,43 @@ var ShipsLayer = Backbone.Collection.extend({
 
     this.mapgl.on('mousemove', _.bind(this.onMousemove, this));
     this.mapgl.on('click', _.bind(this.onClick, this));
+
+    this.appevents.on('map:select', this.selectByShip, this);
+  },
+
+  selectByShip: function (ship) {
+    this.selectById('ship-' + ship.get('id'));
+  },
+
+  selectById: function (id) {
+    var selected = this.findWhere({ selected: true });
+    if (selected) {
+      selected.set('selected', false);
+    }
+
+    if (id) {
+      selected = this.get(id);
+
+      if (selected.get('ship').has('position')) {
+        this.mapgl.flyTo({ center: selected.get('ship').get('position').getCoordinate(), zoom: 15 });
+        selected.set('selected', true);
+      } else {
+        alert('Growl: No position yet');
+      }
+    }
   },
 
   onClick: function (e) {
     this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
-      var selected = this.findWhere({ selected: true });
-      if (selected) {
-        selected.set('selected', false);
-      }
-
       if (!_.isEmpty(features)) {
-        var feature = _.first(features);
-        this.mapgl.flyTo({ center: feature.geometry.coordinates, zoom: 15 });
-
-        var id = feature.properties.id;
-        this.get(id).set('selected', true);
+        var id = _.first(features).properties.id;
+        this.appevents.trigger('map:selected', this.get(id).get('ship'));
+        this.selectById(id);
+      } else {
+        this.appevents.trigger('map:unselected', true);
+        this.selectById(false)
       }
+
     }, this));
   },
 
@@ -164,7 +186,7 @@ var ShipsLayer = Backbone.Collection.extend({
           "coordinates": ship.get('position').getCoordinate()
         },
         "properties": {
-          "title": ship.toTitel(),
+          "title": ship.getHelper().toTitel(),
           "id": marker.get('id')
         }
       }
@@ -181,7 +203,11 @@ var ShipsLayer = Backbone.Collection.extend({
   removeFromMap: function () {
     this.ships.off('sync', this.addToMap, this);
     this.ships.off('add', this.addShipMarker, this);
+
+    this.mapgl.off('click', _.bind(this.onClick, this));
     this.mapgl.off('mousemove', _.bind(this.onMousemove, this));
+
+    this.appevents.off('map:select', selectByShip, this);
 
     if (this.source) {
       this.mapgl.removeSource("ships");

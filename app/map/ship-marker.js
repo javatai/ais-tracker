@@ -31,7 +31,7 @@ var ShipMarker = Backbone.Model.extend({
         "coordinates": position.getCoordinate()
       },
       "properties": {
-        "title": this.get('ship').toTitel(),
+        "title": this.get('ship').getHelper().toTitel(),
         "marker-symbol": this.get('selected') && "triangle" || "triangle-stroked",
         "id": this.get('id')
       }

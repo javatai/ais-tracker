@@ -7,9 +7,14 @@ var moment = require('moment');
 var MapUtil = require('../../lib/MapUtil');
 
 var Popup = require('../../map/popup');
+var PositionHelper = require('./helper');
 
 var Position = Backbone.RelationalModel.extend({
   url: '/api/position',
+
+  getHelper: function () {
+    return new PositionHelper(this);
+  },
 
   parse: function (data, xhr) {
     data.raw = data.raw && JSON.parse(data.raw) || data.raw;
@@ -37,47 +42,6 @@ var Position = Backbone.RelationalModel.extend({
       return timestamp.format("YYYY-MM-DD HH:mm:ss UTC");
     }
     return Backbone.RelationalModel.prototype.get.apply(this, arguments);
-  },
-
-  getCOG: function () {
-    if (this.has('cog')) {
-      return _.str.sprintf('%03d&deg;', this.get('cog'));
-    }
-    return;
-  },
-
-  getSOG: function () {
-    if (this.has('sog')) {
-      return _.str.sprintf('%0.1f kts', this.get('sog'));
-    }
-    return;
-  },
-
-  toTitel: function () {
-    var title = [
-      'Lat: ' + MapUtil.decimalLatToDms(this.get('latitude')),
-      'Lon: ' + MapUtil.decimalLngToDms(this.get('longitude')),
-    ];
-
-    var cog = this.getCOG();
-    var sog = this.getSOG();
-
-    if (cog && sog) {
-      title.push('Course/speed: ' + cog + ' at ' + sog);
-    } else if (cog) {
-      title.push('Course: ' + cog);
-      title.push('Speed: n/a');
-    } else if (sog) {
-      title.push('Course:  n/a');
-      title.push('Speed: ' + sog);
-    } else {
-      title.push('Course/speed: n/a');
-    }
-
-    title.push('');
-    title.push(this.get('timestamp'));
-
-    return title.join('<br>');
   },
 
   distanceTo: function (LngLat) {

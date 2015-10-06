@@ -11,6 +11,7 @@ var ShipData = require('../shipdata/collection');
 var ShipDatum = require('../shipdata/model');
 
 var Track = require('../track/collection');
+var ShipHelper = require('./helper');
 
 var Ship = Backbone.RelationalModel.extend({
   relations: [{
@@ -30,14 +31,14 @@ var Ship = Backbone.RelationalModel.extend({
     collectionType: Track
   }],
 
+  getHelper: function () {
+    return new ShipHelper(this);
+  },
+
   fetchTrack: function () {
     var collection = this.get('track');
     collection.setId(this.get('id'));
     return collection.fetch();
-  },
-
-  toTitel: function () {
-    return this.has('shipdata') && this.get('shipdata').get('name') || this.get('userid');
   },
 
   distanceTo: function (LngLat) {

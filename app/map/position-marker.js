@@ -19,7 +19,7 @@ var PositionMarker = Backbone.Model.extend({
         "coordinates": this.get('position').getCoordinate()
       },
       "properties": {
-        "title": this.get('position').toTitel(),
+        "title": this.get('position').getHelper().toTitel(),
         "id": this.get('id')
       }
     }

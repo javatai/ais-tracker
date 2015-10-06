@@ -1,8 +1,10 @@
 'use strict';
 
 var _ = require('underscore');
+var MapUtil = require('../../lib/MapUtil');
 
 var Positions = require('../position/collection');
+var TrackHelper = require('./helper');
 
 var Track = Positions.extend({
   id: null,
@@ -22,6 +24,10 @@ var Track = Positions.extend({
     return this.filter(function (position) {
       return position.distanceTo(LngLat) < min;
     });
+  },
+
+  getHelper: function () {
+    return new TrackHelper(this);
   }
 });
 

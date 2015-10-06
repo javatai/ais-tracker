@@ -15,9 +15,9 @@ var ShipLabel = Label.extend({
   },
 
   toTitel: function () {
-    var title = this.ship.toTitel();
+    var title = this.ship.getHelper().toTitel();
     title += '<hr noshade size="1">';
-    title += this.ship.get('position').toTitel();
+    title += this.ship.get('position').getHelper().toTitel();
 
     return title;
   }

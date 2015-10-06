@@ -15,7 +15,7 @@ var PositionLabel = Label.extend({
   },
 
   toTitel: function () {
-    return this.position.toTitel();
+    return this.position.getHelper().toTitel();
   }
 });
 
