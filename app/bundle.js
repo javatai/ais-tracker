@@ -1056,7 +1056,14 @@ _.extend(PositionHelper.prototype, {
       return this.aismessage.lookup('navigationstatus', data.get('navigationstatus'));
     },
     'Rate of turning': function (data) {
-      return data.has('rot') && data.get('rot') + ' °/min' || false;
+      if (!data.has('rot')) {
+        return;
+      }
+      var rot = data.get('rot');
+      if (rot > 126 || rot < -126) {
+        return this.aismessage.lookup('rot', rot);
+      }
+      return rot + '&deg;/min' || false;
     },
     'Speed over ground': function (data) {
       return this.getSOG();
@@ -1065,7 +1072,7 @@ _.extend(PositionHelper.prototype, {
       return this.getCOG();
     },
     'True Heading': function (data) {
-      return data.has('trueheading') && data.get('trueheading') + '°' || false;
+      return data.has('trueheading') && data.get('trueheading') + '&deg;' || false;
     },
     Longitude: function (data) {
       return MapUtil.decimalLatToDms(data.get('longitude'));
@@ -2042,7 +2049,17 @@ module.exports={
       "type": "uint",
       "description": "Rate of turning.  Positive right; negative left.  BROKEN!",
       "unavailable": -128,
-      "units": "4.733*sqrt(val) degrees/min"
+      "units": "degrees/min",
+      "lookuptable": [
+        {
+          "value": 127,
+          "desc": "turning right > 5&deg;/30s"
+        },
+        {
+          "value": -127,
+          "desc": "turning left > 5&deg;/30s"
+        }
+      ]
     },
     {
       "name": "SOG",
