@@ -1,11 +1,24 @@
-var Receiver = require('ais-receiver');
+"use strict";
 
-var receiver = new Receiver({
-  udp_port: '29421'
-});
+var env = process.env.NODE_ENV || "development";
+var config = require(__dirname + '/config/config.json')[env];
 
-receiver.nema.on('message', function (aismsgnum, data) {
-  console.log(data);
-});
+var sequelize = require('./lib/init');
 
-receiver.start();
+var receiver = require('./receiver');
+var server = require('./server');
+
+sequelize
+  .sync({ force: false })
+  .then(function() {
+
+    receiver.start();
+
+    server.listen(config.server.port, config.server.hostname, function() {
+      var host = server.address().address,
+          port = server.address().port;
+
+      console.log('listening at http://%s:%s', host, port);
+    });
+
+  });

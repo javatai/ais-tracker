@@ -1,0 +1,8 @@
+{
+  "map": {
+    "accessToken": "pk.eyJ1IjoiYnJldHNjaG4iLCJhIjoiY2lldmU5ZjA3MDA5cHQxbTBsenF4OTN6NCJ9.k-N7xO9qfKgI6aBjxFgGKw",
+    "style": "mapbox://styles/mapbox/streets-v8",
+    "center": [ 9.996006002132162, 53.50766131847098 ],
+    "zoom": 12
+  }
+}
