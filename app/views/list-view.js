@@ -115,9 +115,10 @@ var ListView = Backbone.View.extend({
     var selected = _.findWhere(this.column, { selected: true });
     var other = _.findWhere(this.column, { selected: false });
 
-    var ships = this.collection.map(function (ship) {
+    var ships = this.collection.map(function (ship, index) {
       return {
         id: ship.get('id'),
+        index: index+1,
         name: ship.getHelper().toTitel(),
         value: selected.format && selected.format(ship.get(selected.getter)) || ship.get(selected.getter)
       }

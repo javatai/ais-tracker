@@ -1518,7 +1518,7 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
   return "  <tr id=\""
     + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
     + "\">\n    <th scope=\"row\">"
-    + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
+    + alias4(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"index","hash":{},"data":data}) : helper)))
     + "</th>\n    <td>"
     + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
     + "</td>\n    <td>"
@@ -1654,9 +1654,10 @@ var ListView = Backbone.View.extend({
     var selected = _.findWhere(this.column, { selected: true });
     var other = _.findWhere(this.column, { selected: false });
 
-    var ships = this.collection.map(function (ship) {
+    var ships = this.collection.map(function (ship, index) {
       return {
         id: ship.get('id'),
+        index: index+1,
         name: ship.getHelper().toTitel(),
         value: selected.format && selected.format(ship.get(selected.getter)) || ship.get(selected.getter)
       }
