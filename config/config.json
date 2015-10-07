@@ -1,23 +1,55 @@
 {
   "development": {
-    "dialect": "mysql",
-    "database": "ais",
-    "host": "localhost",
-    "username": "ais",
-    "password": "myAIS!123"
+    "sequelize": {
+      "dialect": "mysql",
+      "database": "ais",
+      "host": "localhost",
+      "username": "ais",
+      "password": "myAIS!123"
+    },
+    "server": {
+      "port": 3000,
+      "hostname": "127.0.0.1"
+    },
+    "receiver": {
+      "port": 29421,
+      "address": "0.0.0.0"
+    }
   },
   "test": {
-    "dialect": "mysql",
-    "database": "ais",
-    "host": "localhost",
-    "username": "ais",
-    "password": "myAIS!123"
+    "sequelize": {
+      "dialect": "mysql",
+      "database": "ais",
+      "host": "localhost",
+      "username": "ais",
+      "password": "myAIS!123",
+      "logging": false
+    },
+    "server": {
+      "port": 3000,
+      "hostname": "127.0.0.1"
+    },
+    "receiver": {
+      "port": 29421,
+      "address": "0.0.0.0"
+    }
   },
   "production": {
-    "dialect": "mysql",
-    "database": "mb_ais",
-    "host": "localhost",
-    "username": "mb",
-    "password": "ilhonlyijryamsoddEs"
+    "sequelize": {
+      "dialect": "mysql",
+      "database": "mb_ais",
+      "host": "localhost",
+      "username": "mb",
+      "password": "ilhonlyijryamsoddEs",
+      "logging": false
+    },
+    "server": {
+      "port": "63838",
+      "hostname": "127.0.0.1"
+    },
+    "receiver": {
+      "port": 63837,
+      "address": "95.143.172.114"
+    }
   }
 }

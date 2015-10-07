@@ -6,12 +6,25 @@ var Backbone = require('backbone');
 require('backbone-relational');
 Backbone.$ = $;
 
-var AppEventDispatcher = _.clone(Backbone.Events);
-
 var map = require('./map/map');
+
+var AppEventDispatcher = _.clone(Backbone.Events);
 
 var Ships = require('./models/ship/collection');
 var ships = new Ships();
+ships.once('sync', function () {
+  Backbone.history.start();
+});
+
+var Router = require('./lib/router');
+var router = new Router({
+  collection: ships,
+  appevents: AppEventDispatcher
+});
+
+AppEventDispatcher.on('map:select', function (ship) {
+  router.navigate('mmsi/' + ship.get('userid'));
+});
 
 var ShipsLayer = require('./map/ships-layer');
 var shipsLayer = new ShipsLayer(null, {
@@ -28,3 +41,7 @@ var masterView = new MasterView({
 });
 
 masterView.render();
+
+
+window.ships = ships;
+

@@ -123,7 +123,6 @@ var MasterView = Backbone.View.extend({
 
   render: function () {
     this.$el.html(this.template());
-    this.$el.find('.header').on("mouseenter", _.bind(this.handlerInList, this));
 
     this.listView = new ListView({
       collection: this.collection,
@@ -131,14 +130,11 @@ var MasterView = Backbone.View.extend({
     });
 
     this.listenTo(this.listView, "select", this.selectShipEmit);
+    this.listenTo(this.appevents, "router:select", this.selectShipEmit);
     this.listenTo(this.appevents, "map:selected", this.selectShip);
     this.listenTo(this.appevents, "map:unselected", this.handlerOut);
 
     this.listView.render();
-  },
-
-  destroy: function () {
-    this.$el.find('.header').off("mouseenter", _.bind(this.handlerInList, this));
   }
 });
 

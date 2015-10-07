@@ -1,3 +1,8 @@
+"use strict";
+
+var env = process.env.NODE_ENV || "development";
+var config = require(__dirname + '/config/config.json')[env];
+
 var sequelize = require('./lib/init');
 
 var receiver = require('./receiver');
@@ -9,7 +14,7 @@ sequelize
 
     receiver.start();
 
-    server.listen(3000, function() {
+    server.listen(config.server.port, config.server.hostname, function() {
       var host = server.address().address,
           port = server.address().port;
 

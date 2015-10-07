@@ -11,6 +11,8 @@ var map = new mapboxgl.Map({
   zoom: config.map.zoom
 });
 
+window.mapgl = map;
+
 map.addControl(new mapboxgl.Navigation());
 
 module.exports = map;

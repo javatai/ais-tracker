@@ -26,8 +26,5 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
-db.ais-messages.sqlite
-db.ais-messages.sqlite-journal
 docs
 test.js
-app/bundle.js

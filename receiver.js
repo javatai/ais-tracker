@@ -1,11 +1,10 @@
 "use strict";
 
-var Receiver = require('ais-receiver');
+var env = process.env.NODE_ENV || "development";
+var config = require(__dirname + '/config/config.json')[env];
 
-var receiver = new Receiver({
-  port: '29421',
-  address: '0.0.0.0'
-});
+var Receiver = require('ais-receiver');
+var receiver = new Receiver(config.receiver);
 
 require('./receiver/position')(receiver);
 require('./receiver/ship')(receiver);
