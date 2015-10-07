@@ -26,12 +26,12 @@ var ShipMarker = Backbone.Model.extend({
 
     if (ship.has('shipdata')) {
       var data = ship.get('shipdata');
-      var a = data.get('dima');
-      var b = data.get('dimb');
-      var c = data.get('dimc');
-      var d = data.get('dimd');
+      var a = data.get('dima') || 0;
+      var b = data.get('dimb') || 0;
+      var c = data.get('dimc') || 0;
+      var d = data.get('dimd') || 0;
 
-      if (a && b && c && d) {
+      if (a || b || c || d) {
         var geod = GeographicLib.Geodesic.WGS84;
         var azi = position.get('trueheading') || position.get('cog');
 
