@@ -2,7 +2,7 @@
 
 var _ = require('underscore');
 var Backbone = require('backbone');
-var MapUtil = require('../../lib/MapUtil');
+var MapUtil = require('../../lib/map-util');
 
 var Positions = require('../position/collection');
 var Position = require('../position/model');

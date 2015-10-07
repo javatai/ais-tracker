@@ -18,8 +18,8 @@ var Ship = sequelize.define("ship", {
   tableName: 'ship',
 
   timestamps: true,
-  createdAt: 'datetime',
-  updatedAt: false
+  createdAt: false,
+  updatedAt: 'datetime'
 });
 
 Ship.belongsTo(Position, { as: 'position', foreignKey: 'positionid' });

@@ -4,7 +4,7 @@ var _ = require('underscore');
 _.str = require("underscore.string");
 var Backbone = require('backbone');
 var moment = require('moment');
-var MapUtil = require('../../lib/MapUtil');
+var MapUtil = require('../../lib/map-util');
 
 var Popup = require('../../map/popup');
 var PositionHelper = require('./helper');
@@ -33,15 +33,6 @@ var Position = Backbone.RelationalModel.extend({
       lng: this.get('longitude'),
       lat: this.get('latitude')
     }
-  },
-
-  get: function (name) {
-    if (name === 'timestamp') {
-      var timestamp = moment.utc(this.attributes.datetime);
-      timestamp.seconds(this.attributes.timestamp);
-      return timestamp.format("YYYY-MM-DD HH:mm:ss UTC");
-    }
-    return Backbone.RelationalModel.prototype.get.apply(this, arguments);
   },
 
   distanceTo: function (LngLat) {

@@ -14,7 +14,7 @@ module.exports = function (server, epilogue) {
       datetime__greater_than = req.params.datetime__greater_than;
     } else {
       var d = new Date();
-      d.setHours(d.getHours() - 24);
+      d.setHours(d.getHours() - 6);
       datetime__greater_than = d.toISOString();
     }
 

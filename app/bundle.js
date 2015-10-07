@@ -88,6 +88,33 @@ module.exports = MapUtil;
 },{}],3:[function(require,module,exports){
 'use strict';
 
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+var AisMessage = Backbone.Collection.extend({
+  fromJSON: function (fields) {
+    _.each(fields, function (field) {
+      field.name = field.name.toLowerCase();
+      this.add(field);
+    }, this);
+  },
+  lookup: function (name, value) {
+    var field = this.findWhere({ name: name });
+    if (!field) {
+      return value;
+    }
+    var lookuptable = field.get('lookuptable');
+    var lookup = _.findWhere(lookuptable, { value: value });
+    return lookup && lookup.desc || value;
+  }
+});
+
+module.exports = AisMessage;
+},{"backbone":36,"underscore":130}],4:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"dup":2}],5:[function(require,module,exports){
+'use strict';
+
 var Backbone = require('backbone');
 
 var Router = Backbone.Router.extend({
@@ -112,7 +139,7 @@ var Router = Backbone.Router.extend({
 });
 
 module.exports = Router;
-},{"backbone":32}],4:[function(require,module,exports){
+},{"backbone":36}],6:[function(require,module,exports){
 var _ = require('underscore');
 var $ = require('jquery');
 var bootstrap = require('bootstrap');
@@ -169,7 +196,7 @@ masterView.render();
 window.ships = ships;
 
 
-},{"./lib/MapUtil":2,"./lib/router":3,"./map/map":6,"./map/ships-layer":12,"./models/ship/collection":17,"./views/master-view":28,"backbone":32,"backbone-relational":31,"bootstrap":33,"jquery":55,"underscore":126}],5:[function(require,module,exports){
+},{"./lib/MapUtil":2,"./lib/router":5,"./map/map":8,"./map/ships-layer":14,"./models/ship/collection":19,"./views/master-view":30,"backbone":36,"backbone-relational":35,"bootstrap":37,"jquery":59,"underscore":130}],7:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -207,7 +234,7 @@ _.extend(Label.prototype, Backbone.Events, {
 Label.extend = Backbone.Model.extend;
 
 module.exports = Label;
-},{"./popup":7,"backbone":32,"underscore":126}],6:[function(require,module,exports){
+},{"./popup":9,"backbone":36,"underscore":130}],8:[function(require,module,exports){
 'use strict';
 
 var config = require('../config.json');
@@ -227,7 +254,7 @@ map.addControl(new mapboxgl.Navigation());
 
 module.exports = map;
 
-},{"../config.json":1}],7:[function(require,module,exports){
+},{"../config.json":1}],9:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -269,7 +296,7 @@ mapboxgl.Popup.prototype._update = function () {
 
 module.exports = mapboxgl.Popup;
 
-},{"jquery":55,"underscore":126}],8:[function(require,module,exports){
+},{"jquery":59,"underscore":130}],10:[function(require,module,exports){
 'use strict';
 
 var Label = require('./label');
@@ -293,7 +320,7 @@ var PositionLabel = Label.extend({
 
 module.exports = PositionLabel;
 
-},{"./label":5,"underscore":126}],9:[function(require,module,exports){
+},{"./label":7,"underscore":130}],11:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -324,7 +351,7 @@ var PositionMarker = Backbone.Model.extend({
 
 module.exports = PositionMarker;
 
-},{"backbone":32,"underscore":126}],10:[function(require,module,exports){
+},{"backbone":36,"underscore":130}],12:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -351,7 +378,7 @@ var ShipLabel = Label.extend({
 });
 
 module.exports = ShipLabel;
-},{"./label":5,"underscore":126}],11:[function(require,module,exports){
+},{"./label":7,"underscore":130}],13:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -385,7 +412,7 @@ var ShipMarker = Backbone.Model.extend({
       var c = data.get('dimc') || 0;
       var d = data.get('dimd') || 0;
 
-      if (a || b || c || d) {
+      if ((a || b) && (c || d)) {
         var geod = GeographicLib.Geodesic.WGS84;
         var azi = position.get('trueheading') || position.get('cog');
 
@@ -549,13 +576,13 @@ var ShipMarker = Backbone.Model.extend({
 
 module.exports = ShipMarker;
 
-},{"backbone":32,"geographiclib":34,"underscore":126}],12:[function(require,module,exports){
+},{"backbone":36,"geographiclib":38,"underscore":130}],14:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var MapUtil = require('../lib/MapUtil');
+var MapUtil = require('../lib/map-util');
 
 var ShipMarker = require('./ship-marker');
 var TrackLayer = require('./track-layer');
@@ -780,13 +807,13 @@ var ShipsLayer = Backbone.Collection.extend({
 
 module.exports = ShipsLayer;
 
-},{"../lib/MapUtil":2,"./ship-label":10,"./ship-marker":11,"./track-layer":13,"backbone":32,"jquery":55,"underscore":126}],13:[function(require,module,exports){
+},{"../lib/map-util":4,"./ship-label":12,"./ship-marker":13,"./track-layer":15,"backbone":36,"jquery":59,"underscore":130}],15:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var MapUtil = require('../lib/MapUtil');
+var MapUtil = require('../lib/map-util');
 
 var PositionMarker = require('./position-marker');
 var PositionLabel = require('./position-label');
@@ -955,7 +982,7 @@ var TrackLayer = Backbone.Collection.extend({
 
 module.exports = TrackLayer;
 
-},{"../lib/MapUtil":2,"./position-label":8,"./position-marker":9,"backbone":32,"jquery":55,"underscore":126}],14:[function(require,module,exports){
+},{"../lib/map-util":4,"./position-label":10,"./position-marker":11,"backbone":36,"jquery":59,"underscore":130}],16:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -969,14 +996,20 @@ var Positions = Backbone.Collection.extend({
 
 module.exports = Positions;
 
-},{"./model":16,"backbone":32}],15:[function(require,module,exports){
+},{"./model":18,"backbone":36}],17:[function(require,module,exports){
 'use strict';
 
+var MapUtil = require('../../lib/map-util');
+var moment = require('moment');
 var _ = require('underscore');
-var MapUtil = require('../../lib/MapUtil');
+var AisMessage = require('../../lib/ais-message');
+
+var json = require('ais-receiver/ais-messages/json/ais_msg_1.json');
 
 var PositionHelper = function (position) {
   this.position = position;
+  this.aismessage = new AisMessage();
+  this.aismessage.fromJSON(json.fields);
 };
 
 _.extend(PositionHelper.prototype, {
@@ -1011,40 +1044,81 @@ _.extend(PositionHelper.prototype, {
 
   toTitel: function () {
     var title = [
-      'Lat: ' + MapUtil.decimalLatToDms(this.position.get('latitude')),
-      'Lon: ' + MapUtil.decimalLngToDms(this.position.get('longitude')),
+      'Lat: ' + this.format('Latitude'),
+      'Lon: ' + this.format('Longitude'),
       'Course/speed: ' + this.getNav(),
       '',
-      this.position.get('timestamp')
+      this.format('Timestamp')
     ];
 
     return title.join('<br>');
   },
 
+  fieldList: {
+    'Navigation status': function (data) {
+      return this.aismessage.lookup('navigationstatus', data.get('navigationstatus'));
+    },
+    'Rate of turning': function (data) {
+      return data.has('rot') && data.get('rot') + ' °/min' || false;
+    },
+    'Speed over ground': function (data) {
+      return this.getSOG();
+    },
+    'Course over ground': function (data) {
+      return this.getCOG();
+    },
+    'True Heading': function (data) {
+      return data.has('trueheading') && data.get('trueheading') + '°' || false;
+    },
+    Longitude: function (data) {
+      return MapUtil.decimalLatToDms(data.get('longitude'));
+    },
+    Latitude: function (data) {
+      return MapUtil.decimalLatToDms(data.get('latitude'));
+    },
+    Timestamp: function (data) {
+      if (data.get('timestamp') > 59) {
+        return this.aismessage.lookup('timestamp', data.get('timestamp'));
+      } else {
+        var timestamp = moment.utc(data.get('datetime'));
+        timestamp.seconds(data.get('timestamp'));
+        return timestamp.format("YYYY-MM-DD HH:mm:ss UTC");
+      }
+    },
+    'Position accuracy': function (data) {
+      return this.aismessage.lookup('positionaccuracy', data.get('positionaccuracy'));
+    }
+  },
+
+  format: function (field) {
+    return this.fieldList[field](this.position);
+  },
+
   toPropertyList: function () {
     var items = [];
-    _.each(this.position.toJSON(), function (value, name) {
-      if (('id,raw,track').indexOf(name) < 0) {
+    _.each(this.fieldList, function (formatter, name) {
+      var value = formatter.call(this, this.position);
+      if (value) {
         items.push({
           name: name,
           value: value
         });
       }
-    });
+    }, this);
     return items;
   }
 });
 
 module.exports = PositionHelper;
 
-},{"../../lib/MapUtil":2,"underscore":126}],16:[function(require,module,exports){
+},{"../../lib/ais-message":3,"../../lib/map-util":4,"ais-receiver/ais-messages/json/ais_msg_1.json":33,"moment":60,"underscore":130}],18:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
 _.str = require("underscore.string");
 var Backbone = require('backbone');
 var moment = require('moment');
-var MapUtil = require('../../lib/MapUtil');
+var MapUtil = require('../../lib/map-util');
 
 var Popup = require('../../map/popup');
 var PositionHelper = require('./helper');
@@ -1075,15 +1149,6 @@ var Position = Backbone.RelationalModel.extend({
     }
   },
 
-  get: function (name) {
-    if (name === 'timestamp') {
-      var timestamp = moment.utc(this.attributes.datetime);
-      timestamp.seconds(this.attributes.timestamp);
-      return timestamp.format("YYYY-MM-DD HH:mm:ss UTC");
-    }
-    return Backbone.RelationalModel.prototype.get.apply(this, arguments);
-  },
-
   distanceTo: function (LngLat) {
     var coords = this.getLngLat();
     return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
@@ -1092,7 +1157,7 @@ var Position = Backbone.RelationalModel.extend({
 
 module.exports = Position;
 
-},{"../../lib/MapUtil":2,"../../map/popup":7,"./helper":15,"backbone":32,"moment":56,"underscore":126,"underscore.string":81}],17:[function(require,module,exports){
+},{"../../lib/map-util":4,"../../map/popup":9,"./helper":17,"backbone":36,"moment":60,"underscore":130,"underscore.string":85}],19:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1180,7 +1245,7 @@ var Ships = Backbone.Collection.extend({
 
 module.exports = Ships;
 
-},{"./model":19,"backbone":32,"underscore":126}],18:[function(require,module,exports){
+},{"./model":21,"backbone":36,"underscore":130}],20:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1197,12 +1262,12 @@ _.extend(ShipHelper.prototype, {
 
 module.exports = ShipHelper;
 
-},{"underscore":126}],19:[function(require,module,exports){
+},{"underscore":130}],21:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
 var Backbone = require('backbone');
-var MapUtil = require('../../lib/MapUtil');
+var MapUtil = require('../../lib/map-util');
 
 var Positions = require('../position/collection');
 var Position = require('../position/model');
@@ -1249,7 +1314,7 @@ var Ship = Backbone.RelationalModel.extend({
 
 module.exports = Ship;
 
-},{"../../lib/MapUtil":2,"../position/collection":14,"../position/model":16,"../shipdata/collection":20,"../shipdata/model":22,"../track/collection":23,"./helper":18,"backbone":32,"underscore":126}],20:[function(require,module,exports){
+},{"../../lib/map-util":4,"../position/collection":16,"../position/model":18,"../shipdata/collection":22,"../shipdata/model":24,"../track/collection":25,"./helper":20,"backbone":36,"underscore":130}],22:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -1263,33 +1328,106 @@ var ShipData = Backbone.Collection.extend({
 
 module.exports = ShipData;
 
-},{"./model":22,"backbone":32}],21:[function(require,module,exports){
+},{"./model":24,"backbone":36}],23:[function(require,module,exports){
 'use strict';
 
+var moment = require('moment');
 var _ = require('underscore');
+var AisMessage = require('../../lib/ais-message');
+
+var json = require('ais-receiver/ais-messages/json/ais_msg_5.json');
 
 var ShipdataHelper = function (shipdata) {
   this.shipdata = shipdata;
+  this.aismessage = new AisMessage();
+  this.aismessage.fromJSON(json.fields);
 };
 
 _.extend(ShipdataHelper.prototype, {
+  fieldList: {
+    MMSI: function (data) {
+      return data.get('userid');
+    },
+    'IMO number': function (data) {
+      return data.get('imonumber');
+    },
+    'AIS version': function (data) {
+      return this.aismessage.lookup('aisversion', data.get('aisversion'));
+    },
+    'Callsign': function (data) {
+      return data.get('callsign');
+    },
+    'Ship type': function (data) {
+      return this.aismessage.lookup('shiptype', data.get('shiptype'));
+    },
+    Width: function (data) {
+      if (data.has('dima') || data.has('dimb')) {
+        return data.get('dima') + data.get('dimb') + ' m';
+      }
+      return;
+    },
+    Lenght: function (data) {
+      if (data.has('dimc') || data.has('dimd')) {
+        return data.get('dimc') + data.get('dimd') + ' m';
+      }
+      return;
+    },
+    Draught: function (data) {
+      return data.has('draught') && data.get('draught') + ' m' || false;
+    },
+    'Position type': function (data) {
+      return this.aismessage.lookup('positiontype', data.get('positiontype'));
+    },
+    Destination: function (data) {
+      return data.get('destination');
+    },
+    ETA: function (data) {
+      var M = data.get('etamonth');
+      var d = data.get('etaday');
+      var h = data.get('etahour');
+      var m = data.get('etaminute');
+
+      if (!M && !d && !h && !m) {
+        return;
+      }
+
+      var timestamp = moment.utc(data.get('datetime'));
+
+      if (M) timestamp.month(M);
+      if (d) timestamp.date(d);
+      if (h) timestamp.hour(h);
+      if (m) timestamp.minute(m);
+
+      return timestamp.format('YYYY-MM-DD HH:mm:ss UTC');
+    },
+    Datetime: function (data) {
+      var timestamp = moment.utc(data.get('datetime'));
+      return timestamp.format('YYYY-MM-DD HH:mm:ss UTC');
+    }
+  },
+
+  format: function (field) {
+    return this.fieldList[field](this.position);
+  },
+
   toPropertyList: function () {
     var items = [];
-    _.each(this.shipdata.toJSON(), function (value, name) {
-      if (('id,raw').indexOf(name) < 0) {
+    _.each(this.fieldList, function (formatter, name) {
+      var value = formatter.call(this, this.shipdata);
+      if (value) {
         items.push({
           name: name,
           value: value
         });
       }
-    });
+    }, this);
     return items;
   }
 });
 
 module.exports = ShipdataHelper;
 
-},{"underscore":126}],22:[function(require,module,exports){
+},{"../../lib/ais-message":3,"ais-receiver/ais-messages/json/ais_msg_5.json":34,"moment":60,"underscore":130}],24:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1311,11 +1449,11 @@ var Shipdatum = Backbone.RelationalModel.extend({
 
 module.exports = Shipdatum;
 
-},{"./helper":21,"backbone":32,"underscore":126}],23:[function(require,module,exports){
+},{"./helper":23,"backbone":36,"underscore":130}],25:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
-var MapUtil = require('../../lib/MapUtil');
+var MapUtil = require('../../lib/map-util');
 
 var Positions = require('../position/collection');
 var TrackHelper = require('./helper');
@@ -1347,11 +1485,10 @@ var Track = Positions.extend({
 
 module.exports = Track;
 
-},{"../../lib/MapUtil":2,"../position/collection":14,"./helper":24,"underscore":126}],24:[function(require,module,exports){
+},{"../../lib/map-util":4,"../position/collection":16,"./helper":26,"underscore":130}],26:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
-var MapUtil = require('../../lib/MapUtil');
 
 var TrackHelper = function (track) {
   this.track = track;
@@ -1362,10 +1499,10 @@ _.extend(TrackHelper.prototype, {
     var positions = this.track.map(function (position, index) {
       return {
         index: index + 1,
-        latitude: MapUtil.decimalLatToDms(position.get('latitude')),
-        longitude: MapUtil.decimalLngToDms(position.get('longitude')),
+        latitude: position.getHelper().format('Latitude'),
+        longitude: position.getHelper().format('Longitude'),
         nav: position.getHelper().getNav(),
-        datetime: position.get('timestamp')
+        timestamp: position.getHelper().format('Timestamp')
       }
     });
     positions.reverse();
@@ -1375,7 +1512,7 @@ _.extend(TrackHelper.prototype, {
 
 module.exports = TrackHelper;
 
-},{"../../lib/MapUtil":2,"underscore":126}],25:[function(require,module,exports){
+},{"underscore":130}],27:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
@@ -1402,7 +1539,7 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
     + "</tbody>\n</table>\n";
 },"useData":true});
 
-},{"hbsfy/runtime":54}],26:[function(require,module,exports){
+},{"hbsfy/runtime":58}],28:[function(require,module,exports){
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -1541,7 +1678,7 @@ var ListView = Backbone.View.extend({
 
 module.exports = ListView;
 
-},{"./list-view.hbs":25,"backbone":32,"jquery":55,"moment":56,"underscore":126}],27:[function(require,module,exports){
+},{"./list-view.hbs":27,"backbone":36,"jquery":59,"moment":60,"underscore":130}],29:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -1552,7 +1689,7 @@ module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":f
     + "\">\n  </form>\n</div>\n<div class=\"list\">\n  <div class=\"collapse\">\n    <div class=\"inner\">\n      <div class=\"list-table\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"ship\">\n  <div class=\"collapse\">\n    <div class=\"inner\">\n      <div class=\"ship-details\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"footer\">\n  <ul class=\"nav nav-pills\">\n    <li role=\"presentation\" class=\"tolist\"><a href=\"#\">Ship list</a></li>\n    <li role=\"presentation\" class=\"disabled toship\"><a href=\"#\"></a></li>\n  </ul>\n</div>";
 },"useData":true});
 
-},{"hbsfy/runtime":54}],28:[function(require,module,exports){
+},{"hbsfy/runtime":58}],30:[function(require,module,exports){
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -1695,7 +1832,7 @@ var MasterView = Backbone.View.extend({
 
 module.exports = MasterView;
 
-},{"./list-view":26,"./master-view.hbs":27,"./ship-view":30,"backbone":32,"jquery":55,"underscore":126}],29:[function(require,module,exports){
+},{"./list-view":28,"./master-view.hbs":29,"./ship-view":32,"backbone":36,"jquery":59,"underscore":130}],31:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
@@ -1709,12 +1846,12 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.ship : depth0),{"name":"each","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "      </tbody>\n      </table>\n    </div>\n";
 },"6":function(container,depth0,helpers,partials,data) {
-    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
 
   return "        <tr>\n          <th scope=\"row\">"
-    + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
+    + container.escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
     + "</th>\n          <td>"
-    + alias4(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper)))
+    + ((stack1 = ((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "</td>\n        </tr>\n";
 },"8":function(container,depth0,helpers,partials,data) {
     return " active";
@@ -1723,8 +1860,8 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
 
   return "        <tr>\n          <th scope=\"row\">"
     + alias4(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"index","hash":{},"data":data}) : helper)))
-    + "</th>\n          <td>\n            <table class=\"property\">\n            <tr>\n              <th>Datetime</th>\n              <td>"
-    + ((stack1 = ((helper = (helper = helpers.datetime || (depth0 != null ? depth0.datetime : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"datetime","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</th>\n          <td>\n            <table class=\"property\">\n            <tr>\n              <th>Timestamp</th>\n              <td>"
+    + ((stack1 = ((helper = (helper = helpers.timestamp || (depth0 != null ? depth0.timestamp : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"timestamp","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "</td>\n            </tr>\n            <tr>\n              <th>Course/Speed</th>\n              <td>"
     + ((stack1 = ((helper = (helper = helpers.nav || (depth0 != null ? depth0.nav : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nav","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "</td>\n            </tr>\n            <tr>\n              <th>Latitude</th>\n              <td>"
@@ -1752,7 +1889,7 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
     + "      </tbody>\n      </table>\n    </div>\n  </div>\n</div>\n";
 },"useData":true});
 
-},{"hbsfy/runtime":54}],30:[function(require,module,exports){
+},{"hbsfy/runtime":58}],32:[function(require,module,exports){
 var _ = require('underscore');
 var Backbone = require('backbone');
 
@@ -1779,7 +1916,892 @@ var ShipView = Backbone.View.extend({
 
 module.exports = ShipView;
 
-},{"./ship-view.hbs":29,"backbone":32,"underscore":126}],31:[function(require,module,exports){
+},{"./ship-view.hbs":31,"backbone":36,"underscore":130}],33:[function(require,module,exports){
+module.exports={
+  "aismsgnum": 1,
+  "name": "position",
+  "class": "a",
+  "description": "Scheduled position report",
+  "fields": [
+    {
+      "name": "MessageID",
+      "numberofbits": 6,
+      "type": "int",
+      "description": "AIS message number.  Must be 1",
+      "required": 1
+    },
+    {
+      "name": "RepeatIndicator",
+      "numberofbits": 2,
+      "type": "int",
+      "description": "Indicated how many times a message has been repeated",
+      "unavailable": 0,
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "default"
+        },
+        {
+          "value": 3,
+          "desc": "do not repeat any more"
+        }
+      ]
+    },
+    {
+      "name": "UserID",
+      "numberofbits": 30,
+      "type": "int",
+      "description": "Unique ship identification number (MMSI)"
+    },
+    {
+      "name": "NavigationStatus",
+      "numberofbits": 4,
+      "type": "int",
+      "description": "What is the vessel doing",
+      "unavailable": 15,
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "under way using engine"
+        },
+        {
+          "value": 1,
+          "desc": "at anchor"
+        },
+        {
+          "value": 2,
+          "desc": "not under command"
+        },
+        {
+          "value": 3,
+          "desc": "restricted maneuverability"
+        },
+        {
+          "value": 4,
+          "desc": "constrained by her draught"
+        },
+        {
+          "value": 5,
+          "desc": "moored"
+        },
+        {
+          "value": 6,
+          "desc": "aground"
+        },
+        {
+          "value": 7,
+          "desc": "engaged in fishing"
+        },
+        {
+          "value": 8,
+          "desc": "under way sailing"
+        },
+        {
+          "value": 9,
+          "desc": "reserved for future use (hazmat)"
+        },
+        {
+          "value": 10,
+          "desc": "reserved for future use"
+        },
+        {
+          "value": 11,
+          "desc": "reserved for future use"
+        },
+        {
+          "value": 12,
+          "desc": "reserved for future use"
+        },
+        {
+          "value": 13,
+          "desc": "reserved for future use"
+        },
+        {
+          "value": 14,
+          "desc": "reserved for future use"
+        },
+        {
+          "value": 15,
+          "desc": "not defined = default"
+        }
+      ]
+    },
+    {
+      "name": "ROT",
+      "numberofbits": 8,
+      "type": "uint",
+      "description": "Rate of turning.  Positive right; negative left.  BROKEN!",
+      "unavailable": -128,
+      "units": "4.733*sqrt(val) degrees/min"
+    },
+    {
+      "name": "SOG",
+      "numberofbits": 10,
+      "type": "int",
+      "description": "Speed over ground",
+      "unavailable": 102.3,
+      "lookuptable": [
+        {
+          "value": 102.2,
+          "desc": "102.2 knots or higher"
+        }
+      ],
+      "units": "knots",
+      "scale": 10,
+      "decimalplaces": 1
+    },
+    {
+      "name": "PositionAccuracy",
+      "numberofbits": 1,
+      "type": "int",
+      "description": "Accuracy of positioning fixes",
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "low (greater than 10 m)"
+        },
+        {
+          "value": 1,
+          "desc": "high (less than 10 m)"
+        }
+      ]
+    },
+    {
+      "name": "Longitude",
+      "numberofbits": 28,
+      "type": "uint",
+      "description": "East West location",
+      "unavailable": 181,
+      "units": "degrees",
+      "scale": 600000,
+      "decimalplaces": 5
+    },
+    {
+      "name": "Latitude",
+      "numberofbits": 27,
+      "type": "uint",
+      "description": "North South location",
+      "unavailable": 91,
+      "units": "degrees",
+      "scale": 600000,
+      "decimalplaces": 5
+    },
+    {
+      "name": "COG",
+      "numberofbits": 12,
+      "type": "int",
+      "description": "Course over ground",
+      "unavailable": 360,
+      "units": "degrees",
+      "scale": 10,
+      "decimalplaces": 1
+    },
+    {
+      "name": "TrueHeading",
+      "numberofbits": 9,
+      "type": "int",
+      "description": "True heading (relative to true North)",
+      "unavailable": 511,
+      "units": "degrees"
+    },
+    {
+      "name": "TimeStamp",
+      "numberofbits": 6,
+      "type": "int",
+      "description": "UTC second when the report was generated",
+      "unavailable": 60,
+      "lookuptable": [
+        {
+          "value": 60,
+          "desc": "not available/default"
+        },
+        {
+          "value": 61,
+          "desc": "manual input"
+        },
+        {
+          "value": 62,
+          "desc": "dead reckoning"
+        },
+        {
+          "value": 63,
+          "desc": "inoperative"
+        }
+      ],
+      "units": "seconds"
+    },
+    {
+      "name": "RegionalReserved",
+      "numberofbits": 4,
+      "type": "int",
+      "description": "Reserved for definition by a regional authority.",
+      "required": 0
+    },
+    {
+      "name": "Spare",
+      "numberofbits": 1,
+      "type": "int",
+      "description": "Not used.  Should be set to zero.",
+      "required": 0
+    },
+    {
+      "name": "RAIM",
+      "numberofbits": 1,
+      "type": "bool",
+      "description": "Receiver autonomous integrity monitoring flag",
+      "lookuptable": [
+        {
+          "value": false,
+          "desc": "not in use"
+        },
+        {
+          "value": true,
+          "desc": "in use"
+        }
+      ]
+    },
+    {
+      "name": "SyncState",
+      "numberofbits": 2,
+      "type": "int",
+      "description": "Sycronization state",
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "UTC direct"
+        },
+        {
+          "value": 1,
+          "desc": "UTC indirect"
+        },
+        {
+          "value": 2,
+          "desc": "synchronized to a base station"
+        },
+        {
+          "value": 3,
+          "desc": "synchronized to another station"
+        }
+      ]
+    },
+    {
+      "name": "SlotTimeout",
+      "numberofbits": 3,
+      "type": "int",
+      "description": "Frames remaining until a new slot is selected",
+      "units": "frames",
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "Last frame in this slot"
+        },
+        {
+          "value": 1,
+          "desc": "1 frames left"
+        },
+        {
+          "value": 2,
+          "desc": "2 frames left"
+        },
+        {
+          "value": 3,
+          "desc": "3 frames left"
+        },
+        {
+          "value": 4,
+          "desc": "4 frames left"
+        },
+        {
+          "value": 5,
+          "desc": "5 frames left"
+        },
+        {
+          "value": 6,
+          "desc": "6 frames left"
+        },
+        {
+          "value": 7,
+          "desc": "7 frames left"
+        }
+      ]
+    },
+    {
+      "name": "SlotMessage",
+      "numberofbits": 14,
+      "type": "int",
+      "description": "In what slot will the next transmission occur. BROKEN"
+    }
+  ]
+}
+},{}],34:[function(require,module,exports){
+module.exports={
+  "aismsgnum": 5,
+  "name": "shipdata",
+  "class": "a",
+  "description": "Class A vessel data report",
+  "fields": [
+    {
+      "name": "MessageID",
+      "numberofbits": 6,
+      "type": "int",
+      "description": "AIS message number.  Must be 5",
+      "required": 5
+    },
+    {
+      "name": "RepeatIndicator",
+      "numberofbits": 2,
+      "type": "int",
+      "description": "Indicated how many times a message has been repeated",
+      "unavailable": 0,
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "default"
+        },
+        {
+          "value": 3,
+          "desc": "do not repeat any more"
+        }
+      ]
+    },
+    {
+      "name": "UserID",
+      "numberofbits": 30,
+      "type": "int",
+      "description": "Unique ship identification number (MMSI)"
+    },
+    {
+      "name": "AISversion",
+      "numberofbits": 2,
+      "type": "int",
+      "description": "Compliant with what edition.  0 is the first edition.",
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "ITU-R M.1371-1"
+        },
+        {
+          "value": 1,
+          "desc": "ITU-R M.1371-3 (or later)"
+        },
+        {
+          "value": 2,
+          "desc": "ITU-R M.1371-5 (or later)"
+        }
+      ]
+    },
+    {
+      "name": "IMOnumber",
+      "numberofbits": 30,
+      "type": "int",
+      "description": "vessel identification number (different than mmsi)",
+      "unavailable": 0
+    },
+    {
+      "name": "CallSign",
+      "numberofbits": 42,
+      "type": "aisstr6",
+      "description": "Ship radio call sign",
+      "unavailable": null
+    },
+    {
+      "name": "Name",
+      "numberofbits": 120,
+      "type": "aisstr6",
+      "description": "Vessel name",
+      "unavailable": null
+    },
+    {
+      "name": "ShipType",
+      "numberofbits": 8,
+      "type": "int",
+      "description": "Type of ship and cargo type",
+      "unavailable": 0,
+      "lookuptable": [
+        {
+          "value": 20,
+          "desc": "Wing in ground (WIG), all ships of this type"
+        },
+        {
+          "value": 21,
+          "desc": "Wing in ground (WIG), Hazardous catagory A"
+        },
+        {
+          "value": 22,
+          "desc": "Wing in ground (WIG), Hazardous catagory B"
+        },
+        {
+          "value": 23,
+          "desc": "Wing in ground (WIG), Hazardous catagory C"
+        },
+        {
+          "value": 24,
+          "desc": "Wing in ground (WIG), Hazardous catagory D"
+        },
+        {
+          "value": 25,
+          "desc": "Wing in ground (WIG), Reserved for future use"
+        },
+        {
+          "value": 26,
+          "desc": "Wing in ground (WIG), Reserved for future use"
+        },
+        {
+          "value": 27,
+          "desc": "Wing in ground (WIG), Reserved for future use"
+        },
+        {
+          "value": 28,
+          "desc": "Wing in ground (WIG), Reserved for future use"
+        },
+        {
+          "value": 29,
+          "desc": "Wing in ground (WIG), No additional information"
+        },
+        {
+          "value": 30,
+          "desc": "fishing"
+        },
+        {
+          "value": 31,
+          "desc": "towing"
+        },
+        {
+          "value": 32,
+          "desc": "towing length exceeds 200m or breadth exceeds 25m"
+        },
+        {
+          "value": 33,
+          "desc": "dredging or underwater ops"
+        },
+        {
+          "value": 34,
+          "desc": "diving ops"
+        },
+        {
+          "value": 35,
+          "desc": "military ops"
+        },
+        {
+          "value": 36,
+          "desc": "sailing"
+        },
+        {
+          "value": 37,
+          "desc": "pleasure craft"
+        },
+        {
+          "value": 38,
+          "desc": "reserved"
+        },
+        {
+          "value": 39,
+          "desc": "reserved"
+        },
+        {
+          "value": 40,
+          "desc": "High speed craft (HSC), all ships of this type"
+        },
+        {
+          "value": 41,
+          "desc": "High speed craft (HSC), Hazardous catagory A"
+        },
+        {
+          "value": 42,
+          "desc": "High speed craft (HSC), Hazardous catagory B"
+        },
+        {
+          "value": 43,
+          "desc": "High speed craft (HSC), Hazardous catagory C"
+        },
+        {
+          "value": 44,
+          "desc": "High speed craft (HSC), Hazardous catagory D"
+        },
+        {
+          "value": 45,
+          "desc": "High speed craft (HSC), Reserved for future use"
+        },
+        {
+          "value": 46,
+          "desc": "High speed craft (HSC), Reserved for future use"
+        },
+        {
+          "value": 47,
+          "desc": "High speed craft (HSC), Reserved for future use"
+        },
+        {
+          "value": 48,
+          "desc": "High speed craft (HSC), Reserved for future use"
+        },
+        {
+          "value": 49,
+          "desc": "High speed craft (HSC), No additional information"
+        },
+        {
+          "value": 50,
+          "desc": "pilot vessel"
+        },
+        {
+          "value": 51,
+          "desc": "search and rescue vessel"
+        },
+        {
+          "value": 52,
+          "desc": "tug"
+        },
+        {
+          "value": 53,
+          "desc": "port tender"
+        },
+        {
+          "value": 54,
+          "desc": "anti-polution equipment"
+        },
+        {
+          "value": 55,
+          "desc": "law enforcement"
+        },
+        {
+          "value": 56,
+          "desc": "spare - local vessel"
+        },
+        {
+          "value": 57,
+          "desc": "spare - local vessel"
+        },
+        {
+          "value": 58,
+          "desc": "medical transport"
+        },
+        {
+          "value": 59,
+          "desc": "ship according to RR Resolution No. 18"
+        },
+        {
+          "value": 60,
+          "desc": "passenger, all ships of this type"
+        },
+        {
+          "value": 61,
+          "desc": "passenger, Hazardous catagory A"
+        },
+        {
+          "value": 62,
+          "desc": "passenger, Hazardous catagory B"
+        },
+        {
+          "value": 63,
+          "desc": "passenger, Hazardous catagory C"
+        },
+        {
+          "value": 64,
+          "desc": "passenger, Hazardous catagory D"
+        },
+        {
+          "value": 65,
+          "desc": "passenger, Reserved for future use"
+        },
+        {
+          "value": 66,
+          "desc": "passenger, Reserved for future use"
+        },
+        {
+          "value": 67,
+          "desc": "passenger, Reserved for future use"
+        },
+        {
+          "value": 68,
+          "desc": "passenger, Reserved for future use"
+        },
+        {
+          "value": 69,
+          "desc": "passenger, No additional information"
+        },
+        {
+          "value": 70,
+          "desc": "cargo, all ships of this type"
+        },
+        {
+          "value": 71,
+          "desc": "cargo, Hazardous catagory A"
+        },
+        {
+          "value": 72,
+          "desc": "cargo, Hazardous catagory B"
+        },
+        {
+          "value": 73,
+          "desc": "cargo, Hazardous catagory C"
+        },
+        {
+          "value": 74,
+          "desc": "cargo, Hazardous catagory D"
+        },
+        {
+          "value": 75,
+          "desc": "cargo, Reserved for future use"
+        },
+        {
+          "value": 76,
+          "desc": "cargo, Reserved for future use"
+        },
+        {
+          "value": 77,
+          "desc": "cargo, Reserved for future use"
+        },
+        {
+          "value": 78,
+          "desc": "cargo, Reserved for future use"
+        },
+        {
+          "value": 79,
+          "desc": "cargo, No additional information"
+        },
+        {
+          "value": 80,
+          "desc": "tanker, all ships of this type"
+        },
+        {
+          "value": 81,
+          "desc": "tanker, Hazardous catagory A"
+        },
+        {
+          "value": 82,
+          "desc": "tanker, Hazardous catagory B"
+        },
+        {
+          "value": 83,
+          "desc": "tanker, Hazardous catagory C"
+        },
+        {
+          "value": 84,
+          "desc": "tanker, Hazardous catagory D"
+        },
+        {
+          "value": 85,
+          "desc": "tanker, Reserved for future use"
+        },
+        {
+          "value": 86,
+          "desc": "tanker, Reserved for future use"
+        },
+        {
+          "value": 87,
+          "desc": "tanker, Reserved for future use"
+        },
+        {
+          "value": 88,
+          "desc": "tanker, Reserved for future use"
+        },
+        {
+          "value": 89,
+          "desc": "tanker, No additional information"
+        },
+        {
+          "value": 90,
+          "desc": "other type, all ships of this type"
+        },
+        {
+          "value": 91,
+          "desc": "other type, Hazardous catagory A"
+        },
+        {
+          "value": 92,
+          "desc": "other type, Hazardous catagory B"
+        },
+        {
+          "value": 93,
+          "desc": "other type, Hazardous catagory C"
+        },
+        {
+          "value": 94,
+          "desc": "other type, Hazardous catagory D"
+        },
+        {
+          "value": 95,
+          "desc": "other type, Reserved for future use"
+        },
+        {
+          "value": 96,
+          "desc": "other type, Reserved for future use"
+        },
+        {
+          "value": 97,
+          "desc": "other type, Reserved for future use"
+        },
+        {
+          "value": 98,
+          "desc": "other type, Reserved for future use"
+        },
+        {
+          "value": 99,
+          "desc": "other type, No additional information"
+        }
+      ]
+    },
+    {
+      "name": "DimA",
+      "numberofbits": 9,
+      "type": "int",
+      "description": "Distance from bow to reference position",
+      "units": "m",
+      "unavailable": 0
+    },
+    {
+      "name": "DimB",
+      "numberofbits": 9,
+      "type": "int",
+      "description": "Distance from reference position to stern",
+      "units": "m",
+      "unavailable": 0
+    },
+    {
+      "name": "DimC",
+      "numberofbits": 6,
+      "type": "int",
+      "description": "Distance from port side to reference position",
+      "units": "m",
+      "unavailable": 0,
+      "lookuptable": [
+        {
+          "value": 63,
+          "desc": "63 m or greater"
+        }
+      ]
+    },
+    {
+      "name": "DimD",
+      "numberofbits": 6,
+      "type": "int",
+      "description": "Distance from reference position to starboard side",
+      "units": "m",
+      "unavailable": 0,
+      "lookuptable": [
+        {
+          "value": 63,
+          "desc": "63 m or greater"
+        }
+      ]
+    },
+    {
+      "name": "PositionType",
+      "numberofbits": 4,
+      "type": "int",
+      "description": "Method used for positioning",
+      "unavailable": 0,
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "undefined"
+        },
+        {
+          "value": 1,
+          "desc": "GPS"
+        },
+        {
+          "value": 2,
+          "desc": "GLONASS"
+        },
+        {
+          "value": 3,
+          "desc": "combined GPS/GLONASS"
+        },
+        {
+          "value": 4,
+          "desc": "Loran-C"
+        },
+        {
+          "value": 5,
+          "desc": "Chayka"
+        },
+        {
+          "value": 6,
+          "desc": "integrated navigation system"
+        },
+        {
+          "value": 7,
+          "desc": "surveyed"
+        }
+      ]
+    },
+    {
+      "name": "ETAmonth",
+      "numberofbits": 4,
+      "type": "int",
+      "description": "Estimated time of arrival - month",
+      "unavailable": 0
+    },
+    {
+      "name": "ETAday",
+      "numberofbits": 5,
+      "type": "int",
+      "description": "Estimated time of arrival - day",
+      "unavailable": 0
+    },
+    {
+      "name": "ETAhour",
+      "numberofbits": 5,
+      "type": "int",
+      "description": "Estimated time of arrival - hour",
+      "unavailable": 24
+    },
+    {
+      "name": "ETAminute",
+      "numberofbits": 6,
+      "type": "int",
+      "description": "Estimated time of arrival - minutes",
+      "unavailable": 60
+    },
+    {
+      "name": "Draught",
+      "numberofbits": 8,
+      "type": "int",
+      "description": "Maximum present static draught",
+      "unavailable": 0,
+      "units": "m",
+      "scale": 10,
+      "decimalplaces": 1,
+      "lookuptable": [
+        {
+          "value": 25.5,
+          "desc": "25.5 m or greater"
+        }
+      ]
+    },
+    {
+      "name": "Destination",
+      "numberofbits": 120,
+      "type": "aisstr6",
+      "description": "Where is the vessel going",
+      "unavailable": null
+    },
+    {
+      "name": "DTE",
+      "numberofbits": 1,
+      "type": "int",
+      "description": "Data terminal ready",
+      "lookuptable": [
+        {
+          "value": 0,
+          "desc": "available"
+        },
+        {
+          "value": 1,
+          "desc": "not available"
+        }
+      ]
+    },
+    {
+      "name": "Spare",
+      "numberofbits": 1,
+      "type": "int",
+      "description": "Reserved for definition by a regional authority.",
+      "required": 0
+    }
+  ]
+}
+},{}],35:[function(require,module,exports){
 /* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab: */
 /**
  * Backbone-relational.js 0.10.0
@@ -3857,7 +4879,7 @@ module.exports = ShipView;
 	};
 }));
 
-},{"backbone":32,"underscore":126}],32:[function(require,module,exports){
+},{"backbone":36,"underscore":130}],36:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.3
 
@@ -5755,7 +6777,7 @@ module.exports = ShipView;
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":55,"underscore":126}],33:[function(require,module,exports){
+},{"jquery":59,"underscore":130}],37:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -8127,7 +9149,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":55}],34:[function(require,module,exports){
+},{"jquery":59}],38:[function(require,module,exports){
 /*
  * Geodesic routines from GeographicLib translated to JavaScript.  See
  * http://geographiclib.sf.net/html/other.html#javascript
@@ -11016,7 +12038,7 @@ cb(GeographicLib);
   }
 });
 
-},{}],35:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11085,7 +12107,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars/base":36,"./handlebars/exception":39,"./handlebars/no-conflict":49,"./handlebars/runtime":50,"./handlebars/safe-string":51,"./handlebars/utils":52}],36:[function(require,module,exports){
+},{"./handlebars/base":40,"./handlebars/exception":43,"./handlebars/no-conflict":53,"./handlebars/runtime":54,"./handlebars/safe-string":55,"./handlebars/utils":56}],40:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11191,7 +12213,7 @@ exports.createFrame = _utils.createFrame;
 exports.logger = _logger2['default'];
 
 
-},{"./decorators":37,"./exception":39,"./helpers":40,"./logger":48,"./utils":52}],37:[function(require,module,exports){
+},{"./decorators":41,"./exception":43,"./helpers":44,"./logger":52,"./utils":56}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11209,7 +12231,7 @@ function registerDefaultDecorators(instance) {
 }
 
 
-},{"./decorators/inline":38}],38:[function(require,module,exports){
+},{"./decorators/inline":42}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11240,7 +12262,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":52}],39:[function(require,module,exports){
+},{"../utils":56}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11282,7 +12304,7 @@ exports['default'] = Exception;
 module.exports = exports['default'];
 
 
-},{}],40:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11330,7 +12352,7 @@ function registerDefaultHelpers(instance) {
 }
 
 
-},{"./helpers/block-helper-missing":41,"./helpers/each":42,"./helpers/helper-missing":43,"./helpers/if":44,"./helpers/log":45,"./helpers/lookup":46,"./helpers/with":47}],41:[function(require,module,exports){
+},{"./helpers/block-helper-missing":45,"./helpers/each":46,"./helpers/helper-missing":47,"./helpers/if":48,"./helpers/log":49,"./helpers/lookup":50,"./helpers/with":51}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11371,7 +12393,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":52}],42:[function(require,module,exports){
+},{"../utils":56}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11467,7 +12489,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":39,"../utils":52}],43:[function(require,module,exports){
+},{"../exception":43,"../utils":56}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11494,7 +12516,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":39}],44:[function(require,module,exports){
+},{"../exception":43}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11525,7 +12547,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":52}],45:[function(require,module,exports){
+},{"../utils":56}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11553,7 +12575,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],46:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11567,7 +12589,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],47:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11602,7 +12624,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":52}],48:[function(require,module,exports){
+},{"../utils":56}],52:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11651,7 +12673,7 @@ exports['default'] = logger;
 module.exports = exports['default'];
 
 
-},{"./utils":52}],49:[function(require,module,exports){
+},{"./utils":56}],53:[function(require,module,exports){
 (function (global){
 /* global window */
 'use strict';
@@ -11674,7 +12696,7 @@ module.exports = exports['default'];
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],50:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11968,7 +12990,7 @@ function executeDecorators(fn, prog, container, depths, data, blockParams) {
 }
 
 
-},{"./base":36,"./exception":39,"./utils":52}],51:[function(require,module,exports){
+},{"./base":40,"./exception":43,"./utils":56}],55:[function(require,module,exports){
 // Build out our basic SafeString type
 'use strict';
 
@@ -11985,7 +13007,7 @@ exports['default'] = SafeString;
 module.exports = exports['default'];
 
 
-},{}],52:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12111,15 +13133,15 @@ function appendContextPath(contextPath, id) {
 }
 
 
-},{}],53:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime')['default'];
 
-},{"./dist/cjs/handlebars.runtime":35}],54:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":39}],58:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":53}],55:[function(require,module,exports){
+},{"handlebars/runtime":57}],59:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -21331,7 +22353,7 @@ return jQuery;
 
 }));
 
-},{}],56:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -24527,7 +25549,7 @@ return jQuery;
     return _moment;
 
 }));
-},{}],57:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 var trim = require('./trim');
 var decap = require('./decapitalize');
 
@@ -24543,7 +25565,7 @@ module.exports = function camelize(str, decapitalize) {
   }
 };
 
-},{"./decapitalize":66,"./trim":118}],58:[function(require,module,exports){
+},{"./decapitalize":70,"./trim":122}],62:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function capitalize(str, lowercaseRest) {
@@ -24553,14 +25575,14 @@ module.exports = function capitalize(str, lowercaseRest) {
   return str.charAt(0).toUpperCase() + remainingChars;
 };
 
-},{"./helper/makeString":76}],59:[function(require,module,exports){
+},{"./helper/makeString":80}],63:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function chars(str) {
   return makeString(str).split('');
 };
 
-},{"./helper/makeString":76}],60:[function(require,module,exports){
+},{"./helper/makeString":80}],64:[function(require,module,exports){
 module.exports = function chop(str, step) {
   if (str == null) return [];
   str = String(str);
@@ -24568,7 +25590,7 @@ module.exports = function chop(str, step) {
   return step > 0 ? str.match(new RegExp('.{1,' + step + '}', 'g')) : [str];
 };
 
-},{}],61:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var camelize = require('./camelize');
 var makeString = require('./helper/makeString');
@@ -24578,14 +25600,14 @@ module.exports = function classify(str) {
   return capitalize(camelize(str.replace(/[\W_]/g, ' ')).replace(/\s/g, ''));
 };
 
-},{"./camelize":57,"./capitalize":58,"./helper/makeString":76}],62:[function(require,module,exports){
+},{"./camelize":61,"./capitalize":62,"./helper/makeString":80}],66:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function clean(str) {
   return trim(str).replace(/\s\s+/g, ' ');
 };
 
-},{"./trim":118}],63:[function(require,module,exports){
+},{"./trim":122}],67:[function(require,module,exports){
 
 var makeString = require('./helper/makeString');
 
@@ -24609,7 +25631,7 @@ module.exports = function cleanDiacritics(str) {
   });
 };
 
-},{"./helper/makeString":76}],64:[function(require,module,exports){
+},{"./helper/makeString":80}],68:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function(str, substr) {
@@ -24621,14 +25643,14 @@ module.exports = function(str, substr) {
   return str.split(substr).length - 1;
 };
 
-},{"./helper/makeString":76}],65:[function(require,module,exports){
+},{"./helper/makeString":80}],69:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function dasherize(str) {
   return trim(str).replace(/([A-Z])/g, '-$1').replace(/[-_\s]+/g, '-').toLowerCase();
 };
 
-},{"./trim":118}],66:[function(require,module,exports){
+},{"./trim":122}],70:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function decapitalize(str) {
@@ -24636,7 +25658,7 @@ module.exports = function decapitalize(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
 };
 
-},{"./helper/makeString":76}],67:[function(require,module,exports){
+},{"./helper/makeString":80}],71:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 function getIndent(str) {
@@ -24666,7 +25688,7 @@ module.exports = function dedent(str, pattern) {
   return str.replace(reg, '');
 };
 
-},{"./helper/makeString":76}],68:[function(require,module,exports){
+},{"./helper/makeString":80}],72:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -24681,7 +25703,7 @@ module.exports = function endsWith(str, ends, position) {
   return position >= 0 && str.indexOf(ends, position) === position;
 };
 
-},{"./helper/makeString":76,"./helper/toPositive":78}],69:[function(require,module,exports){
+},{"./helper/makeString":80,"./helper/toPositive":82}],73:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var escapeChars = require('./helper/escapeChars');
 var reversedEscapeChars = {};
@@ -24701,7 +25723,7 @@ module.exports = function escapeHTML(str) {
   });
 };
 
-},{"./helper/escapeChars":73,"./helper/makeString":76}],70:[function(require,module,exports){
+},{"./helper/escapeChars":77,"./helper/makeString":80}],74:[function(require,module,exports){
 module.exports = function() {
   var result = {};
 
@@ -24713,7 +25735,7 @@ module.exports = function() {
   return result;
 };
 
-},{}],71:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function adjacent(str, direction) {
@@ -24724,7 +25746,7 @@ module.exports = function adjacent(str, direction) {
   return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + direction);
 };
 
-},{"./makeString":76}],72:[function(require,module,exports){
+},{"./makeString":80}],76:[function(require,module,exports){
 var escapeRegExp = require('./escapeRegExp');
 
 module.exports = function defaultToWhiteSpace(characters) {
@@ -24736,7 +25758,7 @@ module.exports = function defaultToWhiteSpace(characters) {
     return '[' + escapeRegExp(characters) + ']';
 };
 
-},{"./escapeRegExp":74}],73:[function(require,module,exports){
+},{"./escapeRegExp":78}],77:[function(require,module,exports){
 /* We're explicitly defining the list of entities we want to escape.
 nbsp is an HTML entity, but we don't want to escape all space characters in a string, hence its omission in this map.
 
@@ -24757,14 +25779,14 @@ var escapeChars = {
 
 module.exports = escapeChars;
 
-},{}],74:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function escapeRegExp(str) {
   return makeString(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 };
 
-},{"./makeString":76}],75:[function(require,module,exports){
+},{"./makeString":80}],79:[function(require,module,exports){
 /*
 We're explicitly defining the list of entities that might see in escape HTML strings
 */
@@ -24785,7 +25807,7 @@ var htmlEntities = {
 
 module.exports = htmlEntities;
 
-},{}],76:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 /**
  * Ensure some object is a coerced to a string
  **/
@@ -24794,7 +25816,7 @@ module.exports = function makeString(object) {
   return '' + object;
 };
 
-},{}],77:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports = function strRepeat(str, qty){
   if (qty < 1) return '';
   var result = '';
@@ -24805,12 +25827,12 @@ module.exports = function strRepeat(str, qty){
   return result;
 };
 
-},{}],78:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 module.exports = function toPositive(number) {
   return number < 0 ? 0 : (+number || 0);
 };
 
-},{}],79:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var underscored = require('./underscored');
 var trim = require('./trim');
@@ -24819,7 +25841,7 @@ module.exports = function humanize(str) {
   return capitalize(trim(underscored(str).replace(/_id$/, '').replace(/_/g, ' ')));
 };
 
-},{"./capitalize":58,"./trim":118,"./underscored":120}],80:[function(require,module,exports){
+},{"./capitalize":62,"./trim":122,"./underscored":124}],84:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function include(str, needle) {
@@ -24827,7 +25849,7 @@ module.exports = function include(str, needle) {
   return makeString(str).indexOf(needle) !== -1;
 };
 
-},{"./helper/makeString":76}],81:[function(require,module,exports){
+},{"./helper/makeString":80}],85:[function(require,module,exports){
 //  Underscore.string
 //  (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
 //  Underscore.string is freely distributable under the terms of the MIT license.
@@ -24967,21 +25989,21 @@ for (var key in prototypeMethods) prototype2method(prototypeMethods[key]);
 
 module.exports = s;
 
-},{"./camelize":57,"./capitalize":58,"./chars":59,"./chop":60,"./classify":61,"./clean":62,"./cleanDiacritics":63,"./count":64,"./dasherize":65,"./decapitalize":66,"./dedent":67,"./endsWith":68,"./escapeHTML":69,"./exports":70,"./helper/escapeRegExp":74,"./humanize":79,"./include":80,"./insert":82,"./isBlank":83,"./join":84,"./levenshtein":85,"./lines":86,"./lpad":87,"./lrpad":88,"./ltrim":89,"./naturalCmp":90,"./numberFormat":91,"./pad":92,"./pred":93,"./prune":94,"./quote":95,"./repeat":96,"./replaceAll":97,"./reverse":98,"./rpad":99,"./rtrim":100,"./slugify":101,"./splice":102,"./sprintf":103,"./startsWith":104,"./strLeft":105,"./strLeftBack":106,"./strRight":107,"./strRightBack":108,"./stripTags":109,"./succ":110,"./surround":111,"./swapCase":112,"./titleize":113,"./toBoolean":114,"./toNumber":115,"./toSentence":116,"./toSentenceSerial":117,"./trim":118,"./truncate":119,"./underscored":120,"./unescapeHTML":121,"./unquote":122,"./vsprintf":123,"./words":124,"./wrap":125}],82:[function(require,module,exports){
+},{"./camelize":61,"./capitalize":62,"./chars":63,"./chop":64,"./classify":65,"./clean":66,"./cleanDiacritics":67,"./count":68,"./dasherize":69,"./decapitalize":70,"./dedent":71,"./endsWith":72,"./escapeHTML":73,"./exports":74,"./helper/escapeRegExp":78,"./humanize":83,"./include":84,"./insert":86,"./isBlank":87,"./join":88,"./levenshtein":89,"./lines":90,"./lpad":91,"./lrpad":92,"./ltrim":93,"./naturalCmp":94,"./numberFormat":95,"./pad":96,"./pred":97,"./prune":98,"./quote":99,"./repeat":100,"./replaceAll":101,"./reverse":102,"./rpad":103,"./rtrim":104,"./slugify":105,"./splice":106,"./sprintf":107,"./startsWith":108,"./strLeft":109,"./strLeftBack":110,"./strRight":111,"./strRightBack":112,"./stripTags":113,"./succ":114,"./surround":115,"./swapCase":116,"./titleize":117,"./toBoolean":118,"./toNumber":119,"./toSentence":120,"./toSentenceSerial":121,"./trim":122,"./truncate":123,"./underscored":124,"./unescapeHTML":125,"./unquote":126,"./vsprintf":127,"./words":128,"./wrap":129}],86:[function(require,module,exports){
 var splice = require('./splice');
 
 module.exports = function insert(str, i, substr) {
   return splice(str, i, 0, substr);
 };
 
-},{"./splice":102}],83:[function(require,module,exports){
+},{"./splice":106}],87:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function isBlank(str) {
   return (/^\s*$/).test(makeString(str));
 };
 
-},{"./helper/makeString":76}],84:[function(require,module,exports){
+},{"./helper/makeString":80}],88:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var slice = [].slice;
 
@@ -24992,7 +26014,7 @@ module.exports = function join() {
   return args.join(makeString(separator));
 };
 
-},{"./helper/makeString":76}],85:[function(require,module,exports){
+},{"./helper/makeString":80}],89:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 /**
@@ -25046,27 +26068,27 @@ module.exports = function levenshtein(str1, str2) {
   return nextCol;
 };
 
-},{"./helper/makeString":76}],86:[function(require,module,exports){
+},{"./helper/makeString":80}],90:[function(require,module,exports){
 module.exports = function lines(str) {
   if (str == null) return [];
   return String(str).split(/\r\n?|\n/);
 };
 
-},{}],87:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lpad(str, length, padStr) {
   return pad(str, length, padStr);
 };
 
-},{"./pad":92}],88:[function(require,module,exports){
+},{"./pad":96}],92:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lrpad(str, length, padStr) {
   return pad(str, length, padStr, 'both');
 };
 
-},{"./pad":92}],89:[function(require,module,exports){
+},{"./pad":96}],93:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimLeft = String.prototype.trimLeft;
@@ -25078,7 +26100,7 @@ module.exports = function ltrim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":72,"./helper/makeString":76}],90:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":76,"./helper/makeString":80}],94:[function(require,module,exports){
 module.exports = function naturalCmp(str1, str2) {
   if (str1 == str2) return 0;
   if (!str1) return -1;
@@ -25109,7 +26131,7 @@ module.exports = function naturalCmp(str1, str2) {
   return str1 < str2 ? -1 : 1;
 };
 
-},{}],91:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 module.exports = function numberFormat(number, dec, dsep, tsep) {
   if (isNaN(number) || number == null) return '';
 
@@ -25123,7 +26145,7 @@ module.exports = function numberFormat(number, dec, dsep, tsep) {
   return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, '$1' + tsep) + decimals;
 };
 
-},{}],92:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -25151,14 +26173,14 @@ module.exports = function pad(str, length, padStr, type) {
   }
 };
 
-},{"./helper/makeString":76,"./helper/strRepeat":77}],93:[function(require,module,exports){
+},{"./helper/makeString":80,"./helper/strRepeat":81}],97:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, -1);
 };
 
-},{"./helper/adjacent":71}],94:[function(require,module,exports){
+},{"./helper/adjacent":75}],98:[function(require,module,exports){
 /**
  * _s.prune: a more elegant version of truncate
  * prune extra chars, never leaving a half-chopped word.
@@ -25187,14 +26209,14 @@ module.exports = function prune(str, length, pruneStr) {
   return (template + pruneStr).length > str.length ? str : str.slice(0, template.length) + pruneStr;
 };
 
-},{"./helper/makeString":76,"./rtrim":100}],95:[function(require,module,exports){
+},{"./helper/makeString":80,"./rtrim":104}],99:[function(require,module,exports){
 var surround = require('./surround');
 
 module.exports = function quote(str, quoteChar) {
   return surround(str, quoteChar || '"');
 };
 
-},{"./surround":111}],96:[function(require,module,exports){
+},{"./surround":115}],100:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -25211,7 +26233,7 @@ module.exports = function repeat(str, qty, separator) {
   return repeat.join(separator);
 };
 
-},{"./helper/makeString":76,"./helper/strRepeat":77}],97:[function(require,module,exports){
+},{"./helper/makeString":80,"./helper/strRepeat":81}],101:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function replaceAll(str, find, replace, ignorecase) {
@@ -25221,21 +26243,21 @@ module.exports = function replaceAll(str, find, replace, ignorecase) {
   return makeString(str).replace(reg, replace);
 };
 
-},{"./helper/makeString":76}],98:[function(require,module,exports){
+},{"./helper/makeString":80}],102:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function reverse(str) {
   return chars(str).reverse().join('');
 };
 
-},{"./chars":59}],99:[function(require,module,exports){
+},{"./chars":63}],103:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function rpad(str, length, padStr) {
   return pad(str, length, padStr, 'right');
 };
 
-},{"./pad":92}],100:[function(require,module,exports){
+},{"./pad":96}],104:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimRight = String.prototype.trimRight;
@@ -25247,7 +26269,7 @@ module.exports = function rtrim(str, characters) {
   return str.replace(new RegExp(characters + '+$'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":72,"./helper/makeString":76}],101:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":76,"./helper/makeString":80}],105:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var trim = require('./trim');
@@ -25258,7 +26280,7 @@ module.exports = function slugify(str) {
   return trim(dasherize(cleanDiacritics(str).replace(/[^\w\s-]/g, '-').toLowerCase()), '-');
 };
 
-},{"./cleanDiacritics":63,"./dasherize":65,"./helper/defaultToWhiteSpace":72,"./helper/makeString":76,"./trim":118}],102:[function(require,module,exports){
+},{"./cleanDiacritics":67,"./dasherize":69,"./helper/defaultToWhiteSpace":76,"./helper/makeString":80,"./trim":122}],106:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function splice(str, i, howmany, substr) {
@@ -25267,7 +26289,7 @@ module.exports = function splice(str, i, howmany, substr) {
   return arr.join('');
 };
 
-},{"./chars":59}],103:[function(require,module,exports){
+},{"./chars":63}],107:[function(require,module,exports){
 // sprintf() for JavaScript 0.7-beta1
 // http://www.diveintojavascript.com/projects/javascript-sprintf
 //
@@ -25393,7 +26415,7 @@ var sprintf = (function() {
 
 module.exports = sprintf;
 
-},{"./helper/strRepeat":77}],104:[function(require,module,exports){
+},{"./helper/strRepeat":81}],108:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -25404,7 +26426,7 @@ module.exports = function startsWith(str, starts, position) {
   return str.lastIndexOf(starts, position) === position;
 };
 
-},{"./helper/makeString":76,"./helper/toPositive":78}],105:[function(require,module,exports){
+},{"./helper/makeString":80,"./helper/toPositive":82}],109:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeft(str, sep) {
@@ -25414,7 +26436,7 @@ module.exports = function strLeft(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":76}],106:[function(require,module,exports){
+},{"./helper/makeString":80}],110:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeftBack(str, sep) {
@@ -25424,7 +26446,7 @@ module.exports = function strLeftBack(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":76}],107:[function(require,module,exports){
+},{"./helper/makeString":80}],111:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRight(str, sep) {
@@ -25434,7 +26456,7 @@ module.exports = function strRight(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":76}],108:[function(require,module,exports){
+},{"./helper/makeString":80}],112:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRightBack(str, sep) {
@@ -25444,26 +26466,26 @@ module.exports = function strRightBack(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":76}],109:[function(require,module,exports){
+},{"./helper/makeString":80}],113:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function stripTags(str) {
   return makeString(str).replace(/<\/?[^>]+>/g, '');
 };
 
-},{"./helper/makeString":76}],110:[function(require,module,exports){
+},{"./helper/makeString":80}],114:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, 1);
 };
 
-},{"./helper/adjacent":71}],111:[function(require,module,exports){
+},{"./helper/adjacent":75}],115:[function(require,module,exports){
 module.exports = function surround(str, wrapper) {
   return [wrapper, str, wrapper].join('');
 };
 
-},{}],112:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function swapCase(str) {
@@ -25472,7 +26494,7 @@ module.exports = function swapCase(str) {
   });
 };
 
-},{"./helper/makeString":76}],113:[function(require,module,exports){
+},{"./helper/makeString":80}],117:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function titleize(str) {
@@ -25481,7 +26503,7 @@ module.exports = function titleize(str) {
   });
 };
 
-},{"./helper/makeString":76}],114:[function(require,module,exports){
+},{"./helper/makeString":80}],118:[function(require,module,exports){
 var trim = require('./trim');
 
 function boolMatch(s, matchers) {
@@ -25503,7 +26525,7 @@ module.exports = function toBoolean(str, trueValues, falseValues) {
   if (boolMatch(str, falseValues || ["false", "0"])) return false;
 };
 
-},{"./trim":118}],115:[function(require,module,exports){
+},{"./trim":122}],119:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function toNumber(num, precision) {
@@ -25512,7 +26534,7 @@ module.exports = function toNumber(num, precision) {
   return Math.round(num * factor) / factor;
 };
 
-},{"./trim":118}],116:[function(require,module,exports){
+},{"./trim":122}],120:[function(require,module,exports){
 var rtrim = require('./rtrim');
 
 module.exports = function toSentence(array, separator, lastSeparator, serial) {
@@ -25526,14 +26548,14 @@ module.exports = function toSentence(array, separator, lastSeparator, serial) {
   return a.length ? a.join(separator) + lastSeparator + lastMember : lastMember;
 };
 
-},{"./rtrim":100}],117:[function(require,module,exports){
+},{"./rtrim":104}],121:[function(require,module,exports){
 var toSentence = require('./toSentence');
 
 module.exports = function toSentenceSerial(array, sep, lastSep) {
   return toSentence(array, sep, lastSep, true);
 };
 
-},{"./toSentence":116}],118:[function(require,module,exports){
+},{"./toSentence":120}],122:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrim = String.prototype.trim;
@@ -25545,7 +26567,7 @@ module.exports = function trim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+|' + characters + '+$', 'g'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":72,"./helper/makeString":76}],119:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":76,"./helper/makeString":80}],123:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function truncate(str, length, truncateStr) {
@@ -25555,14 +26577,14 @@ module.exports = function truncate(str, length, truncateStr) {
   return str.length > length ? str.slice(0, length) + truncateStr : str;
 };
 
-},{"./helper/makeString":76}],120:[function(require,module,exports){
+},{"./helper/makeString":80}],124:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function underscored(str) {
   return trim(str).replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
 };
 
-},{"./trim":118}],121:[function(require,module,exports){
+},{"./trim":122}],125:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var htmlEntities = require('./helper/htmlEntities');
 
@@ -25582,7 +26604,7 @@ module.exports = function unescapeHTML(str) {
   });
 };
 
-},{"./helper/htmlEntities":75,"./helper/makeString":76}],122:[function(require,module,exports){
+},{"./helper/htmlEntities":79,"./helper/makeString":80}],126:[function(require,module,exports){
 module.exports = function unquote(str, quoteChar) {
   quoteChar = quoteChar || '"';
   if (str[0] === quoteChar && str[str.length - 1] === quoteChar)
@@ -25590,7 +26612,7 @@ module.exports = function unquote(str, quoteChar) {
   else return str;
 };
 
-},{}],123:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 var sprintf = require('./sprintf');
 
 module.exports = function vsprintf(fmt, argv) {
@@ -25598,7 +26620,7 @@ module.exports = function vsprintf(fmt, argv) {
   return sprintf.apply(null, argv);
 };
 
-},{"./sprintf":103}],124:[function(require,module,exports){
+},{"./sprintf":107}],128:[function(require,module,exports){
 var isBlank = require('./isBlank');
 var trim = require('./trim');
 
@@ -25607,7 +26629,7 @@ module.exports = function words(str, delimiter) {
   return trim(str, delimiter).split(delimiter || /\s+/);
 };
 
-},{"./isBlank":83,"./trim":118}],125:[function(require,module,exports){
+},{"./isBlank":87,"./trim":122}],129:[function(require,module,exports){
 // Wrap
 // wraps a string by a certain width
 
@@ -25708,7 +26730,7 @@ module.exports = function wrap(str, options){
 		return result;
 	}
 };
-},{"./helper/makeString":76}],126:[function(require,module,exports){
+},{"./helper/makeString":80}],130:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -27258,4 +28280,4 @@ module.exports = function wrap(str, options){
   }
 }.call(this));
 
-},{}]},{},[4]);
+},{}]},{},[6]);

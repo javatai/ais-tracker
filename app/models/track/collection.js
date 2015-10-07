@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('underscore');
-var MapUtil = require('../../lib/MapUtil');
+var MapUtil = require('../../lib/map-util');
 
 var Positions = require('../position/collection');
 var TrackHelper = require('./helper');

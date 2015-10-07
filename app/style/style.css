@@ -181,6 +181,18 @@ body { margin: 0; padding: 0; background-color: #ccc; }
   width: 225px;
 }
 
+#content .ship table.position > thead th:nth-child(1),
+#content .ship table.position > tbody th:nth-child(1) {
+  width: 145px;
+}
+
+#content .ship table.position > thead th:nth-child(2) {
+  width: 215px;
+}
+#content .ship table.position > tbody td:nth-child(2) {
+  width: 200px;
+}
+
 #content .ship table.track > thead th:nth-child(1),
 #content .ship table.track > tbody th:nth-child(1) {
   width: 40px;

@@ -3,7 +3,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var MapUtil = require('../lib/MapUtil');
+var MapUtil = require('../lib/map-util');
 
 var ShipMarker = require('./ship-marker');
 var TrackLayer = require('./track-layer');

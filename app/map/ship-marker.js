@@ -31,7 +31,7 @@ var ShipMarker = Backbone.Model.extend({
       var c = data.get('dimc') || 0;
       var d = data.get('dimd') || 0;
 
-      if (a || b || c || d) {
+      if ((a || b) && (c || d)) {
         var geod = GeographicLib.Geodesic.WGS84;
         var azi = position.get('trueheading') || position.get('cog');
 
