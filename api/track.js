@@ -28,7 +28,8 @@ module.exports = function (server, epilogue) {
           datetime: {
             $gte: datetime__greater_than
           }
-        }
+        },
+        limit: 500
       }).then(function (track) {
         res.send(_.map(track, function (position) {
           return position.get({ plain: true })
