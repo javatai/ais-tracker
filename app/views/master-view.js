@@ -67,6 +67,7 @@ var MasterView = Backbone.View.extend({
   openshipview: function () {
     this.$el.find('.list .collapse').collapse('hide');
     this.$el.find('.ship .collapse').collapse('show');
+
     this.setCurrentTab('ship');
   },
 
