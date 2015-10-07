@@ -1837,12 +1837,14 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
 },"3":function(container,depth0,helpers,partials,data) {
     return " class=\"active\"";
 },"5":function(container,depth0,helpers,partials,data) {
+    return "    <li role=\"presentation\"><a href=\"#track\" aria-controls=\"track\" role=\"tab\" data-toggle=\"tab\">Track details</a></li>\n";
+},"7":function(container,depth0,helpers,partials,data) {
     var stack1;
 
   return "    <div role=\"tabpanel\" class=\"tab-pane active\" id=\"shipdetails\">\n      <table class=\"table table-hover table-condensed details fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.ship : depth0),{"name":"each","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.ship : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "      </tbody>\n      </table>\n    </div>\n";
-},"6":function(container,depth0,helpers,partials,data) {
+},"8":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
 
   return "        <tr>\n          <th scope=\"row\">"
@@ -1850,9 +1852,15 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
     + "</th>\n          <td>"
     + ((stack1 = ((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "</td>\n        </tr>\n";
-},"8":function(container,depth0,helpers,partials,data) {
-    return " active";
 },"10":function(container,depth0,helpers,partials,data) {
+    return " active";
+},"12":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "    <div role=\"tabpanel\" class=\"tab-pane\" id=\"track\">\n      <table class=\"table table-hover table-condensed track fixedhead\">\n      <thead>\n        <tr>\n          <th>#</th>\n          <th>Position</th>\n        </tr>\n      </thead>\n      <tbody>\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.track : depth0),{"name":"each","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "      </tbody>\n      </table>\n    </div>\n";
+},"13":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
   return "        <tr>\n          <th scope=\"row\">"
@@ -1875,15 +1883,17 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
     + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "    <li role=\"presentation\"><a href=\"#lastposition\""
     + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "aria-controls=\"lastposition\" role=\"tab\" data-toggle=\"tab\">Last position</a></li>\n    <li role=\"presentation\"><a href=\"#track\" aria-controls=\"track\" role=\"tab\" data-toggle=\"tab\">Track details</a></li>\n  </ul>\n\n  <!-- Tab panes -->\n  <div class=\"tab-content\">\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "aria-controls=\"lastposition\" role=\"tab\" data-toggle=\"tab\">Last position</a></li>\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "  </ul>\n\n  <!-- Tab panes -->\n  <div class=\"tab-content\">\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "    <div role=\"tabpanel\" class=\"tab-pane"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "\" id=\"lastposition\">\n      <table class=\"table table-hover table-condensed position fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.position : depth0),{"name":"each","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n    <div role=\"tabpanel\" class=\"tab-pane\" id=\"track\">\n      <table class=\"table table-hover table-condensed track fixedhead\">\n      <thead>\n        <tr>\n          <th>#</th>\n          <th>Position</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"each","hash":{},"fn":container.program(10, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n  </div>\n</div>\n";
+    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.position : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "      </tbody>\n      </table>\n    </div>\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "  </div>\n</div>\n";
 },"useData":true});
 
 },{"hbsfy/runtime":57}],31:[function(require,module,exports){
@@ -1901,11 +1911,13 @@ var ShipView = Backbone.View.extend({
   },
 
   render: function () {
+    var track = this.model.get('track').getHelper().toPropertyList();
+
     this.$el.html(this.template({
       title: this.model.getHelper().toTitel(),
       ship: this.model.has('shipdata') && this.model.get('shipdata').getHelper().toPropertyList(),
       position: this.model.get('position').getHelper().toPropertyList(),
-      track: this.model.get('track').getHelper().toPropertyList(),
+      track: !_.isEmpty(track) ? track : false,
       positiontab: this.model.has('shipdata') ? false : true
     }));
   }

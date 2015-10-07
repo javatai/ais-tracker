@@ -6,7 +6,9 @@
     <li role="presentation" class="active"><a href="#shipdetails" aria-controls="shipdetails" role="tab" data-toggle="tab">Ship details</a></li>
     {{/if}}
     <li role="presentation"><a href="#lastposition"{{#if positiontab}} class="active"{{/if}}aria-controls="lastposition" role="tab" data-toggle="tab">Last position</a></li>
+    {{#if track}}
     <li role="presentation"><a href="#track" aria-controls="track" role="tab" data-toggle="tab">Track details</a></li>
+    {{/if}}
   </ul>
 
   <!-- Tab panes -->
@@ -49,6 +51,7 @@
       </tbody>
       </table>
     </div>
+    {{#if track}}
     <div role="tabpanel" class="tab-pane" id="track">
       <table class="table table-hover table-condensed track fixedhead">
       <thead>
@@ -86,5 +89,6 @@
       </tbody>
       </table>
     </div>
+    {{/if}}
   </div>
 </div>
