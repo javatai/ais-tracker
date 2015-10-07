@@ -30,14 +30,14 @@ _.extend(ShipdataHelper.prototype, {
       return this.aismessage.lookup('shiptype', data.get('shiptype'));
     },
     Width: function (data) {
-      if (data.has('dima') || data.has('dimb')) {
-        return data.get('dima') + data.get('dimb') + ' m';
+      if (data.has('dimc') || data.has('dimd')) {
+        return data.get('dimc') + data.get('dimd') + ' m';
       }
       return;
     },
     Lenght: function (data) {
-      if (data.has('dimc') || data.has('dimd')) {
-        return data.get('dimc') + data.get('dimd') + ' m';
+      if (data.has('dima') || data.has('dimb')) {
+        return data.get('dima') + data.get('dimb') + ' m';
       }
       return;
     },
