@@ -141,6 +141,14 @@ AppEventDispatcher.on('map:select', function (ship) {
   router.navigate('mmsi/' + ship.get('userid'));
 });
 
+AppEventDispatcher.on('map:selected', function (ship) {
+  router.navigate('mmsi/' + ship.get('userid'));
+});
+
+AppEventDispatcher.on('map:unselected', function (ship) {
+  router.navigate('');
+});
+
 var ShipsLayer = require('./map/ships-layer');
 var shipsLayer = new ShipsLayer(null, {
   map: map,
@@ -492,7 +500,7 @@ var ShipMarker = Backbone.Model.extend({
           "fill-color": "rgba(63,63,191,0.5)",
           "fill-outline-color": "rgba(0,0,0,0)"
         }
-      });
+      }, 'track');
       this.layer[this.getMapId(2)] = true;
     }
 
@@ -600,7 +608,7 @@ var ShipsLayer = Backbone.Collection.extend({
       selected = this.get(id);
 
       if (selected.get('ship').has('position')) {
-        this.mapgl.flyTo({ center: selected.get('ship').get('position').getCoordinate(), zoom: 18 });
+        this.mapgl.flyTo({ center: selected.get('ship').get('position').getCoordinate(), zoom: 17 });
         selected.set('selected', true);
       } else {
         alert('Growl: No position yet');
@@ -683,37 +691,37 @@ var ShipsLayer = Backbone.Collection.extend({
       }
     });
 
-    // this.layer.labels = this.mapgl.addLayer({
-    //   "id": "labels",
-    //   "type": "symbol",
-    //   "source": "ships",
-    //   "layout": {
-    //     "text-field": "{title}",
-    //     "text-font": [
-    //       "DIN Offc Pro Medium",
-    //       "Arial Unicode MS Regular"
-    //     ],
-    //     "text-offset": [0, 1.5],
-    //     "text-anchor": "center",
-    //     "text-size": {
-    //       "base": 1,
-    //       "stops": [
-    //         [ 13, 12 ],
-    //         [ 18, 16 ]
-    //       ],
-    //     },
-    //     "text-allow-overlap": true,
-    //     "visibility": "visible"
-    //   },
-    //   "maxzoom": 22,
-    //   "minzoom": 14,
-    //   "paint": {
-    //     "text-color": "#000000",
-    //     "text-halo-blur": 0.5,
-    //     "text-halo-color": "#ffffff",
-    //     "text-halo-width": 0.5
-    //   }
-    // });
+    this.layer.labels = this.mapgl.addLayer({
+      "id": "labels",
+      "type": "symbol",
+      "source": "ships",
+      "layout": {
+        "text-field": "{title}",
+        "text-font": [
+          "DIN Offc Pro Medium",
+          "Arial Unicode MS Regular"
+        ],
+        "text-offset": [0, 1.5],
+        "text-anchor": "center",
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [ 13, 12 ],
+            [ 18, 16 ]
+          ],
+        },
+        "text-allow-overlap": true,
+        "visibility": "visible"
+      },
+      "maxzoom": 22,
+      "minzoom": 14,
+      "paint": {
+        "text-color": "#000000",
+        "text-halo-blur": 0.5,
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 0.5
+      }
+    });
   },
 
   addToMap: function () {

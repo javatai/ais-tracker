@@ -56,7 +56,7 @@ var ShipsLayer = Backbone.Collection.extend({
       selected = this.get(id);
 
       if (selected.get('ship').has('position')) {
-        this.mapgl.flyTo({ center: selected.get('ship').get('position').getCoordinate(), zoom: 15 });
+        this.mapgl.flyTo({ center: selected.get('ship').get('position').getCoordinate(), zoom: 17 });
         selected.set('selected', true);
       } else {
         alert('Growl: No position yet');

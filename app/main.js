@@ -26,6 +26,14 @@ AppEventDispatcher.on('map:select', function (ship) {
   router.navigate('mmsi/' + ship.get('userid'));
 });
 
+AppEventDispatcher.on('map:selected', function (ship) {
+  router.navigate('mmsi/' + ship.get('userid'));
+});
+
+AppEventDispatcher.on('map:unselected', function (ship) {
+  router.navigate('');
+});
+
 var ShipsLayer = require('./map/ships-layer');
 var shipsLayer = new ShipsLayer(null, {
   map: map,

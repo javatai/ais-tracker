@@ -146,7 +146,7 @@ var ShipMarker = Backbone.Model.extend({
           "fill-color": "rgba(63,63,191,0.5)",
           "fill-outline-color": "rgba(0,0,0,0)"
         }
-      });
+      }, 'track');
       this.layer[this.getMapId(2)] = true;
     }
 
