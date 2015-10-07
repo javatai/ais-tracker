@@ -1,5 +1,8 @@
 "use strict";
 
+var env = process.env.NODE_ENV || "development";
+var config = require(__dirname + '/../config/config.json')[env];
+
 var _ = require('underscore');
 var Position = require('../models/position');
 var Ship = require('../models/ship');
@@ -42,7 +45,7 @@ module.exports = function (receiver) {
           limit: 1
         }).then(function(track) {
           var last = track[0];
-          if (!last || distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude')) > 5) {
+          if (!last || distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude')) > config.setup.movemin) {
             ship.addTrack(position);
           }
         });

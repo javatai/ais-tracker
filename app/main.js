@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var bootstrap = require('bootstrap');
-var MapUtil = require('./lib/MapUtil');
 var Backbone = require('backbone');
 require('backbone-relational');
 Backbone.$ = $;
