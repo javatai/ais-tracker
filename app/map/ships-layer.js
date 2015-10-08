@@ -11,9 +11,8 @@ var ShipLabel = require('./ship-label');
 
 var ShipsLayer = Backbone.Collection.extend({
   model: ShipMarker,
-  layer: [],
+  layer: { },
   label: null,
-  trackLayer: null,
 
   initialize: function (attributes, options) {
     this.mapgl = options.map;
@@ -220,7 +219,7 @@ var ShipsLayer = Backbone.Collection.extend({
       this.mapgl.removeLayer('ships');
     }
 
-    this.layer = [];
+    this.layer = { };
     this.reset();
   }
 })

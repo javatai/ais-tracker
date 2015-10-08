@@ -385,7 +385,7 @@ var Backbone = require('backbone');
 var GeographicLib = require("geographiclib");
 
 var ShipMarker = Backbone.Model.extend({
-  layer: [],
+  layer: { },
 
   initialize: function (model, options) {
     this.mapgl = options.map;
@@ -573,7 +573,7 @@ var ShipMarker = Backbone.Model.extend({
       this.mapgl.removeLayer(this.getMapId(2));
     }
 
-    this.layer = [];
+    this.layer = { };
   }
 });
 
@@ -593,9 +593,8 @@ var ShipLabel = require('./ship-label');
 
 var ShipsLayer = Backbone.Collection.extend({
   model: ShipMarker,
-  layer: [],
+  layer: { },
   label: null,
-  trackLayer: null,
 
   initialize: function (attributes, options) {
     this.mapgl = options.map;
@@ -802,7 +801,7 @@ var ShipsLayer = Backbone.Collection.extend({
       this.mapgl.removeLayer('ships');
     }
 
-    this.layer = [];
+    this.layer = { };
     this.reset();
   }
 })
@@ -822,7 +821,7 @@ var PositionLabel = require('./position-label');
 
 var TrackLayer = Backbone.Collection.extend({
   model: PositionMarker,
-  layer: [],
+  layer: { },
   label: null,
   ship: null,
   ships: [],
@@ -964,7 +963,7 @@ var TrackLayer = Backbone.Collection.extend({
       this.mapgl.removeLayer('positions');
     }
 
-    this.layer = [];
+    this.layer = { };
     this.reset();
   },
 

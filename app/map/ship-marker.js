@@ -5,7 +5,7 @@ var Backbone = require('backbone');
 var GeographicLib = require("geographiclib");
 
 var ShipMarker = Backbone.Model.extend({
-  layer: [],
+  layer: { },
 
   initialize: function (model, options) {
     this.mapgl = options.map;
@@ -193,7 +193,7 @@ var ShipMarker = Backbone.Model.extend({
       this.mapgl.removeLayer(this.getMapId(2));
     }
 
-    this.layer = [];
+    this.layer = { };
   }
 });
 

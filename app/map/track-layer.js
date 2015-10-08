@@ -10,7 +10,7 @@ var PositionLabel = require('./position-label');
 
 var TrackLayer = Backbone.Collection.extend({
   model: PositionMarker,
-  layer: [],
+  layer: { },
   label: null,
   ship: null,
   ships: [],
@@ -152,7 +152,7 @@ var TrackLayer = Backbone.Collection.extend({
       this.mapgl.removeLayer('positions');
     }
 
-    this.layer = [];
+    this.layer = { };
     this.reset();
   },
 
