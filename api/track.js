@@ -14,7 +14,8 @@ module.exports = function (server, epilogue) {
       datetime__greater_than = req.params.datetime__greater_than;
     } else {
       var d = new Date();
-      d.setDate(d.getDate() - 2);
+      // d.setDate(d.getDate() - 1);
+      d.setHours(d.getHours() - 12);
       datetime__greater_than = d.toISOString();
     }
 
@@ -29,7 +30,7 @@ module.exports = function (server, epilogue) {
             $gte: datetime__greater_than
           }
         },
-        limit: 500
+        limit: 100
       }).then(function (track) {
         res.send(_.map(track, function (position) {
           return position.get({ plain: true })

@@ -5,7 +5,8 @@
       "database": "ais",
       "host": "localhost",
       "username": "ais",
-      "password": "myAIS!123"
+      "password": "myAIS!123",
+      "logging": false
     },
     "server": {
       "port": 3000,
@@ -16,7 +17,7 @@
       "address": "0.0.0.0"
     },
     "setup": {
-      "movemin": 20
+      "movemin": 50
     }
   },
   "test": {
@@ -37,7 +38,7 @@
       "address": "0.0.0.0"
     },
     "setup": {
-      "movemin": 20
+      "movemin": 50
     }
   },
   "production": {
@@ -58,7 +59,7 @@
       "address": "95.143.172.114"
     },
     "setup": {
-      "movemin": 20
+      "movemin": 50
     }
   }
 }

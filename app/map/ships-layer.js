@@ -11,8 +11,7 @@ var ShipLabel = require('./ship-label');
 
 var ShipsLayer = Backbone.Collection.extend({
   model: ShipMarker,
-  source: null,
-  layer: { },
+  layer: [],
   label: null,
   trackLayer: null,
 
@@ -32,14 +31,15 @@ var ShipsLayer = Backbone.Collection.extend({
   },
 
   process: function () {
-    this.ships.on('add', this.addShipMarker, this);
-    this.ships.on('sync', this.addToMap, this);
+    this.listenTo(this.ships, 'add', this.addShipMarker);
+    this.listenTo(this.ships, 'sync', this.addToMap);
+
     this.ships.fetch();
 
     this.mapgl.on('mousemove', _.bind(this.onMousemove, this));
     this.mapgl.on('click', _.bind(this.onClick, this));
 
-    this.appevents.on('map:select', this.selectByShip, this);
+    this.listenTo(this.appevents, 'map:select', this.selectByShip);
   },
 
   selectByShip: function (ship) {
@@ -54,12 +54,10 @@ var ShipsLayer = Backbone.Collection.extend({
 
     if (id) {
       selected = this.get(id);
-
       if (selected.get('ship').has('position')) {
-        this.mapgl.flyTo({ center: selected.get('ship').get('position').getCoordinate(), zoom: 15 });
         selected.set('selected', true);
       } else {
-        alert('Growl: No position yet');
+        alert('No position yet');
       }
     }
   },
@@ -114,13 +112,36 @@ var ShipsLayer = Backbone.Collection.extend({
     }));
   },
 
-  addSource: function (data) {
-    if (!this.source) {
-      this.source = this.mapgl.addSource("ships", {
-        "type": "geojson"
+  addSource: function () {
+    var ships = this.filter(function (marker) {
+      return marker.get('ship').has('position');
+    });
+
+    var features = this.map(function (marker) {
+      var ship = marker.get('ship');
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": ship.get('position').getCoordinate()
+        },
+        "properties": {
+          "title": ship.getHelper().toTitel(),
+          "id": marker.get('id')
+        }
+      }
+    });
+
+    if (!this.mapgl.getSource('ships')) {
+      this.mapgl.addSource('ships', {
+        "type": "geojson",
       });
     }
-    this.mapgl.getSource("ships").setData(data);
+
+    this.mapgl.getSource('ships').setData({
+      "type": "FeatureCollection",
+      "features": features
+    });
   },
 
   addLayer: function () {
@@ -128,7 +149,7 @@ var ShipsLayer = Backbone.Collection.extend({
       return;
     }
 
-    this.layer.ships = this.mapgl.addLayer({
+    this.mapgl.addLayer({
       "id": "ships",
       "type": "circle",
       "source": "ships",
@@ -139,7 +160,9 @@ var ShipsLayer = Backbone.Collection.extend({
       }
     });
 
-    this.layer.labels = this.mapgl.addLayer({
+    this.layer['ships'] = true;
+
+    this.mapgl.addLayer({
       "id": "labels",
       "type": "symbol",
       "source": "ships",
@@ -170,59 +193,35 @@ var ShipsLayer = Backbone.Collection.extend({
         "text-halo-width": 0.5
       }
     });
+
+    this.layer['labels'] = true;
   },
 
   addToMap: function () {
-    var ships = this.filter(function (marker) {
-      return marker.get('ship').has('position');
-    });
-
-    var data = this.map(function (marker) {
-      var ship = marker.get('ship');
-      return {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": ship.get('position').getCoordinate()
-        },
-        "properties": {
-          "title": ship.getHelper().toTitel(),
-          "id": marker.get('id')
-        }
-      }
-    });
-
-    this.addSource({
-      "type": "FeatureCollection",
-      "features": data
-    });
-
+    this.addSource();
     this.addLayer();
   },
 
   removeFromMap: function () {
-    this.ships.off('sync', this.addToMap, this);
-    this.ships.off('add', this.addShipMarker, this);
+    this.stopListening(this.ships, 'sync', this.addToMap);
+    this.stopListening(this.ships, 'add', this.addShipMarker);
 
     this.mapgl.off('click', _.bind(this.onClick, this));
     this.mapgl.off('mousemove', _.bind(this.onMousemove, this));
 
-    this.appevents.off('map:select', selectByShip, this);
+    this.stopListening(this.appevents, 'map:select', selectByShip);
 
-    if (this.source) {
-      this.mapgl.removeSource("ships");
-
-      delete this.source;
+    if (this.layer['labels']) {
+      this.mapgl.removeLayer('labels');
     }
 
-    if (!_.isEmpty(this.layer)) {
-      this.mapgl.removeLayer("ships");
-      this.mapgl.removeLayer("labels");
-
-      delete this.layer.ships;
-      delete this.layer.labels;
-      this.layer = { };
+    if (this.layer['ships']) {
+      this.mapgl.removeSource('ships');
+      this.mapgl.removeLayer('ships');
     }
+
+    this.layer = [];
+    this.reset();
   }
 })
 

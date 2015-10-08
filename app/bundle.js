@@ -155,6 +155,8 @@ ships.once('sync', function () {
   Backbone.history.start();
 });
 
+window.ships = ships;
+
 var Router = require('./lib/router');
 var router = new Router({
   collection: ships,
@@ -388,7 +390,7 @@ var ShipMarker = Backbone.Model.extend({
   initialize: function (model, options) {
     this.mapgl = options.map;
     this.on('change:selected', this.addToMap, this);
-    this.get('ship').on('change', this.process, this);
+    this.listenTo(this.get('ship'), 'change', this.process);
     this.process();
   },
 
@@ -494,6 +496,7 @@ var ShipMarker = Backbone.Model.extend({
         "type": "geojson",
       });
     }
+
     this.mapgl.getSource(this.getMapId(1)).setData(this.toFeature());
 
     var shape = this.toShape();
@@ -503,6 +506,7 @@ var ShipMarker = Backbone.Model.extend({
           "type": "geojson",
         });
       }
+
       this.mapgl.getSource(this.getMapId(2)).setData(shape);
     }
   },
@@ -525,6 +529,7 @@ var ShipMarker = Backbone.Model.extend({
           "fill-outline-color": "rgba(0,0,0,0)"
         }
       }, 'track');
+
       this.layer[this.getMapId(2)] = true;
     }
 
@@ -556,6 +561,7 @@ var ShipMarker = Backbone.Model.extend({
 
   removeFromMap: function () {
     this.off('change:selected', this.addToMap, this);
+    this.stopListening(this.get('ship'), 'change', this.process);
 
     if (this.layer[this.getMapId(1)]) {
       this.mapgl.removeSource(this.getMapId(1));
@@ -587,8 +593,7 @@ var ShipLabel = require('./ship-label');
 
 var ShipsLayer = Backbone.Collection.extend({
   model: ShipMarker,
-  source: null,
-  layer: { },
+  layer: [],
   label: null,
   trackLayer: null,
 
@@ -608,14 +613,15 @@ var ShipsLayer = Backbone.Collection.extend({
   },
 
   process: function () {
-    this.ships.on('add', this.addShipMarker, this);
-    this.ships.on('sync', this.addToMap, this);
+    this.listenTo(this.ships, 'add', this.addShipMarker);
+    this.listenTo(this.ships, 'sync', this.addToMap);
+
     this.ships.fetch();
 
     this.mapgl.on('mousemove', _.bind(this.onMousemove, this));
     this.mapgl.on('click', _.bind(this.onClick, this));
 
-    this.appevents.on('map:select', this.selectByShip, this);
+    this.listenTo(this.appevents, 'map:select', this.selectByShip);
   },
 
   selectByShip: function (ship) {
@@ -630,12 +636,10 @@ var ShipsLayer = Backbone.Collection.extend({
 
     if (id) {
       selected = this.get(id);
-
       if (selected.get('ship').has('position')) {
-        this.mapgl.flyTo({ center: selected.get('ship').get('position').getCoordinate(), zoom: 15 });
         selected.set('selected', true);
       } else {
-        alert('Growl: No position yet');
+        alert('No position yet');
       }
     }
   },
@@ -690,13 +694,36 @@ var ShipsLayer = Backbone.Collection.extend({
     }));
   },
 
-  addSource: function (data) {
-    if (!this.source) {
-      this.source = this.mapgl.addSource("ships", {
-        "type": "geojson"
+  addSource: function () {
+    var ships = this.filter(function (marker) {
+      return marker.get('ship').has('position');
+    });
+
+    var features = this.map(function (marker) {
+      var ship = marker.get('ship');
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": ship.get('position').getCoordinate()
+        },
+        "properties": {
+          "title": ship.getHelper().toTitel(),
+          "id": marker.get('id')
+        }
+      }
+    });
+
+    if (!this.mapgl.getSource('ships')) {
+      this.mapgl.addSource('ships', {
+        "type": "geojson",
       });
     }
-    this.mapgl.getSource("ships").setData(data);
+
+    this.mapgl.getSource('ships').setData({
+      "type": "FeatureCollection",
+      "features": features
+    });
   },
 
   addLayer: function () {
@@ -704,7 +731,7 @@ var ShipsLayer = Backbone.Collection.extend({
       return;
     }
 
-    this.layer.ships = this.mapgl.addLayer({
+    this.mapgl.addLayer({
       "id": "ships",
       "type": "circle",
       "source": "ships",
@@ -715,7 +742,9 @@ var ShipsLayer = Backbone.Collection.extend({
       }
     });
 
-    this.layer.labels = this.mapgl.addLayer({
+    this.layer['ships'] = true;
+
+    this.mapgl.addLayer({
       "id": "labels",
       "type": "symbol",
       "source": "ships",
@@ -746,59 +775,35 @@ var ShipsLayer = Backbone.Collection.extend({
         "text-halo-width": 0.5
       }
     });
+
+    this.layer['labels'] = true;
   },
 
   addToMap: function () {
-    var ships = this.filter(function (marker) {
-      return marker.get('ship').has('position');
-    });
-
-    var data = this.map(function (marker) {
-      var ship = marker.get('ship');
-      return {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": ship.get('position').getCoordinate()
-        },
-        "properties": {
-          "title": ship.getHelper().toTitel(),
-          "id": marker.get('id')
-        }
-      }
-    });
-
-    this.addSource({
-      "type": "FeatureCollection",
-      "features": data
-    });
-
+    this.addSource();
     this.addLayer();
   },
 
   removeFromMap: function () {
-    this.ships.off('sync', this.addToMap, this);
-    this.ships.off('add', this.addShipMarker, this);
+    this.stopListening(this.ships, 'sync', this.addToMap);
+    this.stopListening(this.ships, 'add', this.addShipMarker);
 
     this.mapgl.off('click', _.bind(this.onClick, this));
     this.mapgl.off('mousemove', _.bind(this.onMousemove, this));
 
-    this.appevents.off('map:select', selectByShip, this);
+    this.stopListening(this.appevents, 'map:select', selectByShip);
 
-    if (this.source) {
-      this.mapgl.removeSource("ships");
-
-      delete this.source;
+    if (this.layer['labels']) {
+      this.mapgl.removeLayer('labels');
     }
 
-    if (!_.isEmpty(this.layer)) {
-      this.mapgl.removeLayer("ships");
-      this.mapgl.removeLayer("labels");
-
-      delete this.layer.ships;
-      delete this.layer.labels;
-      this.layer = { };
+    if (this.layer['ships']) {
+      this.mapgl.removeSource('ships');
+      this.mapgl.removeLayer('ships');
     }
+
+    this.layer = [];
+    this.reset();
   }
 })
 
@@ -817,8 +822,7 @@ var PositionLabel = require('./position-label');
 
 var TrackLayer = Backbone.Collection.extend({
   model: PositionMarker,
-  source: { },
-  layer: { },
+  layer: [],
   label: null,
   ship: null,
   ships: [],
@@ -829,24 +833,29 @@ var TrackLayer = Backbone.Collection.extend({
 
     this.positionLabel = new PositionLabel(this.mapgl);
 
-    this.shipsLayer.on('change:selected', this.process, this);
+    this.listenTo(this.shipsLayer, 'change:selected', this.process);
   },
 
   process: function (marker, selected) {
     if (selected) {
       this.ship = marker.get('ship');
 
-      if (_.indexOf(this.ships, marker) > -1) {
-        this.ship.get('track').each(function (position) {
-        this.addPositionMarker(position);
-        }, this);
-      } else {
-        this.ships.push(this.ship);
-      }
+      this.listenToOnce(this.ship, 'sync', function () {
+        if (_.indexOf(this.ships, marker) > -1) {
+          this.ship.get('track').each(function (position) {
+            this.addPositionMarker(position);
+          }, this);
+        } else {
+          this.ships.push(this.ship);
+        }
 
-      this.ship.get('track').on('add', this.addPositionMarker, this);
-      this.ship.get('track').on('sync', this.addToMap, this);
-      this.ship.fetchTrack();
+        this.listenTo(this.ship.get('track'), 'add', this.addPositionMarker);
+        this.listenTo(this.ship.get('track'), 'sync', this.addToMap);
+
+        this.ship.fetchTrack();
+      });
+
+      this.ship.fetch();
     } else {
       this.removeFromMap();
     }
@@ -862,19 +871,38 @@ var TrackLayer = Backbone.Collection.extend({
     }));
   },
 
-  addSource: function (track, positions) {
-    if (_.isEmpty(this.source)) {
-      this.source.track = this.mapgl.addSource("track", {
-        "type": "geojson"
-      });
+  addSource: function () {
+    this.last().set('position', this.ship.get('position'));
 
-      this.source.position = this.mapgl.addSource("positions", {
-        "type": "geojson"
+    var track = {
+      "type": "LineString",
+      "coordinates": this.map(function (positionMarker) {
+        return positionMarker.get('position').getCoordinate();
+      })
+    }
+
+    var positions = {
+      "type": "FeatureCollection",
+      "features": this.map(function (positionMarker) {
+        return positionMarker.toFeature();
+      })
+    }
+
+    if (!this.mapgl.getSource('track')) {
+      this.mapgl.addSource('track', {
+        "type": "geojson",
       });
     }
 
-    this.mapgl.getSource("track").setData(track);
-    this.mapgl.getSource("positions").setData(positions);
+    this.mapgl.getSource('track').setData(track);
+
+    if (!this.mapgl.getSource('positions')) {
+      this.mapgl.addSource('positions', {
+        "type": "geojson",
+      });
+    }
+
+    this.mapgl.getSource('positions').setData(positions);
   },
 
   addLayer: function () {
@@ -882,7 +910,7 @@ var TrackLayer = Backbone.Collection.extend({
       return;
     }
 
-    this.layer.track = this.mapgl.addLayer({
+    this.mapgl.addLayer({
       "id": "track",
       "type": "line",
       "source": "track",
@@ -892,7 +920,9 @@ var TrackLayer = Backbone.Collection.extend({
       }
     }, "ships");
 
-    this.layer.positions = this.mapgl.addLayer({
+    this.layer['track'] = true;
+
+    this.mapgl.addLayer({
       "id": "positions",
       "type": "circle",
       "source": "positions",
@@ -901,62 +931,40 @@ var TrackLayer = Backbone.Collection.extend({
         "circle-color": "#444",
       }
     }, "ships");
+
+    this.layer['positions'] = true;
   },
 
   addToMap: function () {
+    this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate(), zoom: 15 });
+
     if (this.length < 2) {
       return;
     }
 
-    var data = [];
-    this.each(function (positionMarker, index) {
-      if (index < this.length-1) {
-        var feature = positionMarker.toFeature();
-        data.push(feature);
-      }
-    }, this);
-
-    var positions = {
-      "type": "FeatureCollection",
-      "features": data
-    }
-
-    var track = {
-      "type": "LineString",
-      "coordinates": this.map(function (positionMarker) {
-        return positionMarker.get('position').getCoordinate();
-      })
-    }
-
-    this.addSource(track, positions);
+    this.addSource();
     this.addLayer();
   },
 
   removeFromMap: function () {
     if (this.ship) {
-      this.ship.get('track').off('add', this.addPositionMarker, this);
-      this.ship.get('track').off('sync', this.addToMap, this);
+      this.stopListening(this.ship.get('track'), 'add', this.addPositionMarker);
+      this.stopListening(this.ship.get('track'), 'sync', this.addToMap);
+
       this.ship.get('track').reset();
     }
 
-    if (!_.isEmpty(this.layer)) {
-      this.mapgl.removeLayer("track");
-      this.mapgl.removeLayer("positions");
-
-      delete this.layer.track;
-      delete this.layer.positions;
-      this.layer = { };
+    if (this.layer['track']) {
+      this.mapgl.removeSource('track');
+      this.mapgl.removeLayer('track');
     }
 
-    if (!_.isEmpty(this.source)) {
-      this.mapgl.removeSource("track");
-      this.mapgl.removeSource("positions");
-
-      delete this.source.track;
-      delete this.source.positions;
-      this.source = { };
+    if (this.layer['positions']) {
+      this.mapgl.removeSource('positions');
+      this.mapgl.removeLayer('positions');
     }
 
+    this.layer = [];
     this.reset();
   },
 
@@ -1198,7 +1206,7 @@ var Ships = Backbone.Collection.extend({
         return a.get('userid') - b.get('userid');
       },
       datetime: function(a, b) {
-        return new Date(a.get('datetime')) - new Date(a.get('datetime'));
+        return new Date(a.get('datetime')) - new Date(b.get('datetime'));
       }
     },
     desc: {
@@ -1283,6 +1291,10 @@ var Track = require('../track/collection');
 var ShipHelper = require('./helper');
 
 var Ship = Backbone.RelationalModel.extend({
+  url: function () {
+    return '/api/ship/' + this.get('id');
+  },
+
   relations: [{
     type: Backbone.HasOne,
     key: 'position',
@@ -1306,8 +1318,8 @@ var Ship = Backbone.RelationalModel.extend({
 
   fetchTrack: function () {
     var collection = this.get('track');
-    collection.setId(this.get('id'));
-    return collection.fetch();
+    collection.reset();
+    return collection.fetch(this.get('id'));
   },
 
   distanceTo: function (LngLat) {
@@ -1463,8 +1475,11 @@ var Positions = require('../position/collection');
 var TrackHelper = require('./helper');
 
 var Track = Positions.extend({
-  id: null,
+  comparator: function (a, b) {
+    return new Date(a.get('datetime')) - new Date(b.get('datetime'));
+  },
 
+  id: null,
   url: function () {
     if (!this.id) {
       throw 'Track: No Id specified';
@@ -1472,8 +1487,9 @@ var Track = Positions.extend({
     return '/api/track/' + this.id;
   },
 
-  setId: function (id) {
+  fetch: function (id) {
     this.id = id;
+    return Positions.prototype.fetch.call(this);
   },
 
   getPositionsForLngLat: function (LngLat, min) {

@@ -34,7 +34,7 @@ var Ships = Backbone.Collection.extend({
         return a.get('userid') - b.get('userid');
       },
       datetime: function(a, b) {
-        return new Date(a.get('datetime')) - new Date(a.get('datetime'));
+        return new Date(a.get('datetime')) - new Date(b.get('datetime'));
       }
     },
     desc: {

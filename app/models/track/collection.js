@@ -7,8 +7,11 @@ var Positions = require('../position/collection');
 var TrackHelper = require('./helper');
 
 var Track = Positions.extend({
-  id: null,
+  comparator: function (a, b) {
+    return new Date(a.get('datetime')) - new Date(b.get('datetime'));
+  },
 
+  id: null,
   url: function () {
     if (!this.id) {
       throw 'Track: No Id specified';
@@ -16,8 +19,9 @@ var Track = Positions.extend({
     return '/api/track/' + this.id;
   },
 
-  setId: function (id) {
+  fetch: function (id) {
     this.id = id;
+    return Positions.prototype.fetch.call(this);
   },
 
   getPositionsForLngLat: function (LngLat, min) {

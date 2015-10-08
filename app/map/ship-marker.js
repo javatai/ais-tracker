@@ -10,7 +10,7 @@ var ShipMarker = Backbone.Model.extend({
   initialize: function (model, options) {
     this.mapgl = options.map;
     this.on('change:selected', this.addToMap, this);
-    this.get('ship').on('change', this.process, this);
+    this.listenTo(this.get('ship'), 'change', this.process);
     this.process();
   },
 
@@ -116,6 +116,7 @@ var ShipMarker = Backbone.Model.extend({
         "type": "geojson",
       });
     }
+
     this.mapgl.getSource(this.getMapId(1)).setData(this.toFeature());
 
     var shape = this.toShape();
@@ -125,6 +126,7 @@ var ShipMarker = Backbone.Model.extend({
           "type": "geojson",
         });
       }
+
       this.mapgl.getSource(this.getMapId(2)).setData(shape);
     }
   },
@@ -147,6 +149,7 @@ var ShipMarker = Backbone.Model.extend({
           "fill-outline-color": "rgba(0,0,0,0)"
         }
       }, 'track');
+
       this.layer[this.getMapId(2)] = true;
     }
 
@@ -178,6 +181,7 @@ var ShipMarker = Backbone.Model.extend({
 
   removeFromMap: function () {
     this.off('change:selected', this.addToMap, this);
+    this.stopListening(this.get('ship'), 'change', this.process);
 
     if (this.layer[this.getMapId(1)]) {
       this.mapgl.removeSource(this.getMapId(1));

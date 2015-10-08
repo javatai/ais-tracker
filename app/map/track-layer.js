@@ -10,8 +10,7 @@ var PositionLabel = require('./position-label');
 
 var TrackLayer = Backbone.Collection.extend({
   model: PositionMarker,
-  source: { },
-  layer: { },
+  layer: [],
   label: null,
   ship: null,
   ships: [],
@@ -22,24 +21,29 @@ var TrackLayer = Backbone.Collection.extend({
 
     this.positionLabel = new PositionLabel(this.mapgl);
 
-    this.shipsLayer.on('change:selected', this.process, this);
+    this.listenTo(this.shipsLayer, 'change:selected', this.process);
   },
 
   process: function (marker, selected) {
     if (selected) {
       this.ship = marker.get('ship');
 
-      if (_.indexOf(this.ships, marker) > -1) {
-        this.ship.get('track').each(function (position) {
-        this.addPositionMarker(position);
-        }, this);
-      } else {
-        this.ships.push(this.ship);
-      }
+      this.listenToOnce(this.ship, 'sync', function () {
+        if (_.indexOf(this.ships, marker) > -1) {
+          this.ship.get('track').each(function (position) {
+            this.addPositionMarker(position);
+          }, this);
+        } else {
+          this.ships.push(this.ship);
+        }
 
-      this.ship.get('track').on('add', this.addPositionMarker, this);
-      this.ship.get('track').on('sync', this.addToMap, this);
-      this.ship.fetchTrack();
+        this.listenTo(this.ship.get('track'), 'add', this.addPositionMarker);
+        this.listenTo(this.ship.get('track'), 'sync', this.addToMap);
+
+        this.ship.fetchTrack();
+      });
+
+      this.ship.fetch();
     } else {
       this.removeFromMap();
     }
@@ -55,19 +59,38 @@ var TrackLayer = Backbone.Collection.extend({
     }));
   },
 
-  addSource: function (track, positions) {
-    if (_.isEmpty(this.source)) {
-      this.source.track = this.mapgl.addSource("track", {
-        "type": "geojson"
-      });
+  addSource: function () {
+    this.last().set('position', this.ship.get('position'));
 
-      this.source.position = this.mapgl.addSource("positions", {
-        "type": "geojson"
+    var track = {
+      "type": "LineString",
+      "coordinates": this.map(function (positionMarker) {
+        return positionMarker.get('position').getCoordinate();
+      })
+    }
+
+    var positions = {
+      "type": "FeatureCollection",
+      "features": this.map(function (positionMarker) {
+        return positionMarker.toFeature();
+      })
+    }
+
+    if (!this.mapgl.getSource('track')) {
+      this.mapgl.addSource('track', {
+        "type": "geojson",
       });
     }
 
-    this.mapgl.getSource("track").setData(track);
-    this.mapgl.getSource("positions").setData(positions);
+    this.mapgl.getSource('track').setData(track);
+
+    if (!this.mapgl.getSource('positions')) {
+      this.mapgl.addSource('positions', {
+        "type": "geojson",
+      });
+    }
+
+    this.mapgl.getSource('positions').setData(positions);
   },
 
   addLayer: function () {
@@ -75,7 +98,7 @@ var TrackLayer = Backbone.Collection.extend({
       return;
     }
 
-    this.layer.track = this.mapgl.addLayer({
+    this.mapgl.addLayer({
       "id": "track",
       "type": "line",
       "source": "track",
@@ -85,7 +108,9 @@ var TrackLayer = Backbone.Collection.extend({
       }
     }, "ships");
 
-    this.layer.positions = this.mapgl.addLayer({
+    this.layer['track'] = true;
+
+    this.mapgl.addLayer({
       "id": "positions",
       "type": "circle",
       "source": "positions",
@@ -94,62 +119,40 @@ var TrackLayer = Backbone.Collection.extend({
         "circle-color": "#444",
       }
     }, "ships");
+
+    this.layer['positions'] = true;
   },
 
   addToMap: function () {
+    this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate(), zoom: 15 });
+
     if (this.length < 2) {
       return;
     }
 
-    var data = [];
-    this.each(function (positionMarker, index) {
-      if (index < this.length-1) {
-        var feature = positionMarker.toFeature();
-        data.push(feature);
-      }
-    }, this);
-
-    var positions = {
-      "type": "FeatureCollection",
-      "features": data
-    }
-
-    var track = {
-      "type": "LineString",
-      "coordinates": this.map(function (positionMarker) {
-        return positionMarker.get('position').getCoordinate();
-      })
-    }
-
-    this.addSource(track, positions);
+    this.addSource();
     this.addLayer();
   },
 
   removeFromMap: function () {
     if (this.ship) {
-      this.ship.get('track').off('add', this.addPositionMarker, this);
-      this.ship.get('track').off('sync', this.addToMap, this);
+      this.stopListening(this.ship.get('track'), 'add', this.addPositionMarker);
+      this.stopListening(this.ship.get('track'), 'sync', this.addToMap);
+
       this.ship.get('track').reset();
     }
 
-    if (!_.isEmpty(this.layer)) {
-      this.mapgl.removeLayer("track");
-      this.mapgl.removeLayer("positions");
-
-      delete this.layer.track;
-      delete this.layer.positions;
-      this.layer = { };
+    if (this.layer['track']) {
+      this.mapgl.removeSource('track');
+      this.mapgl.removeLayer('track');
     }
 
-    if (!_.isEmpty(this.source)) {
-      this.mapgl.removeSource("track");
-      this.mapgl.removeSource("positions");
-
-      delete this.source.track;
-      delete this.source.positions;
-      this.source = { };
+    if (this.layer['positions']) {
+      this.mapgl.removeSource('positions');
+      this.mapgl.removeLayer('positions');
     }
 
+    this.layer = [];
     this.reset();
   },
 

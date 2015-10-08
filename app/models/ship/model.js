@@ -14,6 +14,10 @@ var Track = require('../track/collection');
 var ShipHelper = require('./helper');
 
 var Ship = Backbone.RelationalModel.extend({
+  url: function () {
+    return '/api/ship/' + this.get('id');
+  },
+
   relations: [{
     type: Backbone.HasOne,
     key: 'position',
@@ -37,8 +41,8 @@ var Ship = Backbone.RelationalModel.extend({
 
   fetchTrack: function () {
     var collection = this.get('track');
-    collection.setId(this.get('id'));
-    return collection.fetch();
+    collection.reset();
+    return collection.fetch(this.get('id'));
   },
 
   distanceTo: function (LngLat) {

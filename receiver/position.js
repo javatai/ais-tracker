@@ -45,7 +45,9 @@ module.exports = function (receiver) {
           limit: 1
         }).then(function(track) {
           var last = track[0];
-          if (!last || distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude')) > config.setup.movemin) {
+          var distancemoved = distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude'));
+          if (!last || distancemoved > config.setup.movemin) {
+            console.log(ais.message.UserID, distancemoved);
             ship.addTrack(position);
           }
         });

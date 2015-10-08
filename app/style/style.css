@@ -35,15 +35,15 @@ body { margin: 0; padding: 0; background-color: #ccc; }
 .ship-label.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: rgba(255,255,255,0.9); }
 .ship-label.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: rgba(255,255,255,0.9); }
 
-.position-label .mapboxgl-popup-content { background: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip { border-bottom-color: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip { border-bottom-color: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip { border-top-color: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip { border-top-color: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: rgba(244,159,0,0.4); }
-.position-label.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: rgba(244,159,0,0.4); }
+.position-label .mapboxgl-popup-content { background: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip { border-bottom-color: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip { border-bottom-color: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip { border-top-color: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip { border-top-color: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: rgba(244,159,0,0.8); }
+.position-label.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: rgba(244,159,0,0.8); }
 
 #content {
   position: absolute;

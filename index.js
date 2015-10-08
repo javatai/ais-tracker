@@ -20,5 +20,4 @@ sequelize
 
       console.log('listening at http://%s:%s', host, port);
     });
-
   });

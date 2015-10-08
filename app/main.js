@@ -15,6 +15,8 @@ ships.once('sync', function () {
   Backbone.history.start();
 });
 
+window.ships = ships;
+
 var Router = require('./lib/router');
 var router = new Router({
   collection: ships,
