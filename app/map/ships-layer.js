@@ -14,9 +14,9 @@ var ShipsLayer = Backbone.Collection.extend({
   layer: { },
   label: null,
 
-  initialize: function (attributes, options) {
+  initialize: function (models, options) {
     this.mapgl = options.map;
-    this.ships = options.ships;
+    this.ships = options.collection;
     this.appevents = options.appevents;
 
     this.shipLabel = new ShipLabel(this.mapgl);

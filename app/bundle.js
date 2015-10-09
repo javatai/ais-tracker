@@ -178,7 +178,7 @@ AppEventDispatcher.on('map:unselected', function (ship) {
 var ShipsLayer = require('./map/ships-layer');
 var shipsLayer = new ShipsLayer(null, {
   map: map,
-  ships: ships,
+  collection: ships,
   appevents: AppEventDispatcher
 });
 
@@ -596,9 +596,9 @@ var ShipsLayer = Backbone.Collection.extend({
   layer: { },
   label: null,
 
-  initialize: function (attributes, options) {
+  initialize: function (models, options) {
     this.mapgl = options.map;
-    this.ships = options.ships;
+    this.ships = options.collection;
     this.appevents = options.appevents;
 
     this.shipLabel = new ShipLabel(this.mapgl);
@@ -1864,7 +1864,7 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
 },"7":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "    <div role=\"tabpanel\" class=\"tab-pane active\" id=\"shipdetails\">\n      <table class=\"table table-hover table-condensed details fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
+  return "    <div role=\"tabpanel\" class=\"tab-pane active\" id=\"shipdetails\">\n      <table class=\"table table-condensed details fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.ship : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "      </tbody>\n      </table>\n    </div>\n";
 },"8":function(container,depth0,helpers,partials,data) {
@@ -1912,7 +1912,7 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
     + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "    <div role=\"tabpanel\" class=\"tab-pane"
     + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "\" id=\"lastposition\">\n      <table class=\"table table-hover table-condensed position fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
+    + "\" id=\"lastposition\">\n      <table class=\"table table-condensed position fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
     + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.position : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "      </tbody>\n      </table>\n    </div>\n"
     + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")

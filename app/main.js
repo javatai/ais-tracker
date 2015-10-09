@@ -38,7 +38,7 @@ AppEventDispatcher.on('map:unselected', function (ship) {
 var ShipsLayer = require('./map/ships-layer');
 var shipsLayer = new ShipsLayer(null, {
   map: map,
-  ships: ships,
+  collection: ships,
   appevents: AppEventDispatcher
 });
 

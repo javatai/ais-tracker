@@ -9,6 +9,7 @@ var ShipMarker = Backbone.Model.extend({
 
   initialize: function (model, options) {
     this.mapgl = options.map;
+    this.collection = options.collection;
     this.on('change:selected', this.addToMap, this);
     this.listenTo(this.get('ship'), 'change', this.process);
     this.process();
