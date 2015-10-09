@@ -56,7 +56,9 @@ module.exports = function (server, epilogue) {
         datetime: {
           $gte: datetime__greater_than
         }
-      }
+      },
+      limit: 10,
+      order: 'datetime DESC'
     }).then(function (ships) {
       res.send(_.map(ships, function (_ship) {
         var ship = _ship.get({ plain: true });

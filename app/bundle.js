@@ -33,7 +33,56 @@ var AisMessage = Backbone.Collection.extend({
 });
 
 module.exports = AisMessage;
-},{"backbone":35,"underscore":129}],3:[function(require,module,exports){
+},{"backbone":28,"underscore":102}],3:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+var Popup = require('./popup');
+
+var Label = function () {
+  this.listenTo(this.model, 'change', this.process);
+};
+
+_.extend(Label.prototype, Backbone.Events, {
+  label: null,
+
+  process: function () {
+    if (this.model.get('mouseover') === true) {
+      this.showLabel();
+    } else {
+      this.hideLabel();
+    }
+  },
+
+  showLabel: function () {
+    if (this.label) {
+      this.hideLabel();
+    }
+
+    this.label = new Popup()
+      .setLngLat(this.getCoordinates())
+      .setHTML(this.toTitel())
+      .addClass(this.classname)
+      .addTo(this.mapgl);
+
+    this.label.once('remove', _.bind(function (label) {
+      delete this.label;
+    }, this));
+  },
+
+  hideLabel: function () {
+    if (this.label) {
+      this.label.remove();
+      delete this.label;
+    }
+  }
+});
+
+module.exports = Label;
+
+},{"./popup":5,"backbone":28,"underscore":102}],4:[function(require,module,exports){
 var MapUtil = {
   distance: function(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;    // Math.PI / 180
@@ -110,150 +159,7 @@ var MapUtil = {
 
 module.exports = MapUtil;
 
-},{}],4:[function(require,module,exports){
-'use strict';
-
-var Backbone = require('backbone');
-
-var Router = Backbone.Router.extend({
-  routes: {
-    "mmsi/:mmsi": "search"
-  },
-
-  initialize: function (options) {
-    this.collection = options.collection;
-    this.appevents = options.appevents;
-  },
-
-  search: function(mmsi) {
-    var ship = this.collection.findWhere({ userid: Number(mmsi) });
-    if (ship) {
-      this.appevents.trigger('router:select', ship);
-    }
-    else {
-      this.navigate("");
-    }
-  }
-});
-
-module.exports = Router;
-},{"backbone":35}],5:[function(require,module,exports){
-var _ = require('underscore');
-var $ = require('jquery');
-var bootstrap = require('bootstrap');
-var Backbone = require('backbone');
-require('backbone-relational');
-Backbone.$ = $;
-
-var map = require('./map/map');
-
-var AppEventDispatcher = _.clone(Backbone.Events);
-
-var Ships = require('./models/ship/collection');
-var ships = new Ships();
-ships.once('sync', function () {
-  Backbone.history.start();
-});
-
-window.ships = ships;
-
-var Router = require('./lib/router');
-var router = new Router({
-  collection: ships,
-  appevents: AppEventDispatcher
-});
-
-AppEventDispatcher.on('map:select', function (ship) {
-  router.navigate('mmsi/' + ship.get('userid'));
-});
-
-AppEventDispatcher.on('map:selected', function (ship) {
-  router.navigate('mmsi/' + ship.get('userid'));
-});
-
-AppEventDispatcher.on('map:unselected', function (ship) {
-  router.navigate('');
-});
-
-var ShipsLayer = require('./map/ships-layer');
-var shipsLayer = new ShipsLayer(null, {
-  map: map,
-  collection: ships,
-  appevents: AppEventDispatcher
-});
-
-var MasterView = require('./views/master-view');
-var masterView = new MasterView({
-  el: $('#content'),
-  collection: ships,
-  appevents: AppEventDispatcher
-});
-
-masterView.render();
-
-
-window.ships = ships;
-
-
-},{"./lib/router":4,"./map/map":7,"./map/ships-layer":13,"./models/ship/collection":18,"./views/master-view":29,"backbone":35,"backbone-relational":34,"bootstrap":36,"jquery":58,"underscore":129}],6:[function(require,module,exports){
-'use strict';
-
-var _ = require('underscore');
-var Backbone = require('backbone');
-
-var Popup = require('./popup');
-
-var Label = function (map) {
-  this.mapgl = map;
-};
-
-_.extend(Label.prototype, Backbone.Events, {
-  label: null,
-
-  showLabel: function () {
-    this.label = new Popup()
-      .setLngLat(this.getCoordinates())
-      .setHTML(this.toTitel())
-      .addClass(this.classname)
-      .addTo(this.mapgl);
-
-    this.label.once('remove', _.bind(function (label) {
-      delete this.label;
-    }, this));
-  },
-
-  hideLabel: function () {
-    if (this.label) {
-      this.label.remove();
-      delete this.label;
-    }
-  }
-});
-
-Label.extend = Backbone.Model.extend;
-
-module.exports = Label;
-},{"./popup":8,"backbone":35,"underscore":129}],7:[function(require,module,exports){
-'use strict';
-
-var config = require('../config.json');
-
-mapboxgl.accessToken = config.map.accessToken;
-
-var map = new mapboxgl.Map({
-  container: 'map',
-  style: config.map.style,
-  center: config.map.center,
-  zoom: config.map.zoom
-});
-
-window.mapgl = map;
-
-map.addControl(new mapboxgl.Navigation());
-
-module.exports = map;
-
-},{"../config.json":1}],8:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -295,372 +201,135 @@ mapboxgl.Popup.prototype._update = function () {
 
 module.exports = mapboxgl.Popup;
 
-},{"jquery":58,"underscore":129}],9:[function(require,module,exports){
-'use strict';
-
-var Label = require('./label');
+},{"jquery":31,"underscore":102}],6:[function(require,module,exports){
 var _ = require('underscore');
-
-var PositionLabel = Label.extend({
-  classname: 'position-label',
-
-  setPosition: function (position) {
-    this.position = position;
-  },
-
-  getCoordinates: function () {
-    return this.position.getCoordinate();
-  },
-
-  toTitel: function () {
-    return this.position.getHelper().toTitel();
-  }
-});
-
-module.exports = PositionLabel;
-
-},{"./label":6,"underscore":129}],10:[function(require,module,exports){
-'use strict';
-
-var _ = require('underscore');
+var $ = require('jquery');
+var bootstrap = require('bootstrap');
 var Backbone = require('backbone');
+require('backbone-relational');
+Backbone.$ = $;
 
-var PositionMarker = Backbone.Model.extend({
-  source: null,
-  layer: null,
 
-  initialize: function (model, options) {
-    this.mapgl = options.map;
-  },
+var Ships = require('./models/ship/collection');
+var ships = new Ships();
 
-  toFeature: function () {
-    return {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": this.get('position').getCoordinate()
-      },
-      "properties": {
-        "title": this.get('position').getHelper().toTitel(),
-        "id": this.get('id')
-      }
-    }
-  }
-});
+// ships.once('sync', function () {
+//   Backbone.history.start();
+// });
 
-module.exports = PositionMarker;
+// var Router = require('./lib/router');
+// var router = new Router({
+//   collection: ships,
+//   appevents: AppEventDispatcher
+// });
 
-},{"backbone":35,"underscore":129}],11:[function(require,module,exports){
+// AppEventDispatcher.on('map:select', function (ship) {
+//   router.navigate('mmsi/' + ship.get('userid'));
+// });
+
+// AppEventDispatcher.on('map:selected', function (ship) {
+//   router.navigate('mmsi/' + ship.get('userid'));
+// });
+
+// AppEventDispatcher.on('map:unselected', function (ship) {
+//   router.navigate('');
+// });
+
+var ShipsLayer = require('./map/ships-layer');
+var shipsLayer = new ShipsLayer(ships);
+
+// var MasterView = require('./views/master-view');
+// var masterView = new MasterView({
+//   el: $('#content'),
+//   collection: ships,
+//   appevents: AppEventDispatcher
+// });
+
+// masterView.render();
+
+/* Debugging */
+
+window.ships = ships;
+
+
+},{"./map/ships-layer":8,"./models/ship/collection":15,"backbone":28,"backbone-relational":27,"bootstrap":29,"jquery":31,"underscore":102}],7:[function(require,module,exports){
 'use strict';
 
-var _ = require('underscore');
-var Label = require('./label');
+var config = require('../config.json');
 
-var ShipLabel = Label.extend({
-  classname: 'ship-label',
+mapboxgl.accessToken = config.map.accessToken;
 
-  setShip: function (ship) {
-    this.ship = ship;
-  },
-
-  getCoordinates: function () {
-    return this.ship.get('position').getCoordinate();
-  },
-
-  toTitel: function () {
-    var title = this.ship.getHelper().toTitel();
-    title += '<hr noshade size="1">';
-    title += this.ship.get('position').getHelper().toTitel();
-
-    return title;
-  }
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: config.map.style,
+  center: config.map.center,
+  zoom: config.map.zoom
 });
 
-module.exports = ShipLabel;
-},{"./label":6,"underscore":129}],12:[function(require,module,exports){
-'use strict';
+window.mapgl = map;
 
-var _ = require('underscore');
-var Backbone = require('backbone');
-var GeographicLib = require("geographiclib");
+map.addControl(new mapboxgl.Navigation());
 
-var ShipMarker = Backbone.Model.extend({
-  layer: { },
+module.exports = map;
 
-  initialize: function (model, options) {
-    this.mapgl = options.map;
-    this.on('change:selected', this.addToMap, this);
-    this.listenTo(this.get('ship'), 'change', this.process);
-    this.process();
-  },
-
-  process: function () {
-    if (this.get('ship').has('position')) {
-      this.addToMap();
-    }
-  },
-
-  toShape: function () {
-    var ship = this.get('ship');
-    var position = ship.get('position');
-
-    if (ship.has('shipdata')) {
-      var data = ship.get('shipdata');
-      var a = data.get('dima') || 0;
-      var b = data.get('dimb') || 0;
-      var c = data.get('dimc') || 0;
-      var d = data.get('dimd') || 0;
-
-      if ((a || b) && (c || d)) {
-        var geod = GeographicLib.Geodesic.WGS84;
-        var azi = position.get('trueheading') || position.get('cog');
-
-        var w = c + d;
-        var h = w/2;
-        var l = Math.sqrt(2*Math.pow(h, 2));
-
-        var lon0 = position.get('longitude');
-        var lat0 = position.get('latitude');
-
-        var m, lon1 = lon0, lat1 = lat0;
-        if (d>c) {
-          m = geod.Direct(lat0, lon0, azi+90, (d-c)/2);
-          lon1 = m.lon2;
-          lat1 = m.lat2;
-        }
-        if (c>d) {
-          m = geod.Direct(lat0, lon0, azi-90, (c-d)/2);
-          lon1 = m.lon2;
-          lat1 = m.lat2;
-        }
-
-        c = d = h;
-        var ax = a-h;
-
-        var a1 = geod.Direct(lat1, lon1, azi, a);
-        var c1 = geod.Direct(a1.lat2, a1.lon2, azi-135, l);
-        var a2 = geod.Direct(c1.lat2, c1.lon2, azi-180, ax);
-
-        var d1 = geod.Direct(a1.lat2, a1.lon2, azi+135, l);
-        var a3 = geod.Direct(d1.lat2, d1.lon2, azi+180, ax);
-
-        var b1 = geod.Direct(a2.lat2, a2.lon2, azi+180, b);
-        var c2 = geod.Direct(b1.lat2, b1.lon2, azi+90, c);
-
-        var b2 = geod.Direct(a3.lat2, a3.lon2, azi+180, b);
-
-        return {
-          "type": "Feature",
-          "geometry": {
-            "type": "Polygon",
-            "coordinates": [[
-              [a1.lon2, a1.lat2],
-              [c1.lon2, c1.lat2],
-              [b1.lon2, b1.lat2],
-              [b2.lon2, b2.lat2],
-              [d1.lon2, d1.lat2],
-              [a1.lon2, a1.lat2]
-            ]]
-          }
-        }
-      }
-    }
-    return null;
-  },
-
-  toFeature: function () {
-    var ship = this.get('ship');
-    var position = ship.get('position');
-
-    return {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": position.getCoordinate()
-      },
-      "properties": {
-        "title": this.get('ship').getHelper().toTitel(),
-        "marker-symbol": this.get('selected') && "triangle" || "triangle-stroked",
-        "id": this.get('id')
-      }
-    }
-  },
-
-  getMapId: function (suffix) {
-    return this.get('id') + (suffix ? '-' + suffix : '');
-  },
-
-  addSource: function () {
-    if (!this.mapgl.getSource(this.getMapId(1))) {
-      this.mapgl.addSource(this.getMapId(1), {
-        "type": "geojson",
-      });
-    }
-
-    this.mapgl.getSource(this.getMapId(1)).setData(this.toFeature());
-
-    var shape = this.toShape();
-    if (shape) {
-      if (!this.mapgl.getSource(this.getMapId(2))) {
-        this.mapgl.addSource(this.getMapId(2), {
-          "type": "geojson",
-        });
-      }
-
-      this.mapgl.getSource(this.getMapId(2)).setData(shape);
-    }
-  },
-
-  addLayer: function () {
-    var ship = this.get('ship');
-    var position = ship.get('position');
-
-    if (this.layer[this.getMapId(2)]) {
-      this.mapgl.removeLayer(this.getMapId(2));
-    }
-
-    if (this.mapgl.getSource(this.getMapId(2))) {
-      this.mapgl.addLayer({
-        "id": this.getMapId(2),
-        "type": "fill",
-        "source": this.getMapId(2),
-        "paint": {
-          "fill-color": "rgba(63,63,191,0.5)",
-          "fill-outline-color": "rgba(0,0,0,0)"
-        }
-      }, 'track');
-
-      this.layer[this.getMapId(2)] = true;
-    }
-
-    if (this.layer[this.getMapId(1)]) {
-      this.mapgl.removeLayer(this.getMapId(1));
-    }
-
-    this.mapgl.addLayer({
-      "id": this.getMapId(1),
-      "type": "symbol",
-      "source": this.getMapId(1),
-      "interactive": true,
-      "layout": {
-        "icon-image": "{marker-symbol}-11",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        "icon-rotate": position.has('cog') && position.get('cog') || 0,
-        "visibility": "visible"
-      }
-    });
-
-    this.layer[this.getMapId(1)] = true;
-  },
-
-  addToMap: function () {
-    this.addSource();
-    this.addLayer();
-  },
-
-  removeFromMap: function () {
-    this.off('change:selected', this.addToMap, this);
-    this.stopListening(this.get('ship'), 'change', this.process);
-
-    if (this.layer[this.getMapId(1)]) {
-      this.mapgl.removeSource(this.getMapId(1));
-      this.mapgl.removeLayer(this.getMapId(1));
-    }
-
-    if (this.layer[this.getMapId(2)]) {
-      this.mapgl.removeSource(this.getMapId(2));
-      this.mapgl.removeLayer(this.getMapId(2));
-    }
-
-    this.layer = { };
-  }
-});
-
-module.exports = ShipMarker;
-
-},{"backbone":35,"geographiclib":37,"underscore":129}],13:[function(require,module,exports){
+},{"../config.json":1}],8:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var MapUtil = require('../lib/map-util');
-
-var ShipMarker = require('./ship-marker');
+var MapGL = require('./map');
 var TrackLayer = require('./track-layer');
-var ShipLabel = require('./ship-label');
 
-var ShipsLayer = Backbone.Collection.extend({
-  model: ShipMarker,
+var ShipsLayer = function (ships) {
+  this.ships = ships;
+  this.mapgl = MapGL;
+
+  this.trackLayer = new TrackLayer(this.ships);
+
+  this.mapgl.on('style.load', _.bind(this.process, this));
+};
+
+_.extend(ShipsLayer.prototype, Backbone.Events, {
   layer: { },
-  label: null,
-
-  initialize: function (models, options) {
-    this.mapgl = options.map;
-    this.ships = options.collection;
-    this.appevents = options.appevents;
-
-    this.shipLabel = new ShipLabel(this.mapgl);
-
-    this.trackLayer = new TrackLayer(null, {
-      map: this.mapgl,
-      shipsLayer: this
-    });
-
-    this.mapgl.on('style.load', _.bind(this.process, this));
-  },
 
   process: function () {
-    this.listenTo(this.ships, 'add', this.addShipMarker);
+    this.listenTo(this.ships, 'add', this.onAddShip);
+    this.listenTo(this.ships, 'remove', this.onRemoveShip);
     this.listenTo(this.ships, 'sync', this.addToMap);
 
     this.ships.fetch();
 
     this.mapgl.on('mousemove', _.bind(this.onMousemove, this));
     this.mapgl.on('click', _.bind(this.onClick, this));
-
-    this.listenTo(this.appevents, 'map:select', this.selectByShip);
   },
 
-  selectByShip: function (ship) {
-    this.selectById('ship-' + ship.get('id'));
-  },
-
-  selectById: function (id) {
-    var selected = this.findWhere({ selected: true });
-    if (selected) {
-      selected.set('selected', false);
-    }
-
-    if (id) {
-      selected = this.get(id);
-      if (selected.get('ship').has('position')) {
-        selected.set('selected', true);
-      } else {
-        alert('No position yet');
-      }
-    }
-  },
-
+  clickid: 0,
   onClick: function (e) {
     this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
-      if (!_.isEmpty(features)) {
-        var id = _.first(features).properties.id;
-        this.appevents.trigger('map:selected', this.get(id).get('ship'));
-        this.selectById(id);
-      } else {
-        this.appevents.trigger('map:unselected', true);
-        this.selectById(false)
+      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
+
+      if (this.clickid) {
+        if (!id || (id !== this.clickid)) {
+          this.ships.get(this.clickid).set('selected', false);
+          this.clickid = 0;
+        }
       }
 
+      if (id) {
+        this.ships.get(id).set('selected', true);
+        this.clickid = id;
+        this.trackLayer.onClickout();
+      } else {
+        this.trackLayer.onClick(e);
+      }
     }, this));
   },
 
+  mouseoverid: 0,
   onMousemove: function (e) {
     this.mapgl.getCanvas().style.cursor = "";
-    this.shipLabel.hideLabel();
-    this.trackLayer.hideLabel();
 
     var bounds = this.mapgl.getBounds();
     var nw = bounds.getNorthWest();
@@ -670,36 +339,61 @@ var ShipsLayer = Backbone.Collection.extend({
     var width = $('#map').width();
 
     var perimeter = 10 * (dist/width);
-
     var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
+
+    if (this.mouseoverid) {
+      if (!ship || (ship && ship.get('id') !== this.mouseoverid)) {
+        this.ships.get(this.mouseoverid).set('mouseover', false);
+        this.mouseoverid = 0;
+      }
+    }
 
     if (ship) {
       this.mapgl.getCanvas().style.cursor = "pointer";
-      this.shipLabel.setShip(ship);
-      this.shipLabel.showLabel();
+      ship.set('mouseover', true);
+      this.mouseoverid = ship.get('id');
+      this.trackLayer.onMouseout();
     } else {
-      this.trackLayer.showLabel(e.lngLat, perimeter);
+      this.trackLayer.onMousemove(e.lngLat, perimeter);
     }
   },
 
-  addShipMarker: function (ship) {
-    this.add(new ShipMarker({
-      id: 'ship-' + ship.get('id'),
-      selected: false,
-      ship: ship
-    }, {
-      map: this.mapgl,
-      collection: this
-    }));
+  onAddShip: function (ship) {
+    ship.getLabel(this.mapgl);
+    ship.getMarker(this.mapgl);
+
+    this.updateSource();
+  },
+
+  onRemoveShip: function (ship) {
+    var id = ship.get('id');
+
+    if (this.mouseoverid === id) {
+      this.mouseoverid = 0;
+    }
+    if (this.clickid === id) {
+      this.clickid = 0;
+    }
+
+    this.updateSource();
   },
 
   addSource: function () {
-    var ships = this.filter(function (marker) {
-      return marker.get('ship').has('position');
-    });
+    if (!this.mapgl.getSource('ships')) {
+      this.mapgl.addSource('ships', {
+        "type": "geojson",
+      });
+    }
 
-    var features = this.map(function (marker) {
-      var ship = marker.get('ship');
+    this.updateSource();
+  },
+
+  updateSource: function () {
+    if (!this.mapgl.getSource('ships')) return;
+
+    var features = this.ships.map(function (ship) {
+      if (!ship.has('position')) return;
+
       return {
         "type": "Feature",
         "geometry": {
@@ -708,285 +402,349 @@ var ShipsLayer = Backbone.Collection.extend({
         },
         "properties": {
           "title": ship.getHelper().toTitel(),
-          "id": marker.get('id')
+          "id": ship.get('id')
         }
       }
     });
 
-    if (!this.mapgl.getSource('ships')) {
-      this.mapgl.addSource('ships', {
-        "type": "geojson",
-      });
-    }
-
     this.mapgl.getSource('ships').setData({
       "type": "FeatureCollection",
-      "features": features
+      "features": _.filter(features, function(feature) { return feature; })
     });
   },
 
-  addLayer: function () {
-    if (!_.isEmpty(this.layer)) {
-      return;
+  addShipsLayer: function () {
+    if (!this.layer['ships']) {
+      this.mapgl.addLayer({
+        "id": "ships",
+        "type": "circle",
+        "source": "ships",
+        "interactive": true,
+        "paint": {
+          "circle-radius": 10,
+          "circle-color": "rgba(255,255,255,0)",
+        }
+      });
+
+      this.layer['ships'] = true;
     }
+  },
 
-    this.mapgl.addLayer({
-      "id": "ships",
-      "type": "circle",
-      "source": "ships",
-      "interactive": true,
-      "paint": {
-        "circle-radius": 10,
-        "circle-color": "rgba(255,255,255,0)",
-      }
-    });
-
-    this.layer['ships'] = true;
-
-    this.mapgl.addLayer({
-      "id": "labels",
-      "type": "symbol",
-      "source": "ships",
-      "layout": {
-        "text-field": "{title}",
-        "text-font": [
-          "DIN Offc Pro Medium",
-          "Arial Unicode MS Regular"
-        ],
-        "text-offset": [0, 1.5],
-        "text-anchor": "center",
-        "text-size": {
-          "base": 1,
-          "stops": [
-            [ 13, 12 ],
-            [ 18, 16 ]
+  addLabelsLayer: function () {
+    if (!this.layer['labels']) {
+      this.mapgl.addLayer({
+        "id": "labels",
+        "type": "symbol",
+        "source": "ships",
+        "layout": {
+          "text-field": "{title}",
+          "text-font": [
+            "DIN Offc Pro Medium",
+            "Arial Unicode MS Regular"
           ],
+          "text-offset": [0, 1.5],
+          "text-anchor": "center",
+          "text-size": {
+            "base": 1,
+            "stops": [
+              [ 13, 12 ],
+              [ 18, 16 ]
+            ],
+          },
+          "text-allow-overlap": true,
+          "visibility": "visible"
         },
-        "text-allow-overlap": true,
-        "visibility": "visible"
-      },
-      "maxzoom": 22,
-      "minzoom": 14,
-      "paint": {
-        "text-color": "#000000",
-        "text-halo-blur": 0.5,
-        "text-halo-color": "#ffffff",
-        "text-halo-width": 0.5
-      }
-    });
+        "maxzoom": 22,
+        "minzoom": 14,
+        "paint": {
+          "text-color": "#000000",
+          "text-halo-blur": 0.5,
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 0.5
+        }
+      });
 
-    this.layer['labels'] = true;
+      this.layer['labels'] = true;
+    }
   },
 
   addToMap: function () {
     this.addSource();
-    this.addLayer();
+    this.addShipsLayer();
+    this.addLabelsLayer();
   },
 
   removeFromMap: function () {
     this.stopListening(this.ships, 'sync', this.addToMap);
     this.stopListening(this.ships, 'add', this.addShipMarker);
+    this.stopListening(this.ships, 'remove', this.removeShipMarker);
 
     this.mapgl.off('click', _.bind(this.onClick, this));
     this.mapgl.off('mousemove', _.bind(this.onMousemove, this));
-
-    this.stopListening(this.appevents, 'map:select', selectByShip);
 
     if (this.layer['labels']) {
       this.mapgl.removeLayer('labels');
     }
 
     if (this.layer['ships']) {
-      this.mapgl.removeSource('ships');
       this.mapgl.removeLayer('ships');
     }
 
+    if (this.mapgl.getSource('ships')) {
+      this.mapgl.removeSource('ships');
+    }
+
     this.layer = { };
-    this.reset();
+    this.mouseoverid = 0;
+    this.clickid = 0;
+    this.first = null;
   }
 })
 
 module.exports = ShipsLayer;
 
-},{"../lib/map-util":3,"./ship-label":11,"./ship-marker":12,"./track-layer":14,"backbone":35,"jquery":58,"underscore":129}],14:[function(require,module,exports){
+},{"../lib/map-util":4,"./map":7,"./track-layer":9,"backbone":28,"jquery":31,"underscore":102}],9:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var MapUtil = require('../lib/map-util');
+var MapGL = require('./map');
 
-var PositionMarker = require('./position-marker');
-var PositionLabel = require('./position-label');
+var TrackLayer = function (ships) {
+  this.ships = ships;
+  this.mapgl = MapGL;
 
-var TrackLayer = Backbone.Collection.extend({
-  model: PositionMarker,
+  this.listenTo(this.ships, 'change:selected', this.process);
+};
+
+_.extend(TrackLayer.prototype, Backbone.Events, {
   layer: { },
-  label: null,
+  track: null,
   ship: null,
-  ships: [],
 
-  initialize: function (attributes, options) {
-    this.mapgl = options.map;
-    this.shipsLayer = options.shipsLayer;
+  process: function (ship) {
+    if (ship.get('selected') === true) {
+      this.ship = ship;
+      this.track = ship.get('track');
 
-    this.positionLabel = new PositionLabel(this.mapgl);
+      this.listenToOnce(this.track, 'sync', this.addToMap);
+      this.listenToOnce(this.track, 'sync', function () {
+        this.listenTo(this.track, 'add', this.onAddPosition);
+        this.listenTo(this.track, 'remove', this.onRemovePosition);
+      }, this);
 
-    this.listenTo(this.shipsLayer, 'change:selected', this.process);
-  },
+      ship.fetchTrack();
+    }
 
-  process: function (marker, selected) {
-    if (selected) {
-      this.ship = marker.get('ship');
-
-      this.listenToOnce(this.ship, 'sync', function () {
-        if (_.indexOf(this.ships, marker) > -1) {
-          this.ship.get('track').each(function (position) {
-            this.addPositionMarker(position);
-          }, this);
-        } else {
-          this.ships.push(this.ship);
-        }
-
-        this.listenTo(this.ship.get('track'), 'add', this.addPositionMarker);
-        this.listenTo(this.ship.get('track'), 'sync', this.addToMap);
-
-        this.ship.fetchTrack();
-      });
-
-      this.ship.fetch();
-    } else {
+    if (ship.get('selected') === false) {
       this.removeFromMap();
     }
   },
 
-  addPositionMarker: function (position) {
-    this.add(new PositionMarker({
-      id: 'position-' + position.get('id'),
-      position: position
-    }, {
-      map: this.mapgl,
-      collection: this
-    }));
+  mouseoverid: 0,
+  onMousemove: function (lngLat, perimeter) {
+    if (this.track && this.track.length > 2) {
+      var position = _.first(this.track.getPositionsForLngLat(lngLat, perimeter));
+
+      if (this.mouseoverid) {
+        if (!position || (position && position.get('id') !== this.mouseoverid)) {
+          this.track.get(this.mouseoverid).set('mouseover', false);
+          this.mouseoverid = 0;
+        }
+      }
+
+      if (position) {
+        this.mapgl.getCanvas().style.cursor = "pointer";
+        position.set('mouseover', true);
+        this.mouseoverid = position.get('id');
+      }
+    }
   },
 
-  addSource: function () {
-    this.last().set('position', this.ship.get('position'));
+  onMouseout: function () {
+    if (this.mouseoverid) {
+      this.track.get(this.mouseoverid).set('mouseover', false);
+      this.mouseoverid = 0;
+    }
+  },
 
-    var track = {
-      "type": "LineString",
-      "coordinates": this.map(function (positionMarker) {
-        return positionMarker.get('position').getCoordinate();
-      })
+  clickid: 0,
+  onClick: function (e) {
+    if (!this.track) return;
+
+    this.mapgl.featuresAt(e.point, { layer: 'positions', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
+      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
+
+      if (this.clickid) {
+        if (!id || (id !== this.clickid)) {
+          this.track.get(this.clickid).set('selected', false);
+          this.clickid = 0;
+        }
+      }
+
+      if (id) {
+        this.track.get(id).set('selected', true);
+        this.clickid = id;
+      }
+    }, this));
+  },
+
+  onClickout: function () {
+    if (this.clickid) {
+      this.track.get(this.clickid).set('selected', false);
+      this.clickid = 0;
+    }
+  },
+
+  onAddPosition: function (position) {
+    this.updateTrackSource();
+    this.updatePositionSource();
+  },
+
+  onRemovePosition: function (position) {
+    var id = position.get('id');
+
+    if (this.mouseoverid === id) {
+      this.mouseoverid = 0;
+    }
+    if (this.clickid === id) {
+      this.clickid = 0;
     }
 
-    var positions = {
-      "type": "FeatureCollection",
-      "features": this.map(function (positionMarker) {
-        return positionMarker.toFeature();
-      })
-    }
+    this.updateTrackSource();
+    this.updatePositionSource();
+  },
 
+  addToMap: function () {
+    if (this.track.length > 2) {
+      this.track.invoke('getLabel', this.mapgl);
+
+      this.addTrackSource();
+      this.addTrackLayer();
+
+      this.addPositionSource();
+      this.addPositionLayer();
+    }
+  },
+
+  addTrackSource: function () {
     if (!this.mapgl.getSource('track')) {
       this.mapgl.addSource('track', {
         "type": "geojson",
       });
     }
 
-    this.mapgl.getSource('track').setData(track);
+    this.updateTrackSource();
+  },
 
+  updateTrackSource: function () {
+    if (!this.mapgl.getSource('track')) return;
+
+    var coordinates = this.track.map(function (position) {
+      return position.getCoordinate();
+    });
+    coordinates.pop();
+    coordinates.push(this.ship.get('position').getCoordinate());
+
+    var track = {
+      "type": "LineString",
+      "coordinates": coordinates
+    }
+
+    this.mapgl.getSource('track').setData(track);
+  },
+
+  addPositionSource: function () {
     if (!this.mapgl.getSource('positions')) {
       this.mapgl.addSource('positions', {
         "type": "geojson",
       });
     }
 
+    this.updatePositionSource();
+  },
+
+  updatePositionSource: function () {
+    if (!this.mapgl.getSource('positions')) return;
+
+    var features = this.track.map(function (position) {
+      return position.getMarker().toMarker();
+    });
+    features.pop();
+    features.push(this.ship.get('position').getMarker().toMarker());
+
+    var positions = {
+      "type": "FeatureCollection",
+      "features": features
+    }
+
     this.mapgl.getSource('positions').setData(positions);
   },
 
-  addLayer: function () {
-    if (!_.isEmpty(this.layer)) {
-      return;
+  addPositionLayer: function () {
+    if (!this.layer['positions']) {
+      this.mapgl.addLayer({
+        "id": "positions",
+        "type": "circle",
+        "source": "positions",
+        "interactive": true,
+        "paint": {
+          "circle-color": "#444",
+        }
+      }, this.ship.getMarker().getMapId('marker'));
+
+      this.layer['positions'] = true;
     }
-
-    this.mapgl.addLayer({
-      "id": "track",
-      "type": "line",
-      "source": "track",
-      "paint": {
-        "line-color": "#888",
-        "line-width": 3
-      }
-    }, "ships");
-
-    this.layer['track'] = true;
-
-    this.mapgl.addLayer({
-      "id": "positions",
-      "type": "circle",
-      "source": "positions",
-      "interactive": true,
-      "paint": {
-        "circle-color": "#444",
-      }
-    }, "ships");
-
-    this.layer['positions'] = true;
   },
 
-  addToMap: function () {
-    this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate(), zoom: 15 });
+  addTrackLayer: function () {
+    if (!this.layer['track']) {
+      this.mapgl.addLayer({
+        "id": "track",
+        "type": "line",
+        "source": "track",
+        "paint": {
+          "line-color": "#888",
+          "line-width": 3
+        }
+      }, this.ship.getMarker().getMapId('marker'));
 
-    if (this.length < 2) {
-      return;
+      this.layer['track'] = true;
     }
-
-    this.addSource();
-    this.addLayer();
   },
 
   removeFromMap: function () {
-    if (this.ship) {
-      this.stopListening(this.ship.get('track'), 'add', this.addPositionMarker);
-      this.stopListening(this.ship.get('track'), 'sync', this.addToMap);
+    this.stopListening(this.track, 'add', this.addToMap);
+    this.stopListening(this.track, 'remove', this.addToMap);
 
-      this.ship.get('track').reset();
+    if (this.mapgl.getSource('track')) {
+      this.mapgl.removeSource('track');
     }
 
     if (this.layer['track']) {
-      this.mapgl.removeSource('track');
       this.mapgl.removeLayer('track');
     }
 
-    if (this.layer['positions']) {
+    if (this.mapgl.getSource('positions')) {
       this.mapgl.removeSource('positions');
+    }
+
+    if (this.layer['positions']) {
       this.mapgl.removeLayer('positions');
     }
 
     this.layer = { };
-    this.reset();
-  },
-
-  hideLabel: function () {
-    this.positionLabel.hideLabel();
-  },
-
-  showLabel: function (lngLat, perimeter) {
-    if (this.ship && this.ship.get('track').length > 0) {
-      var position = _.first(this.ship.get('track').getPositionsForLngLat(lngLat, perimeter));
-
-      if (position) {
-        this.mapgl.getCanvas().style.cursor = "pointer";
-        this.positionLabel.setPosition(position);
-        this.positionLabel.showLabel();
-      }
-    }
+    this.mouseoverid = 0;
+    this.clickid = 0;
+    this.track.reset();
   }
 });
 
 module.exports = TrackLayer;
 
-},{"../lib/map-util":3,"./position-label":9,"./position-marker":10,"backbone":35,"jquery":58,"underscore":129}],15:[function(require,module,exports){
+},{"../lib/map-util":4,"./map":7,"backbone":28,"jquery":31,"underscore":102}],10:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -1000,7 +758,7 @@ var Positions = Backbone.Collection.extend({
 
 module.exports = Positions;
 
-},{"./model":17,"backbone":35}],16:[function(require,module,exports){
+},{"./model":14,"backbone":28}],11:[function(require,module,exports){
 'use strict';
 
 var MapUtil = require('../../lib/map-util');
@@ -1122,7 +880,64 @@ _.extend(PositionHelper.prototype, {
 
 module.exports = PositionHelper;
 
-},{"../../lib/ais-message":2,"../../lib/map-util":3,"ais-receiver/ais-messages/json/ais_msg_1.json":32,"moment":59,"underscore":129}],17:[function(require,module,exports){
+},{"../../lib/ais-message":2,"../../lib/map-util":4,"ais-receiver/ais-messages/json/ais_msg_1.json":25,"moment":32,"underscore":102}],12:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+var Label = require('../../lib/label');
+
+var PositionLabel = function (position, mapgl) {
+  this.model = position;
+  this.mapgl = mapgl;
+
+  Label.apply(this);
+};
+
+_.extend(PositionLabel.prototype, Label.prototype, {
+  classname: 'position-label',
+
+  getCoordinates: function () {
+    return this.model.getCoordinate();
+  },
+
+  toTitel: function () {
+    return this.model.getHelper().toTitel();
+  }
+});
+
+module.exports = PositionLabel;
+
+},{"../../lib/label":3,"backbone":28,"underscore":102}],13:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+var PositionMarker = function (position) {
+  this.position = position;
+};
+
+_.extend(PositionMarker.prototype, Backbone.Events, {
+  toMarker: function () {
+    return {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": this.position.getCoordinate()
+      },
+      "properties": {
+        "title": this.position.getHelper().toTitel(),
+        "id": this.position.get('id')
+      }
+    }
+  }
+});
+
+module.exports = PositionMarker;
+
+},{"backbone":28,"underscore":102}],14:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1131,14 +946,39 @@ var Backbone = require('backbone');
 var moment = require('moment');
 var MapUtil = require('../../lib/map-util');
 
-var Popup = require('../../map/popup');
 var PositionHelper = require('./helper');
+var PositionMarker = require('./marker');
+var PositionLabel = require('./label');
 
 var Position = Backbone.RelationalModel.extend({
-  url: '/api/position',
+  positionHelper: null,
+  positionLabel: null,
+  positionMarker: null,
+
+  defaults: {
+    'mouseover': false,
+    'selected': false
+  },
 
   getHelper: function () {
-    return new PositionHelper(this);
+    if (!this.positionHelper) {
+      this.positionHelper =  new PositionHelper(this);
+    }
+    return this.positionHelper;
+  },
+
+  getMarker: function (mapgl) {
+    if (!this.positionMarker) {
+      this.positionMarker =  new PositionMarker(this, mapgl);
+    }
+    return this.positionMarker;
+  },
+
+  getLabel: function (mapgl) {
+    if (!this.positionLabel) {
+      this.positionLabel = new PositionLabel(this, mapgl);
+    }
+    return this.positionLabel;
   },
 
   parse: function (data, xhr) {
@@ -1168,7 +1008,7 @@ var Position = Backbone.RelationalModel.extend({
 
 module.exports = Position;
 
-},{"../../lib/map-util":3,"../../map/popup":8,"./helper":16,"backbone":35,"moment":59,"underscore":129,"underscore.string":84}],18:[function(require,module,exports){
+},{"../../lib/map-util":4,"./helper":11,"./label":12,"./marker":13,"backbone":28,"moment":32,"underscore":102,"underscore.string":57}],15:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1256,7 +1096,7 @@ var Ships = Backbone.Collection.extend({
 
 module.exports = Ships;
 
-},{"./model":20,"backbone":35,"underscore":129}],19:[function(require,module,exports){
+},{"./model":19,"backbone":28,"underscore":102}],16:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1273,7 +1113,263 @@ _.extend(ShipHelper.prototype, {
 
 module.exports = ShipHelper;
 
-},{"underscore":129}],20:[function(require,module,exports){
+},{"underscore":102}],17:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+var Label = require('../../lib/label');
+
+var ShipLabel = function (ship, mapgl) {
+  this.model = ship;
+  this.mapgl = mapgl;
+
+  Label.apply(this);
+};
+
+_.extend(ShipLabel.prototype, Label.prototype, {
+  classname: 'ship-label',
+
+  getCoordinates: function () {
+    return this.model.get('position').getCoordinate();
+  },
+
+  toTitel: function () {
+    var titel = this.model.getHelper().toTitel();
+    titel += '<hr noshade size="1">';
+    titel += this.model.get('position').getHelper().toTitel();
+
+    return titel;
+  }
+});
+
+module.exports = ShipLabel;
+
+},{"../../lib/label":3,"backbone":28,"underscore":102}],18:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+var Backbone = require('backbone');
+var GeographicLib = require("geographiclib");
+
+var ShipMarker = function (ship, mapgl) {
+  this.ship = ship;
+  this.mapgl = mapgl;
+
+  this.listenTo(this.ship, 'change', this.process);
+  this.process();
+};
+
+_.extend(ShipMarker.prototype, Backbone.Events, {
+  layer: {},
+
+  process: function () {
+    if (this.ship.has('position')) {
+      this.addToMap();
+
+      if (this.ship.get('selected') === true) {
+        this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate(), zoom: 15 });
+      }
+    }
+  },
+
+  hasShape: function () {
+    if (this.ship.has('shipdata')) {
+      var data = this.ship.get('shipdata');
+      var a = data.get('dima') || 0;
+      var b = data.get('dimb') || 0;
+      var c = data.get('dimc') || 0;
+      var d = data.get('dimd') || 0;
+
+      if ((a || b) && (c || d)) {
+        return { a: a, b: b, c: c, d: d };
+      }
+    }
+  },
+
+  toShape: function () {
+    var dim = this.hasShape();
+    if (dim) {
+      var ship = this.ship;
+      var position = ship.get('position');
+
+      var a = dim.a;
+      var b = dim.b;
+      var c = dim.c;
+      var d = dim.d;
+
+      var geod = GeographicLib.Geodesic.WGS84;
+      var azi = position.get('trueheading') || position.get('cog');
+
+      var w = c + d;
+      var h = w/2;
+      var l = Math.sqrt(2*Math.pow(h, 2));
+
+      var lon0 = position.get('longitude');
+      var lat0 = position.get('latitude');
+
+      var m, lon1 = lon0, lat1 = lat0;
+      if (d>c) {
+        m = geod.Direct(lat0, lon0, azi+90, (d-c)/2);
+        lon1 = m.lon2;
+        lat1 = m.lat2;
+      }
+      if (c>d) {
+        m = geod.Direct(lat0, lon0, azi-90, (c-d)/2);
+        lon1 = m.lon2;
+        lat1 = m.lat2;
+      }
+
+      c = d = h;
+      var ax = a-h;
+
+      var a1 = geod.Direct(lat1, lon1, azi, a);
+      var c1 = geod.Direct(a1.lat2, a1.lon2, azi-135, l);
+      var a2 = geod.Direct(c1.lat2, c1.lon2, azi-180, ax);
+
+      var d1 = geod.Direct(a1.lat2, a1.lon2, azi+135, l);
+      var a3 = geod.Direct(d1.lat2, d1.lon2, azi+180, ax);
+
+      var b1 = geod.Direct(a2.lat2, a2.lon2, azi+180, b);
+      var c2 = geod.Direct(b1.lat2, b1.lon2, azi+90, c);
+
+      var b2 = geod.Direct(a3.lat2, a3.lon2, azi+180, b);
+
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[
+            [a1.lon2, a1.lat2],
+            [c1.lon2, c1.lat2],
+            [b1.lon2, b1.lat2],
+            [b2.lon2, b2.lat2],
+            [d1.lon2, d1.lat2],
+            [a1.lon2, a1.lat2]
+          ]]
+        },
+        "properties": {
+          "id": this.getMapId('shape')
+        }
+      }
+    }
+  },
+
+  toMarker: function () {
+    var ship = this.ship;
+    var position = ship.get('position');
+
+    return {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": position.getCoordinate()
+      },
+      "properties": {
+        "title": ship.getHelper().toTitel(),
+        "marker-symbol": ship.get('selected') && "triangle" || "triangle-stroked",
+        "id": this.getMapId('marker')
+      }
+    }
+  },
+
+  getMapId: function (prefix) {
+    return prefix + '-' + this.ship.get('id');
+  },
+
+  addShapeSource: function () {
+    if (!this.mapgl.getSource(this.getMapId('shape'))) {
+      this.mapgl.addSource(this.getMapId('shape'), {
+        "type": "geojson",
+      });
+    }
+
+    this.mapgl.getSource(this.getMapId('shape')).setData(this.toShape());
+  },
+
+  addShapeLayer: function () {
+    if (!this.layer[this.getMapId('shape')]) {
+      this.mapgl.addLayer({
+        "id": this.getMapId('shape'),
+        "type": "fill",
+        "source": this.getMapId('shape'),
+        "paint": {
+          "fill-color": "rgba(63,63,191,0.5)",
+          "fill-outline-color": "rgba(0,0,0,0)"
+        }
+      }, 'track');
+      this.layer[this.getMapId('shape')] = true;
+    }
+  },
+
+  addMarkerSource: function () {
+    if (!this.mapgl.getSource(this.getMapId('marker'))) {
+      this.mapgl.addSource(this.getMapId('marker'), {
+        "type": "geojson",
+      });
+    }
+
+    this.mapgl.getSource(this.getMapId('marker')).setData(this.toMarker());
+  },
+
+  addMarkerLayer: function () {
+    if (!this.layer[this.getMapId('marker')]) {
+      this.mapgl.addLayer({
+        "id": this.getMapId('marker'),
+        "type": "symbol",
+        "source": this.getMapId('marker'),
+        "interactive": true,
+        "layout": {
+          "icon-image": "{marker-symbol}-11",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "visibility": "visible"
+        }
+      });
+
+      this.layer[this.getMapId('marker')] = true;
+    }
+
+    var position = this.ship.get('position');
+    this.mapgl.setLayoutProperty(this.getMapId('marker'), "icon-rotate", position.has('cog') && position.get('cog') || 0);
+  },
+
+  addToMap: function () {
+    if (this.hasShape()) {
+      this.addShapeSource();
+      this.addShapeLayer();
+    }
+    this.addMarkerSource();
+    this.addMarkerLayer();
+  },
+
+  removeFromMap: function () {
+    this.stopListening(this.get('ship'), 'change', this.process);
+
+    if (this.layer[this.getMapId('marker')]) {
+      this.mapgl.removeLayer(this.getMapId('marker'));
+    }
+
+    if (!this.mapgl.getSource(this.getMapId('marker'))) {
+      this.mapgl.removeSource(this.getMapId('marker'));
+    }
+
+    if (this.layer[this.getMapId('shape')]) {
+      this.mapgl.removeLayer(this.getMapId('shape'));
+    }
+
+    if (!this.mapgl.getSource(this.getMapId('shape'))) {
+      this.mapgl.removeSource(this.getMapId('shape'));
+    }
+
+    this.layer = { };
+  }
+});
+
+module.exports = ShipMarker;
+
+},{"backbone":28,"geographiclib":30,"underscore":102}],19:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1287,9 +1383,21 @@ var ShipData = require('../shipdata/collection');
 var ShipDatum = require('../shipdata/model');
 
 var Track = require('../track/collection');
+
 var ShipHelper = require('./helper');
+var ShipMarker = require('./marker');
+var ShipLabel = require('./label');
 
 var Ship = Backbone.RelationalModel.extend({
+  shipHelper: null,
+  shipLabel: null,
+  shipMarker: null,
+
+  defaults: {
+    'mouseover': false,
+    'selected': false
+  },
+
   url: function () {
     return '/api/ship/' + this.get('id');
   },
@@ -1312,7 +1420,24 @@ var Ship = Backbone.RelationalModel.extend({
   }],
 
   getHelper: function () {
-    return new ShipHelper(this);
+    if (!this.shipHelper) {
+      this.shipHelper =  new ShipHelper(this);
+    }
+    return this.shipHelper;
+  },
+
+  getMarker: function (mapgl) {
+    if (!this.shipMarker) {
+      this.shipMarker =  new ShipMarker(this, mapgl);
+    }
+    return this.shipMarker;
+  },
+
+  getLabel: function (mapgl) {
+    if (!this.shipLabel) {
+      this.shipLabel = new ShipLabel(this, mapgl);
+    }
+    return this.shipLabel;
   },
 
   fetchTrack: function () {
@@ -1329,7 +1454,7 @@ var Ship = Backbone.RelationalModel.extend({
 
 module.exports = Ship;
 
-},{"../../lib/map-util":3,"../position/collection":15,"../position/model":17,"../shipdata/collection":21,"../shipdata/model":23,"../track/collection":24,"./helper":19,"backbone":35,"underscore":129}],21:[function(require,module,exports){
+},{"../../lib/map-util":4,"../position/collection":10,"../position/model":14,"../shipdata/collection":20,"../shipdata/model":22,"../track/collection":23,"./helper":16,"./label":17,"./marker":18,"backbone":28,"underscore":102}],20:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -1343,7 +1468,7 @@ var ShipData = Backbone.Collection.extend({
 
 module.exports = ShipData;
 
-},{"./model":23,"backbone":35}],22:[function(require,module,exports){
+},{"./model":22,"backbone":28}],21:[function(require,module,exports){
 'use strict';
 
 var moment = require('moment');
@@ -1442,7 +1567,7 @@ _.extend(ShipdataHelper.prototype, {
 
 module.exports = ShipdataHelper;
 
-},{"../../lib/ais-message":2,"ais-receiver/ais-messages/json/ais_msg_5.json":33,"moment":59,"underscore":129}],23:[function(require,module,exports){
+},{"../../lib/ais-message":2,"ais-receiver/ais-messages/json/ais_msg_5.json":26,"moment":32,"underscore":102}],22:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1464,7 +1589,7 @@ var Shipdatum = Backbone.RelationalModel.extend({
 
 module.exports = Shipdatum;
 
-},{"./helper":22,"backbone":35,"underscore":129}],24:[function(require,module,exports){
+},{"./helper":21,"backbone":28,"underscore":102}],23:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1504,7 +1629,7 @@ var Track = Positions.extend({
 
 module.exports = Track;
 
-},{"../../lib/map-util":3,"../position/collection":15,"./helper":25,"underscore":129}],25:[function(require,module,exports){
+},{"../../lib/map-util":4,"../position/collection":10,"./helper":24,"underscore":102}],24:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1531,424 +1656,7 @@ _.extend(TrackHelper.prototype, {
 
 module.exports = TrackHelper;
 
-},{"underscore":129}],26:[function(require,module,exports){
-// hbsfy compiled Handlebars template
-var HandlebarsCompiler = require('hbsfy/runtime');
-module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
-    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
-
-  return "  <tr id=\""
-    + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
-    + "\">\n    <th scope=\"row\">"
-    + alias4(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"index","hash":{},"data":data}) : helper)))
-    + "</th>\n    <td>"
-    + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
-    + "</td>\n    <td>"
-    + alias4(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper)))
-    + "</td>\n  </tr>\n";
-},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
-
-  return "<table class=\"table table-hover table-condensed shiplist fixedhead\">\n<thead>\n  <tr>\n    <th>#</th>\n    <th>\n      <div class=\"dropdown\">\n        <a id=\"dLabel\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">\n          Vessel name\n          <span class=\"caret\"></span>\n        </a>\n        <ul class=\"dropdown-menu\" aria-labelledby=\"dLabel\">\n          <li><a href=\"#\" class=\"name_asc\">Sort ascending</a></li>\n          <li><a href=\"#\" class=\"name_desc\">Sort descending</a></li>\n        </ul>\n      </div>\n    </th>\n    <th>\n      <div class=\"dropdown\">\n        <a id=\"dLabel\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">\n          "
-    + alias4(((helper = (helper = helpers.secondColumn || (depth0 != null ? depth0.secondColumn : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"secondColumn","hash":{},"data":data}) : helper)))
-    + "\n          <span class=\"caret\"></span>\n        </a>\n        <ul class=\"dropdown-menu\" aria-labelledby=\"dLabel\">\n          <li><a href=\"#\" class=\"column_asc\">Sort ascending</a></li>\n          <li><a href=\"#\" class=\"column_desc\">Sort descending</a></li>\n          <li role=\"separator\" class=\"divider\"></li>\n          <li><a href=\"#\" class=\"column_change\">"
-    + alias4(((helper = (helper = helpers.changelabel || (depth0 != null ? depth0.changelabel : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"changelabel","hash":{},"data":data}) : helper)))
-    + "</a></li>\n        </ul>\n      </div>\n    </th>\n  </tr>\n</thead>\n<tbody>\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.ships : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "</tbody>\n</table>\n";
-},"useData":true});
-
-},{"hbsfy/runtime":57}],27:[function(require,module,exports){
-var _ = require('underscore');
-var $ = require('jquery');
-var Backbone = require('backbone');
-
-var moment = require('moment');
-var template = require('./list-view.hbs');
-
-var ListView = Backbone.View.extend({
-  template: template,
-  search: '',
-
-  column: [{
-    label: 'MMSI',
-    getter: 'userid',
-    initsort: 'asc',
-    changelabel: 'Switch to MMSI',
-    selected: true
-  }, {
-    label: 'Datetime',
-    changelabel: 'Switch to last position datetime',
-    getter: 'datetime',
-    initsort: 'desc',
-    selected: false,
-    format: function (datetime) {
-      return moment.utc(datetime).format("YYYY-MM-DD HH:mm:ss UTC");
-    }
-  }],
-
-  events: {
-    "click .name_asc" : "sortnameasc",
-    "click .name_desc" : "sortnamedesc",
-    "click .column_asc" : "sortcolumnasc",
-    "click .column_desc" : "sortcolumndesc",
-    "click .column_change" : "change",
-    "click tbody tr" : "select"
-  },
-
-  initialize: function (options) {
-    this.listenTo(this.collection, "sync", this.render);
-  },
-
-  execFilter: function () {
-    var hide = [];
-    if (this.search.length > 0) {
-      var found = this.collection.filter(function (ship) {
-        var name = ship.has('shipdata') && ship.get('shipdata').get('name').toLowerCase() || '';
-        var mmsi = ship.get('userid');
-
-        if (name.indexOf(this.search) > -1 || String(mmsi).indexOf(this.search, 0) === 0) {
-          return false;
-        }
-        return true;
-      }, this);
-
-      hide = _.map(found, function (ship) {
-        return ship.get('id');
-      });
-    }
-
-    this.collection.each(function (ship) {
-      var id = ship.get('id');
-      if (hide.indexOf(id) > -1) {
-        this.$el.find('#' + id).hide();
-      } else {
-        this.$el.find('#' + id).show();
-      }
-    }, this);
-  },
-
-  filter: function (evt) {
-    var search = $(evt.target).val();
-    this.search = search && search.toLowerCase() || '';
-    this.execFilter();
-  },
-
-  sortnameasc: function () {
-    this.collection.changeSort("name", "asc");
-    this.render();
-  },
-
-  sortnamedesc: function () {
-    this.collection.changeSort("name", "desc");
-    this.render();
-  },
-
-  sortcolumnasc: function () {
-    this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "asc");
-    this.render();
-  },
-
-  sortcolumndesc: function () {
-    this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "desc");
-    this.render();
-  },
-
-  change: function (evt) {
-    _.each(this.column, function (item, index) {
-      this.column[index].selected = !this.column[index].selected;
-
-      if (this.column[index].selected) {
-        this.collection.changeSort(this.column[index].getter, this.column[index].initsort);
-        this.collection.sort();
-      }
-    }, this);
-
-    this.render();
-  },
-
-  select: function (evt) {
-    var id = $(evt.currentTarget).attr('id');
-    this.trigger('select', this.collection.get(id));
-  },
-
-  render: function () {
-    var selected = _.findWhere(this.column, { selected: true });
-    var other = _.findWhere(this.column, { selected: false });
-
-    var ships = this.collection.map(function (ship, index) {
-      return {
-        id: ship.get('id'),
-        index: index+1,
-        name: ship.getHelper().toTitel(),
-        value: selected.format && selected.format(ship.get(selected.getter)) || ship.get(selected.getter)
-      }
-    });
-
-    this.$el.html(this.template({
-      filter: this.search,
-      ships: ships,
-      secondColumn: selected.label,
-      changelabel: other.changelabel
-    }));
-
-    this.execFilter();
-  }
-});
-
-module.exports = ListView;
-
-},{"./list-view.hbs":26,"backbone":35,"jquery":58,"moment":59,"underscore":129}],28:[function(require,module,exports){
-// hbsfy compiled Handlebars template
-var HandlebarsCompiler = require('hbsfy/runtime');
-module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var helper;
-
-  return "<div class=\"header clearfix\">\n  <form class=\"form-horizontal\">\n    <input class=\"form-control\" type=\"text\" placeholder=\"Filter by Name or MMSI\" value=\""
-    + container.escapeExpression(((helper = (helper = helpers.filter || (depth0 != null ? depth0.filter : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"filter","hash":{},"data":data}) : helper)))
-    + "\">\n  </form>\n</div>\n<div class=\"list\">\n  <div class=\"collapse\">\n    <div class=\"inner\">\n      <div class=\"list-table\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"ship\">\n  <div class=\"collapse\">\n    <div class=\"inner\">\n      <div class=\"ship-details\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"footer\">\n  <ul class=\"nav nav-pills\">\n    <li role=\"presentation\" class=\"tolist\"><a href=\"#\">Ship list</a></li>\n    <li role=\"presentation\" class=\"disabled toship\"><a href=\"#\"></a></li>\n  </ul>\n</div>";
-},"useData":true});
-
-},{"hbsfy/runtime":57}],29:[function(require,module,exports){
-var _ = require('underscore');
-var $ = require('jquery');
-var Backbone = require('backbone');
-
-var ListView = require('./list-view');
-var ShipView = require('./ship-view');
-
-var template = require('./master-view.hbs');
-
-var MasterView = Backbone.View.extend({
-  template: template,
-  currenttab: 'list',
-
-  events: {
-    "keyup input": "filter",
-    "focus input": "openlistview",
-    "click .footer .tolist a": "openlistview",
-    "click .footer .toship:not(.disabled) a": "openshipview"
-  },
-
-  initialize: function (options) {
-    this.options = options;
-    this.appevents = options.appevents;
-  },
-
-  isOpen: function () {
-    this.$el.addClass('open');
-  },
-
-  isClosed: function () {
-    this.$el.removeClass('open');
-  },
-
-  setCurrentTab: function (tab) {
-    this.isOpen();
-    this.currenttab = tab;
-    var cls = 'to' + tab;
-    _.each(this.$el.find('.footer li'), function (el) {
-      var $el = $(el);
-      if ($el.hasClass('active') && !$el.hasClass(cls)) {
-        $el.removeClass('active');
-      }
-      if (!$el.hasClass('active') && $el.hasClass(cls)) {
-        $el.addClass('active');
-      }
-      if ($el.hasClass('disabled') && $el.hasClass(cls)) {
-        $el.removeClass('disabled');
-      }
-    });
-
-    if (this.shipView) {
-      this.$el.find('.footer li.toship a').html(this.shipView.model.getHelper().toTitel());
-    }
-  },
-
-  openlistview: function () {
-    this.$el.find('.list .collapse').collapse('show');
-    this.$el.find('.ship .collapse').collapse('hide');
-    this.setCurrentTab('list');
-  },
-
-  closelistview: function () {
-    this.$el.find('.list .collapse').collapse('hide');
-    this.isClosed();
-  },
-
-  openshipview: function () {
-    this.$el.find('.list .collapse').collapse('hide');
-    this.$el.find('.ship .collapse').collapse('show');
-
-    this.setCurrentTab('ship');
-  },
-
-  closeshipview: function () {
-    this.$el.find('.ship .collapse').collapse('hide');
-    this.isClosed();
-  },
-
-  filter: function (evt) {
-    this.openlistview();
-    this.listView.filter(evt);
-  },
-
-  selectShip: function (ship) {
-    var id = ship.get('id');
-
-    this.shipView = new ShipView({
-      model: ship,
-      el: this.$el.find('.ship-details')
-    });
-
-    this.shipView.render();
-    this.openshipview();
-  },
-
-  selectShipEmit: function (ship) {
-    this.$el.find('.ship .collapse').one('shown.bs.collapse', _.bind(function () {
-      this.appevents.trigger('map:select', ship);
-    }, this));
-
-    this.selectShip(ship);
-  },
-
-  handlerInList: function () {
-    this.openlistview();
-  },
-
-  handlerInShip: function () {
-    if (this.shipView) {
-      this.openshipview();
-    } else {
-      this.openlistview();
-    }
-  },
-
-  handlerOut: function () {
-    if (this.currenttab != 'list') {
-      this.closeshipview();
-    } else {
-      this.closelistview();
-    }
-  },
-
-  render: function () {
-    this.$el.html(this.template());
-
-    this.listView = new ListView({
-      collection: this.collection,
-      el: this.$el.find('.list-table')
-    });
-
-    this.listenTo(this.listView, "select", this.selectShipEmit);
-    this.listenTo(this.appevents, "router:select", this.selectShipEmit);
-    this.listenTo(this.appevents, "map:selected", this.selectShip);
-    this.listenTo(this.appevents, "map:unselected", this.handlerOut);
-
-    this.listView.render();
-  }
-});
-
-module.exports = MasterView;
-
-},{"./list-view":27,"./master-view.hbs":28,"./ship-view":31,"backbone":35,"jquery":58,"underscore":129}],30:[function(require,module,exports){
-// hbsfy compiled Handlebars template
-var HandlebarsCompiler = require('hbsfy/runtime');
-module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
-    return "    <li role=\"presentation\" class=\"active\"><a href=\"#shipdetails\" aria-controls=\"shipdetails\" role=\"tab\" data-toggle=\"tab\">Ship details</a></li>\n";
-},"3":function(container,depth0,helpers,partials,data) {
-    return " class=\"active\"";
-},"5":function(container,depth0,helpers,partials,data) {
-    return "    <li role=\"presentation\"><a href=\"#track\" aria-controls=\"track\" role=\"tab\" data-toggle=\"tab\">Track details</a></li>\n";
-},"7":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return "    <div role=\"tabpanel\" class=\"tab-pane active\" id=\"shipdetails\">\n      <table class=\"table table-condensed details fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.ship : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n";
-},"8":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
-
-  return "        <tr>\n          <th scope=\"row\">"
-    + container.escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
-    + "</th>\n          <td>"
-    + ((stack1 = ((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</td>\n        </tr>\n";
-},"10":function(container,depth0,helpers,partials,data) {
-    return " active";
-},"12":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return "    <div role=\"tabpanel\" class=\"tab-pane\" id=\"track\">\n      <table class=\"table table-hover table-condensed track fixedhead\">\n      <thead>\n        <tr>\n          <th>#</th>\n          <th>Position</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.track : depth0),{"name":"each","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n";
-},"13":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
-
-  return "        <tr>\n          <th scope=\"row\">"
-    + alias4(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"index","hash":{},"data":data}) : helper)))
-    + "</th>\n          <td>\n            <table class=\"property\">\n            <tr>\n              <th>Timestamp</th>\n              <td>"
-    + ((stack1 = ((helper = (helper = helpers.timestamp || (depth0 != null ? depth0.timestamp : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"timestamp","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</td>\n            </tr>\n            <tr>\n              <th>Course/Speed</th>\n              <td>"
-    + ((stack1 = ((helper = (helper = helpers.nav || (depth0 != null ? depth0.nav : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nav","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</td>\n            </tr>\n            <tr>\n              <th>Latitude</th>\n              <td>"
-    + alias4(((helper = (helper = helpers.latitude || (depth0 != null ? depth0.latitude : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"latitude","hash":{},"data":data}) : helper)))
-    + "</td>\n            </tr>\n            <tr>\n              <th>Longitude</th>\n              <td>"
-    + alias4(((helper = (helper = helpers.longitude || (depth0 != null ? depth0.longitude : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"longitude","hash":{},"data":data}) : helper)))
-    + "</td>\n            </tr>\n            </table>\n          </td>\n        </tr>\n";
-},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {};
-
-  return "<h3>"
-    + container.escapeExpression(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
-    + "</h3>\n<div>\n  <!-- Nav tabs -->\n  <ul class=\"nav nav-tabs\" role=\"tablist\">\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    <li role=\"presentation\"><a href=\"#lastposition\""
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "aria-controls=\"lastposition\" role=\"tab\" data-toggle=\"tab\">Last position</a></li>\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "  </ul>\n\n  <!-- Tab panes -->\n  <div class=\"tab-content\">\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    <div role=\"tabpanel\" class=\"tab-pane"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "\" id=\"lastposition\">\n      <table class=\"table table-condensed position fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.position : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "  </div>\n</div>\n";
-},"useData":true});
-
-},{"hbsfy/runtime":57}],31:[function(require,module,exports){
-var _ = require('underscore');
-var Backbone = require('backbone');
-
-var template = require('./ship-view.hbs');
-
-var ShipView = Backbone.View.extend({
-  template: template,
-  isShown: false,
-
-  initialize: function () {
-    this.listenTo(this.model.get('track'), "sync", this.render);
-  },
-
-  render: function () {
-    var track = this.model.get('track').getHelper().toPropertyList();
-
-    this.$el.html(this.template({
-      title: this.model.getHelper().toTitel(),
-      ship: this.model.has('shipdata') && this.model.get('shipdata').getHelper().toPropertyList(),
-      position: this.model.get('position').getHelper().toPropertyList(),
-      track: !_.isEmpty(track) ? track : false,
-      positiontab: this.model.has('shipdata') ? false : true
-    }));
-  }
-});
-
-module.exports = ShipView;
-
-},{"./ship-view.hbs":30,"backbone":35,"underscore":129}],32:[function(require,module,exports){
+},{"underscore":102}],25:[function(require,module,exports){
 module.exports={
   "aismsgnum": 1,
   "name": "position",
@@ -2275,7 +1983,7 @@ module.exports={
     }
   ]
 }
-},{}],33:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports={
   "aismsgnum": 5,
   "name": "shipdata",
@@ -2847,7 +2555,7 @@ module.exports={
     }
   ]
 }
-},{}],34:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab: */
 /**
  * Backbone-relational.js 0.10.0
@@ -4925,7 +4633,7 @@ module.exports={
 	};
 }));
 
-},{"backbone":35,"underscore":129}],35:[function(require,module,exports){
+},{"backbone":28,"underscore":102}],28:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.3
 
@@ -6823,7 +6531,7 @@ module.exports={
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":58,"underscore":129}],36:[function(require,module,exports){
+},{"jquery":31,"underscore":102}],29:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -9195,7 +8903,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":58}],37:[function(require,module,exports){
+},{"jquery":31}],30:[function(require,module,exports){
 /*
  * Geodesic routines from GeographicLib translated to JavaScript.  See
  * http://geographiclib.sf.net/html/other.html#javascript
@@ -12084,1110 +11792,7 @@ cb(GeographicLib);
   }
 });
 
-},{}],38:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-// istanbul ignore next
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-// istanbul ignore next
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-var _handlebarsBase = require('./handlebars/base');
-
-// Each of these augment the Handlebars object. No need to setup here.
-// (This is done to easily share code between commonjs and browse envs)
-
-var base = _interopRequireWildcard(_handlebarsBase);
-
-var _handlebarsSafeString = require('./handlebars/safe-string');
-
-var _handlebarsSafeString2 = _interopRequireDefault(_handlebarsSafeString);
-
-var _handlebarsException = require('./handlebars/exception');
-
-var _handlebarsException2 = _interopRequireDefault(_handlebarsException);
-
-var _handlebarsUtils = require('./handlebars/utils');
-
-var Utils = _interopRequireWildcard(_handlebarsUtils);
-
-var _handlebarsRuntime = require('./handlebars/runtime');
-
-var runtime = _interopRequireWildcard(_handlebarsRuntime);
-
-var _handlebarsNoConflict = require('./handlebars/no-conflict');
-
-// For compatibility and usage outside of module systems, make the Handlebars object a namespace
-
-var _handlebarsNoConflict2 = _interopRequireDefault(_handlebarsNoConflict);
-
-function create() {
-  var hb = new base.HandlebarsEnvironment();
-
-  Utils.extend(hb, base);
-  hb.SafeString = _handlebarsSafeString2['default'];
-  hb.Exception = _handlebarsException2['default'];
-  hb.Utils = Utils;
-  hb.escapeExpression = Utils.escapeExpression;
-
-  hb.VM = runtime;
-  hb.template = function (spec) {
-    return runtime.template(spec, hb);
-  };
-
-  return hb;
-}
-
-var inst = create();
-inst.create = create;
-
-_handlebarsNoConflict2['default'](inst);
-
-inst['default'] = inst;
-
-exports['default'] = inst;
-module.exports = exports['default'];
-
-
-},{"./handlebars/base":39,"./handlebars/exception":42,"./handlebars/no-conflict":52,"./handlebars/runtime":53,"./handlebars/safe-string":54,"./handlebars/utils":55}],39:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.HandlebarsEnvironment = HandlebarsEnvironment;
-// istanbul ignore next
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utils = require('./utils');
-
-var _exception = require('./exception');
-
-var _exception2 = _interopRequireDefault(_exception);
-
-var _helpers = require('./helpers');
-
-var _decorators = require('./decorators');
-
-var _logger = require('./logger');
-
-var _logger2 = _interopRequireDefault(_logger);
-
-var VERSION = '4.0.3';
-exports.VERSION = VERSION;
-var COMPILER_REVISION = 7;
-
-exports.COMPILER_REVISION = COMPILER_REVISION;
-var REVISION_CHANGES = {
-  1: '<= 1.0.rc.2', // 1.0.rc.2 is actually rev2 but doesn't report it
-  2: '== 1.0.0-rc.3',
-  3: '== 1.0.0-rc.4',
-  4: '== 1.x.x',
-  5: '== 2.0.0-alpha.x',
-  6: '>= 2.0.0-beta.1',
-  7: '>= 4.0.0'
-};
-
-exports.REVISION_CHANGES = REVISION_CHANGES;
-var objectType = '[object Object]';
-
-function HandlebarsEnvironment(helpers, partials, decorators) {
-  this.helpers = helpers || {};
-  this.partials = partials || {};
-  this.decorators = decorators || {};
-
-  _helpers.registerDefaultHelpers(this);
-  _decorators.registerDefaultDecorators(this);
-}
-
-HandlebarsEnvironment.prototype = {
-  constructor: HandlebarsEnvironment,
-
-  logger: _logger2['default'],
-  log: _logger2['default'].log,
-
-  registerHelper: function registerHelper(name, fn) {
-    if (_utils.toString.call(name) === objectType) {
-      if (fn) {
-        throw new _exception2['default']('Arg not supported with multiple helpers');
-      }
-      _utils.extend(this.helpers, name);
-    } else {
-      this.helpers[name] = fn;
-    }
-  },
-  unregisterHelper: function unregisterHelper(name) {
-    delete this.helpers[name];
-  },
-
-  registerPartial: function registerPartial(name, partial) {
-    if (_utils.toString.call(name) === objectType) {
-      _utils.extend(this.partials, name);
-    } else {
-      if (typeof partial === 'undefined') {
-        throw new _exception2['default']('Attempting to register a partial as undefined');
-      }
-      this.partials[name] = partial;
-    }
-  },
-  unregisterPartial: function unregisterPartial(name) {
-    delete this.partials[name];
-  },
-
-  registerDecorator: function registerDecorator(name, fn) {
-    if (_utils.toString.call(name) === objectType) {
-      if (fn) {
-        throw new _exception2['default']('Arg not supported with multiple decorators');
-      }
-      _utils.extend(this.decorators, name);
-    } else {
-      this.decorators[name] = fn;
-    }
-  },
-  unregisterDecorator: function unregisterDecorator(name) {
-    delete this.decorators[name];
-  }
-};
-
-var log = _logger2['default'].log;
-
-exports.log = log;
-exports.createFrame = _utils.createFrame;
-exports.logger = _logger2['default'];
-
-
-},{"./decorators":40,"./exception":42,"./helpers":43,"./logger":51,"./utils":55}],40:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.registerDefaultDecorators = registerDefaultDecorators;
-// istanbul ignore next
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _decoratorsInline = require('./decorators/inline');
-
-var _decoratorsInline2 = _interopRequireDefault(_decoratorsInline);
-
-function registerDefaultDecorators(instance) {
-  _decoratorsInline2['default'](instance);
-}
-
-
-},{"./decorators/inline":41}],41:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _utils = require('../utils');
-
-exports['default'] = function (instance) {
-  instance.registerDecorator('inline', function (fn, props, container, options) {
-    var ret = fn;
-    if (!props.partials) {
-      props.partials = {};
-      ret = function (context, options) {
-        // Create a new partials stack frame prior to exec.
-        var original = container.partials;
-        container.partials = _utils.extend({}, original, props.partials);
-        var ret = fn(context, options);
-        container.partials = original;
-        return ret;
-      };
-    }
-
-    props.partials[options.args[0]] = options.fn;
-
-    return ret;
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{"../utils":55}],42:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
-
-function Exception(message, node) {
-  var loc = node && node.loc,
-      line = undefined,
-      column = undefined;
-  if (loc) {
-    line = loc.start.line;
-    column = loc.start.column;
-
-    message += ' - ' + line + ':' + column;
-  }
-
-  var tmp = Error.prototype.constructor.call(this, message);
-
-  // Unfortunately errors are not enumerable in Chrome (at least), so `for prop in tmp` doesn't work.
-  for (var idx = 0; idx < errorProps.length; idx++) {
-    this[errorProps[idx]] = tmp[errorProps[idx]];
-  }
-
-  /* istanbul ignore else */
-  if (Error.captureStackTrace) {
-    Error.captureStackTrace(this, Exception);
-  }
-
-  if (loc) {
-    this.lineNumber = line;
-    this.column = column;
-  }
-}
-
-Exception.prototype = new Error();
-
-exports['default'] = Exception;
-module.exports = exports['default'];
-
-
-},{}],43:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.registerDefaultHelpers = registerDefaultHelpers;
-// istanbul ignore next
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _helpersBlockHelperMissing = require('./helpers/block-helper-missing');
-
-var _helpersBlockHelperMissing2 = _interopRequireDefault(_helpersBlockHelperMissing);
-
-var _helpersEach = require('./helpers/each');
-
-var _helpersEach2 = _interopRequireDefault(_helpersEach);
-
-var _helpersHelperMissing = require('./helpers/helper-missing');
-
-var _helpersHelperMissing2 = _interopRequireDefault(_helpersHelperMissing);
-
-var _helpersIf = require('./helpers/if');
-
-var _helpersIf2 = _interopRequireDefault(_helpersIf);
-
-var _helpersLog = require('./helpers/log');
-
-var _helpersLog2 = _interopRequireDefault(_helpersLog);
-
-var _helpersLookup = require('./helpers/lookup');
-
-var _helpersLookup2 = _interopRequireDefault(_helpersLookup);
-
-var _helpersWith = require('./helpers/with');
-
-var _helpersWith2 = _interopRequireDefault(_helpersWith);
-
-function registerDefaultHelpers(instance) {
-  _helpersBlockHelperMissing2['default'](instance);
-  _helpersEach2['default'](instance);
-  _helpersHelperMissing2['default'](instance);
-  _helpersIf2['default'](instance);
-  _helpersLog2['default'](instance);
-  _helpersLookup2['default'](instance);
-  _helpersWith2['default'](instance);
-}
-
-
-},{"./helpers/block-helper-missing":44,"./helpers/each":45,"./helpers/helper-missing":46,"./helpers/if":47,"./helpers/log":48,"./helpers/lookup":49,"./helpers/with":50}],44:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _utils = require('../utils');
-
-exports['default'] = function (instance) {
-  instance.registerHelper('blockHelperMissing', function (context, options) {
-    var inverse = options.inverse,
-        fn = options.fn;
-
-    if (context === true) {
-      return fn(this);
-    } else if (context === false || context == null) {
-      return inverse(this);
-    } else if (_utils.isArray(context)) {
-      if (context.length > 0) {
-        if (options.ids) {
-          options.ids = [options.name];
-        }
-
-        return instance.helpers.each(context, options);
-      } else {
-        return inverse(this);
-      }
-    } else {
-      if (options.data && options.ids) {
-        var data = _utils.createFrame(options.data);
-        data.contextPath = _utils.appendContextPath(options.data.contextPath, options.name);
-        options = { data: data };
-      }
-
-      return fn(context, options);
-    }
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{"../utils":55}],45:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-// istanbul ignore next
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utils = require('../utils');
-
-var _exception = require('../exception');
-
-var _exception2 = _interopRequireDefault(_exception);
-
-exports['default'] = function (instance) {
-  instance.registerHelper('each', function (context, options) {
-    if (!options) {
-      throw new _exception2['default']('Must pass iterator to #each');
-    }
-
-    var fn = options.fn,
-        inverse = options.inverse,
-        i = 0,
-        ret = '',
-        data = undefined,
-        contextPath = undefined;
-
-    if (options.data && options.ids) {
-      contextPath = _utils.appendContextPath(options.data.contextPath, options.ids[0]) + '.';
-    }
-
-    if (_utils.isFunction(context)) {
-      context = context.call(this);
-    }
-
-    if (options.data) {
-      data = _utils.createFrame(options.data);
-    }
-
-    function execIteration(field, index, last) {
-      if (data) {
-        data.key = field;
-        data.index = index;
-        data.first = index === 0;
-        data.last = !!last;
-
-        if (contextPath) {
-          data.contextPath = contextPath + field;
-        }
-      }
-
-      ret = ret + fn(context[field], {
-        data: data,
-        blockParams: _utils.blockParams([context[field], field], [contextPath + field, null])
-      });
-    }
-
-    if (context && typeof context === 'object') {
-      if (_utils.isArray(context)) {
-        for (var j = context.length; i < j; i++) {
-          if (i in context) {
-            execIteration(i, i, i === context.length - 1);
-          }
-        }
-      } else {
-        var priorKey = undefined;
-
-        for (var key in context) {
-          if (context.hasOwnProperty(key)) {
-            // We're running the iterations one step out of sync so we can detect
-            // the last iteration without have to scan the object twice and create
-            // an itermediate keys array.
-            if (priorKey !== undefined) {
-              execIteration(priorKey, i - 1);
-            }
-            priorKey = key;
-            i++;
-          }
-        }
-        if (priorKey !== undefined) {
-          execIteration(priorKey, i - 1, true);
-        }
-      }
-    }
-
-    if (i === 0) {
-      ret = inverse(this);
-    }
-
-    return ret;
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{"../exception":42,"../utils":55}],46:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-// istanbul ignore next
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _exception = require('../exception');
-
-var _exception2 = _interopRequireDefault(_exception);
-
-exports['default'] = function (instance) {
-  instance.registerHelper('helperMissing', function () /* [args, ]options */{
-    if (arguments.length === 1) {
-      // A missing field in a {{foo}} construct.
-      return undefined;
-    } else {
-      // Someone is actually trying to call something, blow up.
-      throw new _exception2['default']('Missing helper: "' + arguments[arguments.length - 1].name + '"');
-    }
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{"../exception":42}],47:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _utils = require('../utils');
-
-exports['default'] = function (instance) {
-  instance.registerHelper('if', function (conditional, options) {
-    if (_utils.isFunction(conditional)) {
-      conditional = conditional.call(this);
-    }
-
-    // Default behavior is to render the positive path if the value is truthy and not empty.
-    // The `includeZero` option may be set to treat the condtional as purely not empty based on the
-    // behavior of isEmpty. Effectively this determines if 0 is handled by the positive path or negative.
-    if (!options.hash.includeZero && !conditional || _utils.isEmpty(conditional)) {
-      return options.inverse(this);
-    } else {
-      return options.fn(this);
-    }
-  });
-
-  instance.registerHelper('unless', function (conditional, options) {
-    return instance.helpers['if'].call(this, conditional, { fn: options.inverse, inverse: options.fn, hash: options.hash });
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{"../utils":55}],48:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-exports['default'] = function (instance) {
-  instance.registerHelper('log', function () /* message, options */{
-    var args = [undefined],
-        options = arguments[arguments.length - 1];
-    for (var i = 0; i < arguments.length - 1; i++) {
-      args.push(arguments[i]);
-    }
-
-    var level = 1;
-    if (options.hash.level != null) {
-      level = options.hash.level;
-    } else if (options.data && options.data.level != null) {
-      level = options.data.level;
-    }
-    args[0] = level;
-
-    instance.log.apply(instance, args);
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{}],49:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-exports['default'] = function (instance) {
-  instance.registerHelper('lookup', function (obj, field) {
-    return obj && obj[field];
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{}],50:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _utils = require('../utils');
-
-exports['default'] = function (instance) {
-  instance.registerHelper('with', function (context, options) {
-    if (_utils.isFunction(context)) {
-      context = context.call(this);
-    }
-
-    var fn = options.fn;
-
-    if (!_utils.isEmpty(context)) {
-      var data = options.data;
-      if (options.data && options.ids) {
-        data = _utils.createFrame(options.data);
-        data.contextPath = _utils.appendContextPath(options.data.contextPath, options.ids[0]);
-      }
-
-      return fn(context, {
-        data: data,
-        blockParams: _utils.blockParams([context], [data && data.contextPath])
-      });
-    } else {
-      return options.inverse(this);
-    }
-  });
-};
-
-module.exports = exports['default'];
-
-
-},{"../utils":55}],51:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _utils = require('./utils');
-
-var logger = {
-  methodMap: ['debug', 'info', 'warn', 'error'],
-  level: 'info',
-
-  // Maps a given level value to the `methodMap` indexes above.
-  lookupLevel: function lookupLevel(level) {
-    if (typeof level === 'string') {
-      var levelMap = _utils.indexOf(logger.methodMap, level.toLowerCase());
-      if (levelMap >= 0) {
-        level = levelMap;
-      } else {
-        level = parseInt(level, 10);
-      }
-    }
-
-    return level;
-  },
-
-  // Can be overridden in the host environment
-  log: function log(level) {
-    level = logger.lookupLevel(level);
-
-    if (typeof console !== 'undefined' && logger.lookupLevel(logger.level) <= level) {
-      var method = logger.methodMap[level];
-      if (!console[method]) {
-        // eslint-disable-line no-console
-        method = 'log';
-      }
-
-      for (var _len = arguments.length, message = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        message[_key - 1] = arguments[_key];
-      }
-
-      console[method].apply(console, message); // eslint-disable-line no-console
-    }
-  }
-};
-
-exports['default'] = logger;
-module.exports = exports['default'];
-
-
-},{"./utils":55}],52:[function(require,module,exports){
-(function (global){
-/* global window */
-'use strict';
-
-exports.__esModule = true;
-
-exports['default'] = function (Handlebars) {
-  /* istanbul ignore next */
-  var root = typeof global !== 'undefined' ? global : window,
-      $Handlebars = root.Handlebars;
-  /* istanbul ignore next */
-  Handlebars.noConflict = function () {
-    if (root.Handlebars === Handlebars) {
-      root.Handlebars = $Handlebars;
-    }
-  };
-};
-
-module.exports = exports['default'];
-
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],53:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.checkRevision = checkRevision;
-exports.template = template;
-exports.wrapProgram = wrapProgram;
-exports.resolvePartial = resolvePartial;
-exports.invokePartial = invokePartial;
-exports.noop = noop;
-// istanbul ignore next
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-// istanbul ignore next
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-var _utils = require('./utils');
-
-var Utils = _interopRequireWildcard(_utils);
-
-var _exception = require('./exception');
-
-var _exception2 = _interopRequireDefault(_exception);
-
-var _base = require('./base');
-
-function checkRevision(compilerInfo) {
-  var compilerRevision = compilerInfo && compilerInfo[0] || 1,
-      currentRevision = _base.COMPILER_REVISION;
-
-  if (compilerRevision !== currentRevision) {
-    if (compilerRevision < currentRevision) {
-      var runtimeVersions = _base.REVISION_CHANGES[currentRevision],
-          compilerVersions = _base.REVISION_CHANGES[compilerRevision];
-      throw new _exception2['default']('Template was precompiled with an older version of Handlebars than the current runtime. ' + 'Please update your precompiler to a newer version (' + runtimeVersions + ') or downgrade your runtime to an older version (' + compilerVersions + ').');
-    } else {
-      // Use the embedded version info since the runtime doesn't know about this revision yet
-      throw new _exception2['default']('Template was precompiled with a newer version of Handlebars than the current runtime. ' + 'Please update your runtime to a newer version (' + compilerInfo[1] + ').');
-    }
-  }
-}
-
-function template(templateSpec, env) {
-  /* istanbul ignore next */
-  if (!env) {
-    throw new _exception2['default']('No environment passed to template');
-  }
-  if (!templateSpec || !templateSpec.main) {
-    throw new _exception2['default']('Unknown template object: ' + typeof templateSpec);
-  }
-
-  templateSpec.main.decorator = templateSpec.main_d;
-
-  // Note: Using env.VM references rather than local var references throughout this section to allow
-  // for external users to override these as psuedo-supported APIs.
-  env.VM.checkRevision(templateSpec.compiler);
-
-  function invokePartialWrapper(partial, context, options) {
-    if (options.hash) {
-      context = Utils.extend({}, context, options.hash);
-      if (options.ids) {
-        options.ids[0] = true;
-      }
-    }
-
-    partial = env.VM.resolvePartial.call(this, partial, context, options);
-    var result = env.VM.invokePartial.call(this, partial, context, options);
-
-    if (result == null && env.compile) {
-      options.partials[options.name] = env.compile(partial, templateSpec.compilerOptions, env);
-      result = options.partials[options.name](context, options);
-    }
-    if (result != null) {
-      if (options.indent) {
-        var lines = result.split('\n');
-        for (var i = 0, l = lines.length; i < l; i++) {
-          if (!lines[i] && i + 1 === l) {
-            break;
-          }
-
-          lines[i] = options.indent + lines[i];
-        }
-        result = lines.join('\n');
-      }
-      return result;
-    } else {
-      throw new _exception2['default']('The partial ' + options.name + ' could not be compiled when running in runtime-only mode');
-    }
-  }
-
-  // Just add water
-  var container = {
-    strict: function strict(obj, name) {
-      if (!(name in obj)) {
-        throw new _exception2['default']('"' + name + '" not defined in ' + obj);
-      }
-      return obj[name];
-    },
-    lookup: function lookup(depths, name) {
-      var len = depths.length;
-      for (var i = 0; i < len; i++) {
-        if (depths[i] && depths[i][name] != null) {
-          return depths[i][name];
-        }
-      }
-    },
-    lambda: function lambda(current, context) {
-      return typeof current === 'function' ? current.call(context) : current;
-    },
-
-    escapeExpression: Utils.escapeExpression,
-    invokePartial: invokePartialWrapper,
-
-    fn: function fn(i) {
-      var ret = templateSpec[i];
-      ret.decorator = templateSpec[i + '_d'];
-      return ret;
-    },
-
-    programs: [],
-    program: function program(i, data, declaredBlockParams, blockParams, depths) {
-      var programWrapper = this.programs[i],
-          fn = this.fn(i);
-      if (data || depths || blockParams || declaredBlockParams) {
-        programWrapper = wrapProgram(this, i, fn, data, declaredBlockParams, blockParams, depths);
-      } else if (!programWrapper) {
-        programWrapper = this.programs[i] = wrapProgram(this, i, fn);
-      }
-      return programWrapper;
-    },
-
-    data: function data(value, depth) {
-      while (value && depth--) {
-        value = value._parent;
-      }
-      return value;
-    },
-    merge: function merge(param, common) {
-      var obj = param || common;
-
-      if (param && common && param !== common) {
-        obj = Utils.extend({}, common, param);
-      }
-
-      return obj;
-    },
-
-    noop: env.VM.noop,
-    compilerInfo: templateSpec.compiler
-  };
-
-  function ret(context) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-    var data = options.data;
-
-    ret._setup(options);
-    if (!options.partial && templateSpec.useData) {
-      data = initData(context, data);
-    }
-    var depths = undefined,
-        blockParams = templateSpec.useBlockParams ? [] : undefined;
-    if (templateSpec.useDepths) {
-      if (options.depths) {
-        depths = context !== options.depths[0] ? [context].concat(options.depths) : options.depths;
-      } else {
-        depths = [context];
-      }
-    }
-
-    function main(context /*, options*/) {
-      return '' + templateSpec.main(container, context, container.helpers, container.partials, data, blockParams, depths);
-    }
-    main = executeDecorators(templateSpec.main, main, container, options.depths || [], data, blockParams);
-    return main(context, options);
-  }
-  ret.isTop = true;
-
-  ret._setup = function (options) {
-    if (!options.partial) {
-      container.helpers = container.merge(options.helpers, env.helpers);
-
-      if (templateSpec.usePartial) {
-        container.partials = container.merge(options.partials, env.partials);
-      }
-      if (templateSpec.usePartial || templateSpec.useDecorators) {
-        container.decorators = container.merge(options.decorators, env.decorators);
-      }
-    } else {
-      container.helpers = options.helpers;
-      container.partials = options.partials;
-      container.decorators = options.decorators;
-    }
-  };
-
-  ret._child = function (i, data, blockParams, depths) {
-    if (templateSpec.useBlockParams && !blockParams) {
-      throw new _exception2['default']('must pass block params');
-    }
-    if (templateSpec.useDepths && !depths) {
-      throw new _exception2['default']('must pass parent depths');
-    }
-
-    return wrapProgram(container, i, templateSpec[i], data, 0, blockParams, depths);
-  };
-  return ret;
-}
-
-function wrapProgram(container, i, fn, data, declaredBlockParams, blockParams, depths) {
-  function prog(context) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-    var currentDepths = depths;
-    if (depths && context !== depths[0]) {
-      currentDepths = [context].concat(depths);
-    }
-
-    return fn(container, context, container.helpers, container.partials, options.data || data, blockParams && [options.blockParams].concat(blockParams), currentDepths);
-  }
-
-  prog = executeDecorators(fn, prog, container, depths, data, blockParams);
-
-  prog.program = i;
-  prog.depth = depths ? depths.length : 0;
-  prog.blockParams = declaredBlockParams || 0;
-  return prog;
-}
-
-function resolvePartial(partial, context, options) {
-  if (!partial) {
-    if (options.name === '@partial-block') {
-      partial = options.data['partial-block'];
-    } else {
-      partial = options.partials[options.name];
-    }
-  } else if (!partial.call && !options.name) {
-    // This is a dynamic partial that returned a string
-    options.name = partial;
-    partial = options.partials[partial];
-  }
-  return partial;
-}
-
-function invokePartial(partial, context, options) {
-  options.partial = true;
-  if (options.ids) {
-    options.data.contextPath = options.ids[0] || options.data.contextPath;
-  }
-
-  var partialBlock = undefined;
-  if (options.fn && options.fn !== noop) {
-    options.data = _base.createFrame(options.data);
-    partialBlock = options.data['partial-block'] = options.fn;
-
-    if (partialBlock.partials) {
-      options.partials = Utils.extend({}, options.partials, partialBlock.partials);
-    }
-  }
-
-  if (partial === undefined && partialBlock) {
-    partial = partialBlock;
-  }
-
-  if (partial === undefined) {
-    throw new _exception2['default']('The partial ' + options.name + ' could not be found');
-  } else if (partial instanceof Function) {
-    return partial(context, options);
-  }
-}
-
-function noop() {
-  return '';
-}
-
-function initData(context, data) {
-  if (!data || !('root' in data)) {
-    data = data ? _base.createFrame(data) : {};
-    data.root = context;
-  }
-  return data;
-}
-
-function executeDecorators(fn, prog, container, depths, data, blockParams) {
-  if (fn.decorator) {
-    var props = {};
-    prog = fn.decorator(prog, props, container, depths && depths[0], data, blockParams, depths);
-    Utils.extend(prog, props);
-  }
-  return prog;
-}
-
-
-},{"./base":39,"./exception":42,"./utils":55}],54:[function(require,module,exports){
-// Build out our basic SafeString type
-'use strict';
-
-exports.__esModule = true;
-function SafeString(string) {
-  this.string = string;
-}
-
-SafeString.prototype.toString = SafeString.prototype.toHTML = function () {
-  return '' + this.string;
-};
-
-exports['default'] = SafeString;
-module.exports = exports['default'];
-
-
-},{}],55:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.extend = extend;
-exports.indexOf = indexOf;
-exports.escapeExpression = escapeExpression;
-exports.isEmpty = isEmpty;
-exports.createFrame = createFrame;
-exports.blockParams = blockParams;
-exports.appendContextPath = appendContextPath;
-var escape = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#x27;',
-  '`': '&#x60;',
-  '=': '&#x3D;'
-};
-
-var badChars = /[&<>"'`=]/g,
-    possible = /[&<>"'`=]/;
-
-function escapeChar(chr) {
-  return escape[chr];
-}
-
-function extend(obj /* , ...source */) {
-  for (var i = 1; i < arguments.length; i++) {
-    for (var key in arguments[i]) {
-      if (Object.prototype.hasOwnProperty.call(arguments[i], key)) {
-        obj[key] = arguments[i][key];
-      }
-    }
-  }
-
-  return obj;
-}
-
-var toString = Object.prototype.toString;
-
-// Sourced from lodash
-// https://github.com/bestiejs/lodash/blob/master/LICENSE.txt
-/* eslint-disable func-style */
-exports.toString = toString;
-var isFunction = function isFunction(value) {
-  return typeof value === 'function';
-};
-// fallback for older versions of Chrome and Safari
-/* istanbul ignore next */
-if (isFunction(/x/)) {
-  exports.isFunction = isFunction = function (value) {
-    return typeof value === 'function' && toString.call(value) === '[object Function]';
-  };
-}
-exports.isFunction = isFunction;
-
-/* eslint-enable func-style */
-
-/* istanbul ignore next */
-var isArray = Array.isArray || function (value) {
-  return value && typeof value === 'object' ? toString.call(value) === '[object Array]' : false;
-};
-
-// Older IE versions do not directly support indexOf so we must implement our own, sadly.
-exports.isArray = isArray;
-
-function indexOf(array, value) {
-  for (var i = 0, len = array.length; i < len; i++) {
-    if (array[i] === value) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-function escapeExpression(string) {
-  if (typeof string !== 'string') {
-    // don't escape SafeStrings, since they're already safe
-    if (string && string.toHTML) {
-      return string.toHTML();
-    } else if (string == null) {
-      return '';
-    } else if (!string) {
-      return string + '';
-    }
-
-    // Force a string conversion as this will be done by the append regardless and
-    // the regex test will do this transparently behind the scenes, causing issues if
-    // an object's to string has escaped characters in it.
-    string = '' + string;
-  }
-
-  if (!possible.test(string)) {
-    return string;
-  }
-  return string.replace(badChars, escapeChar);
-}
-
-function isEmpty(value) {
-  if (!value && value !== 0) {
-    return true;
-  } else if (isArray(value) && value.length === 0) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function createFrame(object) {
-  var frame = extend({}, object);
-  frame._parent = object;
-  return frame;
-}
-
-function blockParams(params, ids) {
-  params.path = ids;
-  return params;
-}
-
-function appendContextPath(contextPath, id) {
-  return (contextPath ? contextPath + '.' : '') + id;
-}
-
-
-},{}],56:[function(require,module,exports){
-// Create a simple path alias to allow browserify to resolve
-// the runtime on a supported path.
-module.exports = require('./dist/cjs/handlebars.runtime')['default'];
-
-},{"./dist/cjs/handlebars.runtime":38}],57:[function(require,module,exports){
-module.exports = require("handlebars/runtime")["default"];
-
-},{"handlebars/runtime":56}],58:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -22399,7 +21004,7 @@ return jQuery;
 
 }));
 
-},{}],59:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -25595,7 +24200,7 @@ return jQuery;
     return _moment;
 
 }));
-},{}],60:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var trim = require('./trim');
 var decap = require('./decapitalize');
 
@@ -25611,7 +24216,7 @@ module.exports = function camelize(str, decapitalize) {
   }
 };
 
-},{"./decapitalize":69,"./trim":121}],61:[function(require,module,exports){
+},{"./decapitalize":42,"./trim":94}],34:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function capitalize(str, lowercaseRest) {
@@ -25621,14 +24226,14 @@ module.exports = function capitalize(str, lowercaseRest) {
   return str.charAt(0).toUpperCase() + remainingChars;
 };
 
-},{"./helper/makeString":79}],62:[function(require,module,exports){
+},{"./helper/makeString":52}],35:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function chars(str) {
   return makeString(str).split('');
 };
 
-},{"./helper/makeString":79}],63:[function(require,module,exports){
+},{"./helper/makeString":52}],36:[function(require,module,exports){
 module.exports = function chop(str, step) {
   if (str == null) return [];
   str = String(str);
@@ -25636,7 +24241,7 @@ module.exports = function chop(str, step) {
   return step > 0 ? str.match(new RegExp('.{1,' + step + '}', 'g')) : [str];
 };
 
-},{}],64:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var camelize = require('./camelize');
 var makeString = require('./helper/makeString');
@@ -25646,14 +24251,14 @@ module.exports = function classify(str) {
   return capitalize(camelize(str.replace(/[\W_]/g, ' ')).replace(/\s/g, ''));
 };
 
-},{"./camelize":60,"./capitalize":61,"./helper/makeString":79}],65:[function(require,module,exports){
+},{"./camelize":33,"./capitalize":34,"./helper/makeString":52}],38:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function clean(str) {
   return trim(str).replace(/\s\s+/g, ' ');
 };
 
-},{"./trim":121}],66:[function(require,module,exports){
+},{"./trim":94}],39:[function(require,module,exports){
 
 var makeString = require('./helper/makeString');
 
@@ -25677,7 +24282,7 @@ module.exports = function cleanDiacritics(str) {
   });
 };
 
-},{"./helper/makeString":79}],67:[function(require,module,exports){
+},{"./helper/makeString":52}],40:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function(str, substr) {
@@ -25689,14 +24294,14 @@ module.exports = function(str, substr) {
   return str.split(substr).length - 1;
 };
 
-},{"./helper/makeString":79}],68:[function(require,module,exports){
+},{"./helper/makeString":52}],41:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function dasherize(str) {
   return trim(str).replace(/([A-Z])/g, '-$1').replace(/[-_\s]+/g, '-').toLowerCase();
 };
 
-},{"./trim":121}],69:[function(require,module,exports){
+},{"./trim":94}],42:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function decapitalize(str) {
@@ -25704,7 +24309,7 @@ module.exports = function decapitalize(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
 };
 
-},{"./helper/makeString":79}],70:[function(require,module,exports){
+},{"./helper/makeString":52}],43:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 function getIndent(str) {
@@ -25734,7 +24339,7 @@ module.exports = function dedent(str, pattern) {
   return str.replace(reg, '');
 };
 
-},{"./helper/makeString":79}],71:[function(require,module,exports){
+},{"./helper/makeString":52}],44:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -25749,7 +24354,7 @@ module.exports = function endsWith(str, ends, position) {
   return position >= 0 && str.indexOf(ends, position) === position;
 };
 
-},{"./helper/makeString":79,"./helper/toPositive":81}],72:[function(require,module,exports){
+},{"./helper/makeString":52,"./helper/toPositive":54}],45:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var escapeChars = require('./helper/escapeChars');
 var reversedEscapeChars = {};
@@ -25769,7 +24374,7 @@ module.exports = function escapeHTML(str) {
   });
 };
 
-},{"./helper/escapeChars":76,"./helper/makeString":79}],73:[function(require,module,exports){
+},{"./helper/escapeChars":49,"./helper/makeString":52}],46:[function(require,module,exports){
 module.exports = function() {
   var result = {};
 
@@ -25781,7 +24386,7 @@ module.exports = function() {
   return result;
 };
 
-},{}],74:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function adjacent(str, direction) {
@@ -25792,7 +24397,7 @@ module.exports = function adjacent(str, direction) {
   return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + direction);
 };
 
-},{"./makeString":79}],75:[function(require,module,exports){
+},{"./makeString":52}],48:[function(require,module,exports){
 var escapeRegExp = require('./escapeRegExp');
 
 module.exports = function defaultToWhiteSpace(characters) {
@@ -25804,7 +24409,7 @@ module.exports = function defaultToWhiteSpace(characters) {
     return '[' + escapeRegExp(characters) + ']';
 };
 
-},{"./escapeRegExp":77}],76:[function(require,module,exports){
+},{"./escapeRegExp":50}],49:[function(require,module,exports){
 /* We're explicitly defining the list of entities we want to escape.
 nbsp is an HTML entity, but we don't want to escape all space characters in a string, hence its omission in this map.
 
@@ -25825,14 +24430,14 @@ var escapeChars = {
 
 module.exports = escapeChars;
 
-},{}],77:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function escapeRegExp(str) {
   return makeString(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 };
 
-},{"./makeString":79}],78:[function(require,module,exports){
+},{"./makeString":52}],51:[function(require,module,exports){
 /*
 We're explicitly defining the list of entities that might see in escape HTML strings
 */
@@ -25853,7 +24458,7 @@ var htmlEntities = {
 
 module.exports = htmlEntities;
 
-},{}],79:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  * Ensure some object is a coerced to a string
  **/
@@ -25862,7 +24467,7 @@ module.exports = function makeString(object) {
   return '' + object;
 };
 
-},{}],80:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function strRepeat(str, qty){
   if (qty < 1) return '';
   var result = '';
@@ -25873,12 +24478,12 @@ module.exports = function strRepeat(str, qty){
   return result;
 };
 
-},{}],81:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function toPositive(number) {
   return number < 0 ? 0 : (+number || 0);
 };
 
-},{}],82:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var underscored = require('./underscored');
 var trim = require('./trim');
@@ -25887,7 +24492,7 @@ module.exports = function humanize(str) {
   return capitalize(trim(underscored(str).replace(/_id$/, '').replace(/_/g, ' ')));
 };
 
-},{"./capitalize":61,"./trim":121,"./underscored":123}],83:[function(require,module,exports){
+},{"./capitalize":34,"./trim":94,"./underscored":96}],56:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function include(str, needle) {
@@ -25895,7 +24500,7 @@ module.exports = function include(str, needle) {
   return makeString(str).indexOf(needle) !== -1;
 };
 
-},{"./helper/makeString":79}],84:[function(require,module,exports){
+},{"./helper/makeString":52}],57:[function(require,module,exports){
 //  Underscore.string
 //  (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
 //  Underscore.string is freely distributable under the terms of the MIT license.
@@ -26035,21 +24640,21 @@ for (var key in prototypeMethods) prototype2method(prototypeMethods[key]);
 
 module.exports = s;
 
-},{"./camelize":60,"./capitalize":61,"./chars":62,"./chop":63,"./classify":64,"./clean":65,"./cleanDiacritics":66,"./count":67,"./dasherize":68,"./decapitalize":69,"./dedent":70,"./endsWith":71,"./escapeHTML":72,"./exports":73,"./helper/escapeRegExp":77,"./humanize":82,"./include":83,"./insert":85,"./isBlank":86,"./join":87,"./levenshtein":88,"./lines":89,"./lpad":90,"./lrpad":91,"./ltrim":92,"./naturalCmp":93,"./numberFormat":94,"./pad":95,"./pred":96,"./prune":97,"./quote":98,"./repeat":99,"./replaceAll":100,"./reverse":101,"./rpad":102,"./rtrim":103,"./slugify":104,"./splice":105,"./sprintf":106,"./startsWith":107,"./strLeft":108,"./strLeftBack":109,"./strRight":110,"./strRightBack":111,"./stripTags":112,"./succ":113,"./surround":114,"./swapCase":115,"./titleize":116,"./toBoolean":117,"./toNumber":118,"./toSentence":119,"./toSentenceSerial":120,"./trim":121,"./truncate":122,"./underscored":123,"./unescapeHTML":124,"./unquote":125,"./vsprintf":126,"./words":127,"./wrap":128}],85:[function(require,module,exports){
+},{"./camelize":33,"./capitalize":34,"./chars":35,"./chop":36,"./classify":37,"./clean":38,"./cleanDiacritics":39,"./count":40,"./dasherize":41,"./decapitalize":42,"./dedent":43,"./endsWith":44,"./escapeHTML":45,"./exports":46,"./helper/escapeRegExp":50,"./humanize":55,"./include":56,"./insert":58,"./isBlank":59,"./join":60,"./levenshtein":61,"./lines":62,"./lpad":63,"./lrpad":64,"./ltrim":65,"./naturalCmp":66,"./numberFormat":67,"./pad":68,"./pred":69,"./prune":70,"./quote":71,"./repeat":72,"./replaceAll":73,"./reverse":74,"./rpad":75,"./rtrim":76,"./slugify":77,"./splice":78,"./sprintf":79,"./startsWith":80,"./strLeft":81,"./strLeftBack":82,"./strRight":83,"./strRightBack":84,"./stripTags":85,"./succ":86,"./surround":87,"./swapCase":88,"./titleize":89,"./toBoolean":90,"./toNumber":91,"./toSentence":92,"./toSentenceSerial":93,"./trim":94,"./truncate":95,"./underscored":96,"./unescapeHTML":97,"./unquote":98,"./vsprintf":99,"./words":100,"./wrap":101}],58:[function(require,module,exports){
 var splice = require('./splice');
 
 module.exports = function insert(str, i, substr) {
   return splice(str, i, 0, substr);
 };
 
-},{"./splice":105}],86:[function(require,module,exports){
+},{"./splice":78}],59:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function isBlank(str) {
   return (/^\s*$/).test(makeString(str));
 };
 
-},{"./helper/makeString":79}],87:[function(require,module,exports){
+},{"./helper/makeString":52}],60:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var slice = [].slice;
 
@@ -26060,7 +24665,7 @@ module.exports = function join() {
   return args.join(makeString(separator));
 };
 
-},{"./helper/makeString":79}],88:[function(require,module,exports){
+},{"./helper/makeString":52}],61:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 /**
@@ -26114,27 +24719,27 @@ module.exports = function levenshtein(str1, str2) {
   return nextCol;
 };
 
-},{"./helper/makeString":79}],89:[function(require,module,exports){
+},{"./helper/makeString":52}],62:[function(require,module,exports){
 module.exports = function lines(str) {
   if (str == null) return [];
   return String(str).split(/\r\n?|\n/);
 };
 
-},{}],90:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lpad(str, length, padStr) {
   return pad(str, length, padStr);
 };
 
-},{"./pad":95}],91:[function(require,module,exports){
+},{"./pad":68}],64:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lrpad(str, length, padStr) {
   return pad(str, length, padStr, 'both');
 };
 
-},{"./pad":95}],92:[function(require,module,exports){
+},{"./pad":68}],65:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimLeft = String.prototype.trimLeft;
@@ -26146,7 +24751,7 @@ module.exports = function ltrim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":75,"./helper/makeString":79}],93:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":48,"./helper/makeString":52}],66:[function(require,module,exports){
 module.exports = function naturalCmp(str1, str2) {
   if (str1 == str2) return 0;
   if (!str1) return -1;
@@ -26177,7 +24782,7 @@ module.exports = function naturalCmp(str1, str2) {
   return str1 < str2 ? -1 : 1;
 };
 
-},{}],94:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function numberFormat(number, dec, dsep, tsep) {
   if (isNaN(number) || number == null) return '';
 
@@ -26191,7 +24796,7 @@ module.exports = function numberFormat(number, dec, dsep, tsep) {
   return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, '$1' + tsep) + decimals;
 };
 
-},{}],95:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -26219,14 +24824,14 @@ module.exports = function pad(str, length, padStr, type) {
   }
 };
 
-},{"./helper/makeString":79,"./helper/strRepeat":80}],96:[function(require,module,exports){
+},{"./helper/makeString":52,"./helper/strRepeat":53}],69:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, -1);
 };
 
-},{"./helper/adjacent":74}],97:[function(require,module,exports){
+},{"./helper/adjacent":47}],70:[function(require,module,exports){
 /**
  * _s.prune: a more elegant version of truncate
  * prune extra chars, never leaving a half-chopped word.
@@ -26255,14 +24860,14 @@ module.exports = function prune(str, length, pruneStr) {
   return (template + pruneStr).length > str.length ? str : str.slice(0, template.length) + pruneStr;
 };
 
-},{"./helper/makeString":79,"./rtrim":103}],98:[function(require,module,exports){
+},{"./helper/makeString":52,"./rtrim":76}],71:[function(require,module,exports){
 var surround = require('./surround');
 
 module.exports = function quote(str, quoteChar) {
   return surround(str, quoteChar || '"');
 };
 
-},{"./surround":114}],99:[function(require,module,exports){
+},{"./surround":87}],72:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -26279,7 +24884,7 @@ module.exports = function repeat(str, qty, separator) {
   return repeat.join(separator);
 };
 
-},{"./helper/makeString":79,"./helper/strRepeat":80}],100:[function(require,module,exports){
+},{"./helper/makeString":52,"./helper/strRepeat":53}],73:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function replaceAll(str, find, replace, ignorecase) {
@@ -26289,21 +24894,21 @@ module.exports = function replaceAll(str, find, replace, ignorecase) {
   return makeString(str).replace(reg, replace);
 };
 
-},{"./helper/makeString":79}],101:[function(require,module,exports){
+},{"./helper/makeString":52}],74:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function reverse(str) {
   return chars(str).reverse().join('');
 };
 
-},{"./chars":62}],102:[function(require,module,exports){
+},{"./chars":35}],75:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function rpad(str, length, padStr) {
   return pad(str, length, padStr, 'right');
 };
 
-},{"./pad":95}],103:[function(require,module,exports){
+},{"./pad":68}],76:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimRight = String.prototype.trimRight;
@@ -26315,7 +24920,7 @@ module.exports = function rtrim(str, characters) {
   return str.replace(new RegExp(characters + '+$'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":75,"./helper/makeString":79}],104:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":48,"./helper/makeString":52}],77:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var trim = require('./trim');
@@ -26326,7 +24931,7 @@ module.exports = function slugify(str) {
   return trim(dasherize(cleanDiacritics(str).replace(/[^\w\s-]/g, '-').toLowerCase()), '-');
 };
 
-},{"./cleanDiacritics":66,"./dasherize":68,"./helper/defaultToWhiteSpace":75,"./helper/makeString":79,"./trim":121}],105:[function(require,module,exports){
+},{"./cleanDiacritics":39,"./dasherize":41,"./helper/defaultToWhiteSpace":48,"./helper/makeString":52,"./trim":94}],78:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function splice(str, i, howmany, substr) {
@@ -26335,7 +24940,7 @@ module.exports = function splice(str, i, howmany, substr) {
   return arr.join('');
 };
 
-},{"./chars":62}],106:[function(require,module,exports){
+},{"./chars":35}],79:[function(require,module,exports){
 // sprintf() for JavaScript 0.7-beta1
 // http://www.diveintojavascript.com/projects/javascript-sprintf
 //
@@ -26461,7 +25066,7 @@ var sprintf = (function() {
 
 module.exports = sprintf;
 
-},{"./helper/strRepeat":80}],107:[function(require,module,exports){
+},{"./helper/strRepeat":53}],80:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -26472,7 +25077,7 @@ module.exports = function startsWith(str, starts, position) {
   return str.lastIndexOf(starts, position) === position;
 };
 
-},{"./helper/makeString":79,"./helper/toPositive":81}],108:[function(require,module,exports){
+},{"./helper/makeString":52,"./helper/toPositive":54}],81:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeft(str, sep) {
@@ -26482,7 +25087,7 @@ module.exports = function strLeft(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":79}],109:[function(require,module,exports){
+},{"./helper/makeString":52}],82:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeftBack(str, sep) {
@@ -26492,7 +25097,7 @@ module.exports = function strLeftBack(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":79}],110:[function(require,module,exports){
+},{"./helper/makeString":52}],83:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRight(str, sep) {
@@ -26502,7 +25107,7 @@ module.exports = function strRight(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":79}],111:[function(require,module,exports){
+},{"./helper/makeString":52}],84:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRightBack(str, sep) {
@@ -26512,26 +25117,26 @@ module.exports = function strRightBack(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":79}],112:[function(require,module,exports){
+},{"./helper/makeString":52}],85:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function stripTags(str) {
   return makeString(str).replace(/<\/?[^>]+>/g, '');
 };
 
-},{"./helper/makeString":79}],113:[function(require,module,exports){
+},{"./helper/makeString":52}],86:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, 1);
 };
 
-},{"./helper/adjacent":74}],114:[function(require,module,exports){
+},{"./helper/adjacent":47}],87:[function(require,module,exports){
 module.exports = function surround(str, wrapper) {
   return [wrapper, str, wrapper].join('');
 };
 
-},{}],115:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function swapCase(str) {
@@ -26540,7 +25145,7 @@ module.exports = function swapCase(str) {
   });
 };
 
-},{"./helper/makeString":79}],116:[function(require,module,exports){
+},{"./helper/makeString":52}],89:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function titleize(str) {
@@ -26549,7 +25154,7 @@ module.exports = function titleize(str) {
   });
 };
 
-},{"./helper/makeString":79}],117:[function(require,module,exports){
+},{"./helper/makeString":52}],90:[function(require,module,exports){
 var trim = require('./trim');
 
 function boolMatch(s, matchers) {
@@ -26571,7 +25176,7 @@ module.exports = function toBoolean(str, trueValues, falseValues) {
   if (boolMatch(str, falseValues || ["false", "0"])) return false;
 };
 
-},{"./trim":121}],118:[function(require,module,exports){
+},{"./trim":94}],91:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function toNumber(num, precision) {
@@ -26580,7 +25185,7 @@ module.exports = function toNumber(num, precision) {
   return Math.round(num * factor) / factor;
 };
 
-},{"./trim":121}],119:[function(require,module,exports){
+},{"./trim":94}],92:[function(require,module,exports){
 var rtrim = require('./rtrim');
 
 module.exports = function toSentence(array, separator, lastSeparator, serial) {
@@ -26594,14 +25199,14 @@ module.exports = function toSentence(array, separator, lastSeparator, serial) {
   return a.length ? a.join(separator) + lastSeparator + lastMember : lastMember;
 };
 
-},{"./rtrim":103}],120:[function(require,module,exports){
+},{"./rtrim":76}],93:[function(require,module,exports){
 var toSentence = require('./toSentence');
 
 module.exports = function toSentenceSerial(array, sep, lastSep) {
   return toSentence(array, sep, lastSep, true);
 };
 
-},{"./toSentence":119}],121:[function(require,module,exports){
+},{"./toSentence":92}],94:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrim = String.prototype.trim;
@@ -26613,7 +25218,7 @@ module.exports = function trim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+|' + characters + '+$', 'g'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":75,"./helper/makeString":79}],122:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":48,"./helper/makeString":52}],95:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function truncate(str, length, truncateStr) {
@@ -26623,14 +25228,14 @@ module.exports = function truncate(str, length, truncateStr) {
   return str.length > length ? str.slice(0, length) + truncateStr : str;
 };
 
-},{"./helper/makeString":79}],123:[function(require,module,exports){
+},{"./helper/makeString":52}],96:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function underscored(str) {
   return trim(str).replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
 };
 
-},{"./trim":121}],124:[function(require,module,exports){
+},{"./trim":94}],97:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var htmlEntities = require('./helper/htmlEntities');
 
@@ -26650,7 +25255,7 @@ module.exports = function unescapeHTML(str) {
   });
 };
 
-},{"./helper/htmlEntities":78,"./helper/makeString":79}],125:[function(require,module,exports){
+},{"./helper/htmlEntities":51,"./helper/makeString":52}],98:[function(require,module,exports){
 module.exports = function unquote(str, quoteChar) {
   quoteChar = quoteChar || '"';
   if (str[0] === quoteChar && str[str.length - 1] === quoteChar)
@@ -26658,7 +25263,7 @@ module.exports = function unquote(str, quoteChar) {
   else return str;
 };
 
-},{}],126:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 var sprintf = require('./sprintf');
 
 module.exports = function vsprintf(fmt, argv) {
@@ -26666,7 +25271,7 @@ module.exports = function vsprintf(fmt, argv) {
   return sprintf.apply(null, argv);
 };
 
-},{"./sprintf":106}],127:[function(require,module,exports){
+},{"./sprintf":79}],100:[function(require,module,exports){
 var isBlank = require('./isBlank');
 var trim = require('./trim');
 
@@ -26675,7 +25280,7 @@ module.exports = function words(str, delimiter) {
   return trim(str, delimiter).split(delimiter || /\s+/);
 };
 
-},{"./isBlank":86,"./trim":121}],128:[function(require,module,exports){
+},{"./isBlank":59,"./trim":94}],101:[function(require,module,exports){
 // Wrap
 // wraps a string by a certain width
 
@@ -26776,7 +25381,7 @@ module.exports = function wrap(str, options){
 		return result;
 	}
 };
-},{"./helper/makeString":79}],129:[function(require,module,exports){
+},{"./helper/makeString":52}],102:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -28326,4 +26931,4 @@ module.exports = function wrap(str, options){
   }
 }.call(this));
 
-},{}]},{},[5]);
+},{}]},{},[6]);

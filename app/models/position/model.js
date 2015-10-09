@@ -6,14 +6,39 @@ var Backbone = require('backbone');
 var moment = require('moment');
 var MapUtil = require('../../lib/map-util');
 
-var Popup = require('../../map/popup');
 var PositionHelper = require('./helper');
+var PositionMarker = require('./marker');
+var PositionLabel = require('./label');
 
 var Position = Backbone.RelationalModel.extend({
-  url: '/api/position',
+  positionHelper: null,
+  positionLabel: null,
+  positionMarker: null,
+
+  defaults: {
+    'mouseover': false,
+    'selected': false
+  },
 
   getHelper: function () {
-    return new PositionHelper(this);
+    if (!this.positionHelper) {
+      this.positionHelper =  new PositionHelper(this);
+    }
+    return this.positionHelper;
+  },
+
+  getMarker: function (mapgl) {
+    if (!this.positionMarker) {
+      this.positionMarker =  new PositionMarker(this, mapgl);
+    }
+    return this.positionMarker;
+  },
+
+  getLabel: function (mapgl) {
+    if (!this.positionLabel) {
+      this.positionLabel = new PositionLabel(this, mapgl);
+    }
+    return this.positionLabel;
   },
 
   parse: function (data, xhr) {

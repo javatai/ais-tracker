@@ -5,52 +5,45 @@ var Backbone = require('backbone');
 require('backbone-relational');
 Backbone.$ = $;
 
-var map = require('./map/map');
-
-var AppEventDispatcher = _.clone(Backbone.Events);
 
 var Ships = require('./models/ship/collection');
 var ships = new Ships();
-ships.once('sync', function () {
-  Backbone.history.start();
-});
 
-window.ships = ships;
+// ships.once('sync', function () {
+//   Backbone.history.start();
+// });
 
-var Router = require('./lib/router');
-var router = new Router({
-  collection: ships,
-  appevents: AppEventDispatcher
-});
+// var Router = require('./lib/router');
+// var router = new Router({
+//   collection: ships,
+//   appevents: AppEventDispatcher
+// });
 
-AppEventDispatcher.on('map:select', function (ship) {
-  router.navigate('mmsi/' + ship.get('userid'));
-});
+// AppEventDispatcher.on('map:select', function (ship) {
+//   router.navigate('mmsi/' + ship.get('userid'));
+// });
 
-AppEventDispatcher.on('map:selected', function (ship) {
-  router.navigate('mmsi/' + ship.get('userid'));
-});
+// AppEventDispatcher.on('map:selected', function (ship) {
+//   router.navigate('mmsi/' + ship.get('userid'));
+// });
 
-AppEventDispatcher.on('map:unselected', function (ship) {
-  router.navigate('');
-});
+// AppEventDispatcher.on('map:unselected', function (ship) {
+//   router.navigate('');
+// });
 
 var ShipsLayer = require('./map/ships-layer');
-var shipsLayer = new ShipsLayer(null, {
-  map: map,
-  collection: ships,
-  appevents: AppEventDispatcher
-});
+var shipsLayer = new ShipsLayer(ships);
 
-var MasterView = require('./views/master-view');
-var masterView = new MasterView({
-  el: $('#content'),
-  collection: ships,
-  appevents: AppEventDispatcher
-});
+// var MasterView = require('./views/master-view');
+// var masterView = new MasterView({
+//   el: $('#content'),
+//   collection: ships,
+//   appevents: AppEventDispatcher
+// });
 
-masterView.render();
+// masterView.render();
 
+/* Debugging */
 
 window.ships = ships;
 
