@@ -1,42 +1,20 @@
 var _ = require('underscore');
+window._ = _;
 var $ = require('jquery');
 var Backbone = require('backbone');
 
-var moment = require('moment');
 var template = require('./list-view.hbs');
 
+var ListHeaderView = require('./list-header');
+var ListItemView = require('./list-item');
+
 var ListView = Backbone.View.extend({
+  listItems: {},
+  container: null,
   template: template,
-  search: '',
 
-  column: [{
-    label: 'MMSI',
-    getter: 'userid',
-    initsort: 'asc',
-    changelabel: 'Switch to MMSI',
-    selected: true
-  }, {
-    label: 'Datetime',
-    changelabel: 'Switch to last position datetime',
-    getter: 'datetime',
-    initsort: 'desc',
-    selected: false,
-    format: function (datetime) {
-      return moment.utc(datetime).format("YYYY-MM-DD HH:mm:ss UTC");
-    }
-  }],
-
-  events: {
-    "click .name_asc" : "sortnameasc",
-    "click .name_desc" : "sortnamedesc",
-    "click .column_asc" : "sortcolumnasc",
-    "click .column_desc" : "sortcolumndesc",
-    "click .column_change" : "change",
-    "click tbody tr" : "select"
-  },
-
-  initialize: function (options) {
-    this.listenTo(this.collection, "sync", this.render);
+  initialize: function () {
+    this.search = '';
   },
 
   execFilter: function () {
@@ -57,14 +35,13 @@ var ListView = Backbone.View.extend({
       });
     }
 
-    this.collection.each(function (ship) {
-      var id = ship.get('id');
-      if (hide.indexOf(id) > -1) {
-        this.$el.find('#' + id).hide();
+    _.each(this.listItems, function (item, id) {
+      if (hide.indexOf(parseInt(id)) > -1) {
+        item.hide();
       } else {
-        this.$el.find('#' + id).show();
+        item.show();
       }
-    }, this);
+    });
   },
 
   filter: function (evt) {
@@ -73,65 +50,58 @@ var ListView = Backbone.View.extend({
     this.execFilter();
   },
 
-  sortnameasc: function () {
-    this.collection.changeSort("name", "asc");
-    this.render();
+  getContainer: function () {
+    return this.container;
   },
 
-  sortnamedesc: function () {
-    this.collection.changeSort("name", "desc");
-    this.render();
+  addItemView: function (ship) {
+    var listItem = new ListItemView({
+      model: ship,
+      collection: this.collection,
+      listview: this
+    });
+
+    _.invoke(this.listItems, 'updateIndex');
+
+    listItem.render();
+
+    this.listItems[ship.get('id')] = listItem;
+
+//    console.log('add', this.listItems[ship.get('id')].index, ship.toTitel());
+
   },
 
-  sortcolumnasc: function () {
-    this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "asc");
-    this.render();
-  },
+  removeItemView: function (ship) {
+    this.listItems[ship.get('id')].remove();
 
-  sortcolumndesc: function () {
-    this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "desc");
-    this.render();
-  },
+//    console.log('remove', this.listItems[ship.get('id')].index, ship.toTitel());
 
-  change: function (evt) {
-    _.each(this.column, function (item, index) {
-      this.column[index].selected = !this.column[index].selected;
-
-      if (this.column[index].selected) {
-        this.collection.changeSort(this.column[index].getter, this.column[index].initsort);
-        this.collection.sort();
-      }
-    }, this);
-
-    this.render();
-  },
-
-  select: function (evt) {
-    var id = $(evt.currentTarget).attr('id');
-    this.trigger('select', this.collection.get(id));
+    delete this.listItems[ship.get('id')];
   },
 
   render: function () {
-    var selected = _.findWhere(this.column, { selected: true });
-    var other = _.findWhere(this.column, { selected: false });
+    this.$el.html(this.template({ }));
 
-    var ships = this.collection.map(function (ship, index) {
-      return {
-        id: ship.get('id'),
-        index: index+1,
-        name: ship.getHelper().toTitel(),
-        value: selected.format && selected.format(ship.get(selected.getter)) || ship.get(selected.getter)
-      }
+    this.listHeaderView = new ListHeaderView({
+      el: this.$el.find('thead'),
+      collection: this.collection
+    });
+    this.selectedColumn = this.listHeaderView.selectedColumn();
+    this.listHeaderView.render();
+
+    this.listenTo(this.listHeaderView, 'column:change', function (selectedColumn) {
+      this.selectedColumn = selectedColumn;
+      _.invoke(this.listItems, 'update');
     });
 
-    this.$el.html(this.template({
-      filter: this.search,
-      ships: ships,
-      secondColumn: selected.label,
-      changelabel: other.changelabel
-    }));
+    this.container = this.$el.find('tbody');
+
+    this.listenTo(this.collection, 'add', this.addItemView);
+    this.listenTo(this.collection, 'remove', this.removeItemView);
 
     this.execFilter();
+
+    window.listItems = this.listItems;
   }
 });
 

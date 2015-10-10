@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -19,106 +21,57 @@ var MasterView = Backbone.View.extend({
   },
 
   initialize: function (options) {
-    this.options = options;
-    this.appevents = options.appevents;
+    this.app = options.app;
+
+    this.listenTo(this.app, 'clickout', this.clickout);
   },
 
-  isOpen: function () {
-    this.$el.addClass('open');
-  },
-
-  isClosed: function () {
-    this.$el.removeClass('open');
-  },
-
-  setCurrentTab: function (tab) {
-    this.isOpen();
-    this.currenttab = tab;
-    var cls = 'to' + tab;
-    _.each(this.$el.find('.footer li'), function (el) {
-      var $el = $(el);
-      if ($el.hasClass('active') && !$el.hasClass(cls)) {
-        $el.removeClass('active');
-      }
-      if (!$el.hasClass('active') && $el.hasClass(cls)) {
-        $el.addClass('active');
-      }
-      if ($el.hasClass('disabled') && $el.hasClass(cls)) {
-        $el.removeClass('disabled');
-      }
-    });
-
-    if (this.shipView) {
-      this.$el.find('.footer li.toship a').html(this.shipView.model.getHelper().toTitel());
-    }
-  },
-
-  openlistview: function () {
-    this.$el.find('.list .collapse').collapse('show');
-    this.$el.find('.ship .collapse').collapse('hide');
-    this.setCurrentTab('list');
-  },
-
-  closelistview: function () {
-    this.$el.find('.list .collapse').collapse('hide');
-    this.isClosed();
-  },
-
-  openshipview: function () {
-    this.$el.find('.list .collapse').collapse('hide');
-    this.$el.find('.ship .collapse').collapse('show');
-
-    this.setCurrentTab('ship');
-  },
-
-  closeshipview: function () {
-    this.$el.find('.ship .collapse').collapse('hide');
-    this.isClosed();
-  },
-
-  filter: function (evt) {
-    this.openlistview();
-    this.listView.filter(evt);
-  },
-
-  selectShip: function (ship) {
-    var id = ship.get('id');
-
-    this.shipView = new ShipView({
-      model: ship,
-      el: this.$el.find('.ship-details')
-    });
-
-    this.shipView.render();
-    this.openshipview();
-  },
-
-  selectShipEmit: function (ship) {
-    this.$el.find('.ship .collapse').one('shown.bs.collapse', _.bind(function () {
-      this.appevents.trigger('map:select', ship);
-    }, this));
-
-    this.selectShip(ship);
-  },
-
-  handlerInList: function () {
-    this.openlistview();
-  },
-
-  handlerInShip: function () {
-    if (this.shipView) {
-      this.openshipview();
-    } else {
-      this.openlistview();
-    }
-  },
-
-  handlerOut: function () {
+  clickout: function () {
     if (this.currenttab != 'list') {
       this.closeshipview();
     } else {
       this.closelistview();
     }
+  },
+
+  setShipTabTitel: function (tab) {
+    if (this.shipView) {
+      this.$el.find('.footer li.toship a').html(this.shipView.model.getHelper().toTitel());
+    } else {
+      this.$el.find('.footer li.toship a').html('');
+    }
+  },
+
+  openlistview: function () {
+    this.$el.find('.list .collapse').collapse('show');
+    var btn = this.$el.find('.footer li.tolist');
+    $(btn).addClass('active');
+    this.$el.addClass('open');
+  },
+
+  closelistview: function () {
+    this.$el.find('.list .collapse').collapse('hide');
+    var btn = this.$el.find('.footer li.tolist');
+    $(btn).removeClass('active');
+    this.$el.removeClass('open');
+  },
+
+  openshipview: function () {
+    this.$el.find('.ship .collapse').collapse('show');
+    var btn = this.$el.find('.footer li.toship');
+    $(btn).addClass('active');
+    this.$el.addClass('open');
+  },
+
+  closeshipview: function () {
+    this.$el.find('.ship .collapse').collapse('hide');
+    var btn = this.$el.find('.footer li.toship');
+    $(btn).removeClass('active');
+    this.$el.removeClass('open');
+  },
+
+  filter: function (evt) {
+    this.listView.filter(evt);
   },
 
   render: function () {
@@ -128,11 +81,6 @@ var MasterView = Backbone.View.extend({
       collection: this.collection,
       el: this.$el.find('.list-table')
     });
-
-    this.listenTo(this.listView, "select", this.selectShipEmit);
-    this.listenTo(this.appevents, "router:select", this.selectShipEmit);
-    this.listenTo(this.appevents, "map:selected", this.selectShip);
-    this.listenTo(this.appevents, "map:unselected", this.handlerOut);
 
     this.listView.render();
   }

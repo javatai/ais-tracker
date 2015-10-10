@@ -17,7 +17,11 @@
       "address": "0.0.0.0"
     },
     "setup": {
-      "movemin": 50
+      "movemin": 50,
+      "ship": {
+        "limit": 10,
+        "order": "datetime DESC"
+      }
     }
   },
   "test": {
@@ -38,7 +42,11 @@
       "address": "0.0.0.0"
     },
     "setup": {
-      "movemin": 50
+      "movemin": 50,
+      "ship": {
+        "limit": 10,
+        "order": "datetime DESC"
+      }
     }
   },
   "production": {
@@ -59,7 +67,11 @@
       "address": "95.143.172.114"
     },
     "setup": {
-      "movemin": 50
+      "movemin": 50,
+      "ship": {
+        "limit": 10,
+        "order": "datetime DESC"
+      }
     }
   }
 }

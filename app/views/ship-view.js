@@ -5,9 +5,9 @@ var template = require('./ship-view.hbs');
 
 var ShipView = Backbone.View.extend({
   template: template,
-  isShown: false,
 
   initialize: function () {
+    this.isShown = false;
     this.listenTo(this.model.get('track'), "sync", this.render);
   },
 

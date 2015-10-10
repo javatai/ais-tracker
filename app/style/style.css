@@ -128,20 +128,16 @@ body { margin: 0; padding: 0; background-color: #ccc; }
 }
 
 #content .list table.fixedhead > thead th:nth-child(1),
-#content .list table.fixedhead > tbody th:nth-child(1) {
-  width: 40px;
+#content .list table.fixedhead > tbody td:nth-child(1) {
+  width: 225px;
 }
 
-#content .list table.fixedhead > thead th:nth-child(2),
+#content .list table.fixedhead > thead th:nth-child(2) {
+  width: 135px;
+}
+
 #content .list table.fixedhead > tbody td:nth-child(2) {
-  width: 210px;
-}
-
-#content .list table.fixedhead > thead th:nth-child(3) {
-  width: 115px;
-}
-#content .list table.fixedhead > tbody td:nth-child(3) {
-  width: 100px;
+  width: 120px;
 }
 
 #content table.fixedhead > tbody tr:nth-child(1) * {

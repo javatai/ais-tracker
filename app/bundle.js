@@ -33,7 +33,48 @@ var AisMessage = Backbone.Collection.extend({
 });
 
 module.exports = AisMessage;
-},{"backbone":28,"underscore":102}],3:[function(require,module,exports){
+},{"backbone":40,"underscore":134}],3:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+var $ = require('jquery');
+var Backbone = require('backbone');
+
+var Ships = require('../models/ship/collection');
+var Router = require('./router');
+var ShipsLayer = require('../map/ships-layer');
+var MasterView = require('../views/master-view');
+
+var App = function () { };
+
+_.extend(App.prototype, Backbone.Events, {
+  run: function () {
+    var ships = new Ships();
+
+    /* Debugging */
+    window.ships = ships;
+
+    var router = new Router({
+      ships: ships
+    });
+
+    var shipsLayer = new ShipsLayer({
+      ships: ships,
+      app: this
+    });
+
+    var masterView = new MasterView({
+      el: $('#content'),
+      collection: ships,
+      app: this
+    });
+
+    masterView.render();
+  }
+});
+
+module.exports = App;
+},{"../map/ships-layer":10,"../models/ship/collection":17,"../views/master-view":34,"./router":7,"backbone":40,"jquery":63,"underscore":134}],4:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -82,7 +123,7 @@ _.extend(Label.prototype, Backbone.Events, {
 
 module.exports = Label;
 
-},{"./popup":5,"backbone":28,"underscore":102}],4:[function(require,module,exports){
+},{"./popup":6,"backbone":40,"underscore":134}],5:[function(require,module,exports){
 var MapUtil = {
   distance: function(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;    // Math.PI / 180
@@ -159,7 +200,7 @@ var MapUtil = {
 
 module.exports = MapUtil;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -201,60 +242,63 @@ mapboxgl.Popup.prototype._update = function () {
 
 module.exports = mapboxgl.Popup;
 
-},{"jquery":31,"underscore":102}],6:[function(require,module,exports){
+},{"jquery":63,"underscore":134}],7:[function(require,module,exports){
+'use strict';
+
 var _ = require('underscore');
+var Backbone = require('backbone');
+
+var Router = Backbone.Router.extend({
+  routes: {
+    "mmsi/:mmsi": "search"
+  },
+
+  initialize: function (options) {
+    this.ships = options.ships;
+
+    this.ships.once('sync', function () {
+      Backbone.history.start();
+    });
+
+    var navigate = _.debounce(_.bind(function (route) {
+      this.navigate(route);
+    }, this), 300);
+
+    this.listenTo(this.ships, 'change:selected', function (ship, selected) {
+      if (selected) {
+        navigate('mmsi/' + ship.get('userid'));
+      } else {
+        navigate('');
+      }
+    });
+  },
+
+  search: function (mmsi) {
+    var ship = this.ships.findWhere({ userid: Number(mmsi) });
+    if (ship) {
+      this.ships.selectShip(ship);
+    } else {
+      this.navigate('');
+    }
+  }
+});
+
+module.exports = Router;
+},{"backbone":40,"underscore":134}],8:[function(require,module,exports){
 var $ = require('jquery');
 var bootstrap = require('bootstrap');
 var Backbone = require('backbone');
 require('backbone-relational');
 Backbone.$ = $;
 
+var App = require('./lib/app');
+var app = new App();
+app.run();
 
-var Ships = require('./models/ship/collection');
-var ships = new Ships();
-
-// ships.once('sync', function () {
-//   Backbone.history.start();
-// });
-
-// var Router = require('./lib/router');
-// var router = new Router({
-//   collection: ships,
-//   appevents: AppEventDispatcher
-// });
-
-// AppEventDispatcher.on('map:select', function (ship) {
-//   router.navigate('mmsi/' + ship.get('userid'));
-// });
-
-// AppEventDispatcher.on('map:selected', function (ship) {
-//   router.navigate('mmsi/' + ship.get('userid'));
-// });
-
-// AppEventDispatcher.on('map:unselected', function (ship) {
-//   router.navigate('');
-// });
-
-var ShipsLayer = require('./map/ships-layer');
-var shipsLayer = new ShipsLayer(ships);
-
-// var MasterView = require('./views/master-view');
-// var masterView = new MasterView({
-//   el: $('#content'),
-//   collection: ships,
-//   appevents: AppEventDispatcher
-// });
-
-// masterView.render();
-
-/* Debugging */
-
-window.ships = ships;
-
-
-},{"./map/ships-layer":8,"./models/ship/collection":15,"backbone":28,"backbone-relational":27,"bootstrap":29,"jquery":31,"underscore":102}],7:[function(require,module,exports){
+},{"./lib/app":3,"backbone":40,"backbone-relational":39,"bootstrap":41,"jquery":63}],9:[function(require,module,exports){
 'use strict';
 
+var _ = require('underscore');
 var config = require('../config.json');
 
 mapboxgl.accessToken = config.map.accessToken;
@@ -272,7 +316,7 @@ map.addControl(new mapboxgl.Navigation());
 
 module.exports = map;
 
-},{"../config.json":1}],8:[function(require,module,exports){
+},{"../config.json":1,"underscore":134}],10:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -282,18 +326,21 @@ var MapUtil = require('../lib/map-util');
 var MapGL = require('./map');
 var TrackLayer = require('./track-layer');
 
-var ShipsLayer = function (ships) {
-  this.ships = ships;
+var ShipsLayer = function (options) {
+  this.ships = options.ships;
+  this.app = options.app;
   this.mapgl = MapGL;
 
-  this.trackLayer = new TrackLayer(this.ships);
+  this.layer = {};
+  this.mouseoverid = 0;
+  this.first = null;
+
+  this.trackLayer = new TrackLayer(options);
 
   this.mapgl.on('style.load', _.bind(this.process, this));
 };
 
 _.extend(ShipsLayer.prototype, Backbone.Events, {
-  layer: { },
-
   process: function () {
     this.listenTo(this.ships, 'add', this.onAddShip);
     this.listenTo(this.ships, 'remove', this.onRemoveShip);
@@ -305,40 +352,34 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.mapgl.on('click', _.bind(this.onClick, this));
   },
 
-  clickid: 0,
-  onClick: function (e) {
-    this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
-      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
-
-      if (this.clickid) {
-        if (!id || (id !== this.clickid)) {
-          this.ships.get(this.clickid).set('selected', false);
-          this.clickid = 0;
-        }
-      }
-
-      if (id) {
-        this.ships.get(id).set('selected', true);
-        this.clickid = id;
-        this.trackLayer.onClickout();
-      } else {
-        this.trackLayer.onClick(e);
-      }
-    }, this));
-  },
-
-  mouseoverid: 0,
-  onMousemove: function (e) {
-    this.mapgl.getCanvas().style.cursor = "";
-
+  calculatePerimeter: function () {
     var bounds = this.mapgl.getBounds();
     var nw = bounds.getNorthWest();
     var ne = bounds.getNorthEast();
 
     var dist = Math.round(MapUtil.distance(nw.lat, nw.lng, ne.lat, ne.lng));
-    var width = $('#map').width();
+    var width = $(this.mapgl.getContainer).width();
 
-    var perimeter = 10 * (dist/width);
+    return 10 * (dist/width);
+  },
+
+  onClick: function (e) {
+    this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
+      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
+
+      if (this.ships.selectShip(id)) {
+        this.trackLayer.onClickout();
+      } else {
+        this.trackLayer.onClick(e);
+      }
+
+    }, this));
+  },
+
+  onMousemove: function (e) {
+    this.mapgl.getCanvas().style.cursor = "";
+
+    var perimeter = this.calculatePerimeter();
     var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
 
     if (this.mouseoverid) {
@@ -359,6 +400,8 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
   },
 
   onAddShip: function (ship) {
+//    console.log('add ship', ship.toTitel())
+
     ship.getLabel(this.mapgl);
     ship.getMarker(this.mapgl);
 
@@ -493,17 +536,12 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     if (this.mapgl.getSource('ships')) {
       this.mapgl.removeSource('ships');
     }
-
-    this.layer = { };
-    this.mouseoverid = 0;
-    this.clickid = 0;
-    this.first = null;
   }
 })
 
 module.exports = ShipsLayer;
 
-},{"../lib/map-util":4,"./map":7,"./track-layer":9,"backbone":28,"jquery":31,"underscore":102}],9:[function(require,module,exports){
+},{"../lib/map-util":5,"./map":9,"./track-layer":11,"backbone":40,"jquery":63,"underscore":134}],11:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -512,22 +550,27 @@ var Backbone = require('backbone');
 var MapUtil = require('../lib/map-util');
 var MapGL = require('./map');
 
-var TrackLayer = function (ships) {
-  this.ships = ships;
+var TrackLayer = function (options) {
+  this.ships = options.ships;
+  this.app = options.app;
   this.mapgl = MapGL;
+
+  this.layer = {};
+  this.mouseoverid = 0;
+  this.clickid = 0;
+  this.track = null;
+  this.ship = null;
 
   this.listenTo(this.ships, 'change:selected', this.process);
 };
 
 _.extend(TrackLayer.prototype, Backbone.Events, {
-  layer: { },
-  track: null,
-  ship: null,
-
   process: function (ship) {
     if (ship.get('selected') === true) {
       this.ship = ship;
       this.track = ship.get('track');
+
+      this.listenToOnce(ship, 'onBeforeRemove', this.removeFromMap);
 
       this.listenToOnce(this.track, 'sync', this.addToMap);
       this.listenToOnce(this.track, 'sync', function () {
@@ -543,7 +586,6 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     }
   },
 
-  mouseoverid: 0,
   onMousemove: function (lngLat, perimeter) {
     if (this.track && this.track.length > 2) {
       var position = _.first(this.track.getPositionsForLngLat(lngLat, perimeter));
@@ -570,9 +612,11 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     }
   },
 
-  clickid: 0,
   onClick: function (e) {
-    if (!this.track) return;
+    if (!this.track) {
+      this.app.trigger('clickout');
+      return;
+    }
 
     this.mapgl.featuresAt(e.point, { layer: 'positions', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
       var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
@@ -587,6 +631,8 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       if (id) {
         this.track.get(id).set('selected', true);
         this.clickid = id;
+      } else {
+        this.mapgl.fire('clickout');
       }
     }, this));
   },
@@ -596,6 +642,8 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.track.get(this.clickid).set('selected', false);
       this.clickid = 0;
     }
+
+    this.app.trigger('clickout');
   },
 
   onAddPosition: function (position) {
@@ -735,16 +783,21 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.mapgl.removeLayer('positions');
     }
 
-    this.layer = { };
+    if (this.track) {
+      this.track.reset();
+    }
+
+    this.layer = {};
     this.mouseoverid = 0;
     this.clickid = 0;
-    this.track.reset();
+    this.track = null;
+    this.ship = null;
   }
 });
 
 module.exports = TrackLayer;
 
-},{"../lib/map-util":4,"./map":7,"backbone":28,"jquery":31,"underscore":102}],10:[function(require,module,exports){
+},{"../lib/map-util":5,"./map":9,"backbone":40,"jquery":63,"underscore":134}],12:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -758,7 +811,7 @@ var Positions = Backbone.Collection.extend({
 
 module.exports = Positions;
 
-},{"./model":14,"backbone":28}],11:[function(require,module,exports){
+},{"./model":16,"backbone":40}],13:[function(require,module,exports){
 'use strict';
 
 var MapUtil = require('../../lib/map-util');
@@ -880,7 +933,7 @@ _.extend(PositionHelper.prototype, {
 
 module.exports = PositionHelper;
 
-},{"../../lib/ais-message":2,"../../lib/map-util":4,"ais-receiver/ais-messages/json/ais_msg_1.json":25,"moment":32,"underscore":102}],12:[function(require,module,exports){
+},{"../../lib/ais-message":2,"../../lib/map-util":5,"ais-receiver/ais-messages/json/ais_msg_1.json":37,"moment":64,"underscore":134}],14:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -909,7 +962,7 @@ _.extend(PositionLabel.prototype, Label.prototype, {
 
 module.exports = PositionLabel;
 
-},{"../../lib/label":3,"backbone":28,"underscore":102}],13:[function(require,module,exports){
+},{"../../lib/label":4,"backbone":40,"underscore":134}],15:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -937,7 +990,7 @@ _.extend(PositionMarker.prototype, Backbone.Events, {
 
 module.exports = PositionMarker;
 
-},{"backbone":28,"underscore":102}],14:[function(require,module,exports){
+},{"backbone":40,"underscore":134}],16:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -994,10 +1047,7 @@ var Position = Backbone.RelationalModel.extend({
   },
 
   getLngLat: function () {
-    return {
-      lng: this.get('longitude'),
-      lat: this.get('latitude')
-    }
+    return new mapboxgl.LngLat(this.get('longitude'), this.get('latitude'));
   },
 
   distanceTo: function (LngLat) {
@@ -1008,7 +1058,7 @@ var Position = Backbone.RelationalModel.extend({
 
 module.exports = Position;
 
-},{"../../lib/map-util":4,"./helper":11,"./label":12,"./marker":13,"backbone":28,"moment":32,"underscore":102,"underscore.string":57}],15:[function(require,module,exports){
+},{"../../lib/map-util":5,"./helper":13,"./label":14,"./marker":15,"backbone":40,"moment":64,"underscore":134,"underscore.string":89}],17:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1072,7 +1122,33 @@ var Ships = Backbone.Collection.extend({
   },
 
   initialize: function () {
+    this.selectedId = 0;
     this.initSort("name", "asc");
+  },
+
+
+  selectShip: function (idOrModel) {
+    var id;
+    if (idOrModel instanceof Ship) {
+      id = idOrModel.get('id');
+    } else {
+      id = idOrModel;
+    }
+
+    if (this.selectedId) {
+      if (!id || (id !== this.selectedId)) {
+        this.get(this.selectedId).set('selected', false);
+        this.selectedId = 0;
+      }
+    }
+
+    if (id) {
+      this.get(id).set('selected', true);
+      this.selectedId = id;
+      return true;
+    } else {
+      return false;
+    }
   },
 
   initSort: function (sortProperty, direction) {
@@ -1091,12 +1167,17 @@ var Ships = Backbone.Collection.extend({
       }
       return false;
     });
+  },
+
+  _removeModels: function (toRemove) {
+    _.invoke(toRemove, 'beforeRemove');
+    Backbone.Collection.prototype._removeModels.apply(this, arguments);
   }
 });
 
 module.exports = Ships;
 
-},{"./model":19,"backbone":28,"underscore":102}],16:[function(require,module,exports){
+},{"./model":21,"backbone":40,"underscore":134}],18:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1113,7 +1194,7 @@ _.extend(ShipHelper.prototype, {
 
 module.exports = ShipHelper;
 
-},{"underscore":102}],17:[function(require,module,exports){
+},{"underscore":134}],19:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1146,14 +1227,18 @@ _.extend(ShipLabel.prototype, Label.prototype, {
 
 module.exports = ShipLabel;
 
-},{"../../lib/label":3,"backbone":28,"underscore":102}],18:[function(require,module,exports){
+},{"../../lib/label":4,"backbone":40,"underscore":134}],20:[function(require,module,exports){
 'use strict';
 
+var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
+var MapUtil = require('../../lib/map-util');
 var GeographicLib = require("geographiclib");
 
 var ShipMarker = function (ship, mapgl) {
+  this.layer = {};
+
   this.ship = ship;
   this.mapgl = mapgl;
 
@@ -1162,14 +1247,34 @@ var ShipMarker = function (ship, mapgl) {
 };
 
 _.extend(ShipMarker.prototype, Backbone.Events, {
-  layer: {},
+  calculateOffsetBounds: function (lnglat) {
+    var geod = GeographicLib.Geodesic.WGS84;
+
+    var N = geod.Direct(lnglat.lat, lnglat.lng, 0, 250);
+    var E = geod.Direct(lnglat.lat, lnglat.lng, 90, 250);
+    var S = geod.Direct(lnglat.lat, lnglat.lng, 180, 250);
+    var W = geod.Direct(lnglat.lat, lnglat.lng, 270, 250);
+
+    var wpx = $(this.mapgl.getContainer).width();
+    var wm = geod.Inverse(N.lat2, E.lon2, S.lat2, W.lon2).s12;
+
+    var m = 420 * wm / wpx;
+    var P = geod.Direct(S.lat2, W.lon2, 270, m);
+
+    var SW = new mapboxgl.LngLat(P.lon2, P.lat2);
+    var NE = new mapboxgl.LngLat(E.lon2, N.lat2);
+
+    return new mapboxgl.LngLatBounds(SW, NE);
+  },
 
   process: function () {
     if (this.ship.has('position')) {
       this.addToMap();
 
       if (this.ship.get('selected') === true) {
-        this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate(), zoom: 15 });
+        var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
+
+        this.mapgl.fitBounds(bounds);
       }
     }
   },
@@ -1345,13 +1450,13 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
   },
 
   removeFromMap: function () {
-    this.stopListening(this.get('ship'), 'change', this.process);
+    this.stopListening(this.ship, 'change', this.process);
 
     if (this.layer[this.getMapId('marker')]) {
       this.mapgl.removeLayer(this.getMapId('marker'));
     }
 
-    if (!this.mapgl.getSource(this.getMapId('marker'))) {
+    if (this.mapgl.getSource(this.getMapId('marker'))) {
       this.mapgl.removeSource(this.getMapId('marker'));
     }
 
@@ -1359,17 +1464,15 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
       this.mapgl.removeLayer(this.getMapId('shape'));
     }
 
-    if (!this.mapgl.getSource(this.getMapId('shape'))) {
+    if (this.mapgl.getSource(this.getMapId('shape'))) {
       this.mapgl.removeSource(this.getMapId('shape'));
     }
-
-    this.layer = { };
   }
 });
 
 module.exports = ShipMarker;
 
-},{"backbone":28,"geographiclib":30,"underscore":102}],19:[function(require,module,exports){
+},{"../../lib/map-util":5,"backbone":40,"geographiclib":42,"jquery":63,"underscore":134}],21:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1449,12 +1552,32 @@ var Ship = Backbone.RelationalModel.extend({
   distanceTo: function (LngLat) {
     var coords = this.get('position').getLngLat();
     return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
+  },
+
+  toTitel: function () {
+    return this.getHelper().toTitel();
+  },
+
+  beforeRemove: function () {
+    this.trigger('onBeforeRemove', this);
+
+    if (this.shipHelper) {
+      delete this.shipHelper;
+    }
+    if (this.shipMarker) {
+      this.shipMarker.removeFromMap();
+      delete this.shipMarker;
+    }
+    if (this.shipMarker) {
+      this.shipMarker.removeFromMap();
+      delete this.shipMarker;
+    }
   }
 });
 
 module.exports = Ship;
 
-},{"../../lib/map-util":4,"../position/collection":10,"../position/model":14,"../shipdata/collection":20,"../shipdata/model":22,"../track/collection":23,"./helper":16,"./label":17,"./marker":18,"backbone":28,"underscore":102}],20:[function(require,module,exports){
+},{"../../lib/map-util":5,"../position/collection":12,"../position/model":16,"../shipdata/collection":22,"../shipdata/model":24,"../track/collection":25,"./helper":18,"./label":19,"./marker":20,"backbone":40,"underscore":134}],22:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -1468,7 +1591,7 @@ var ShipData = Backbone.Collection.extend({
 
 module.exports = ShipData;
 
-},{"./model":22,"backbone":28}],21:[function(require,module,exports){
+},{"./model":24,"backbone":40}],23:[function(require,module,exports){
 'use strict';
 
 var moment = require('moment');
@@ -1567,7 +1690,7 @@ _.extend(ShipdataHelper.prototype, {
 
 module.exports = ShipdataHelper;
 
-},{"../../lib/ais-message":2,"ais-receiver/ais-messages/json/ais_msg_5.json":26,"moment":32,"underscore":102}],22:[function(require,module,exports){
+},{"../../lib/ais-message":2,"ais-receiver/ais-messages/json/ais_msg_5.json":38,"moment":64,"underscore":134}],24:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1589,7 +1712,7 @@ var Shipdatum = Backbone.RelationalModel.extend({
 
 module.exports = Shipdatum;
 
-},{"./helper":21,"backbone":28,"underscore":102}],23:[function(require,module,exports){
+},{"./helper":23,"backbone":40,"underscore":134}],25:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1629,7 +1752,7 @@ var Track = Positions.extend({
 
 module.exports = Track;
 
-},{"../../lib/map-util":4,"../position/collection":10,"./helper":24,"underscore":102}],24:[function(require,module,exports){
+},{"../../lib/map-util":5,"../position/collection":12,"./helper":26,"underscore":134}],26:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1656,7 +1779,539 @@ _.extend(TrackHelper.prototype, {
 
 module.exports = TrackHelper;
 
-},{"underscore":102}],25:[function(require,module,exports){
+},{"underscore":134}],27:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<tr>\n  <th>\n    <div class=\"dropdown\">\n      <a id=\"dLabel\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">\n        Vessel name\n        <span class=\"caret\"></span>\n      </a>\n      <ul class=\"dropdown-menu\" aria-labelledby=\"dLabel\">\n        <li><a href=\"#\" class=\"name_asc\">Sort ascending</a></li>\n        <li><a href=\"#\" class=\"name_desc\">Sort descending</a></li>\n      </ul>\n    </div>\n  </th>\n  <th>\n    <div class=\"dropdown\">\n      <a id=\"dLabel\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">\n        "
+    + alias4(((helper = (helper = helpers.secondColumn || (depth0 != null ? depth0.secondColumn : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"secondColumn","hash":{},"data":data}) : helper)))
+    + "\n        <span class=\"caret\"></span>\n      </a>\n      <ul class=\"dropdown-menu\" aria-labelledby=\"dLabel\">\n        <li><a href=\"#\" class=\"column_asc\">Sort ascending</a></li>\n        <li><a href=\"#\" class=\"column_desc\">Sort descending</a></li>\n        <li role=\"separator\" class=\"divider\"></li>\n        <li><a href=\"#\" class=\"column_change\">"
+    + alias4(((helper = (helper = helpers.changelabel || (depth0 != null ? depth0.changelabel : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"changelabel","hash":{},"data":data}) : helper)))
+    + "</a></li>\n      </ul>\n    </div>\n  </th>\n</tr>";
+},"useData":true});
+
+},{"hbsfy/runtime":62}],28:[function(require,module,exports){
+var _ = require('underscore');
+var $ = require('jquery');
+var Backbone = require('backbone');
+var moment = require('moment');
+
+var template = require('./list-header.hbs');
+
+var ListHeader = Backbone.View.extend({
+  template: template,
+
+  column: [{
+    label: 'MMSI',
+    getter: 'userid',
+    initsort: 'asc',
+    changelabel: 'Switch to MMSI',
+    selected: true
+  }, {
+    label: 'Datetime',
+    changelabel: 'Switch to last position datetime',
+    getter: 'datetime',
+    initsort: 'desc',
+    selected: false,
+    format: function (datetime) {
+      return moment.utc(datetime).format("YYYY-MM-DD HH:mm:ss UTC");
+    }
+  }],
+
+  events: {
+    "click .name_asc" : "sortnameasc",
+    "click .name_desc" : "sortnamedesc",
+    "click .column_asc" : "sortcolumnasc",
+    "click .column_desc" : "sortcolumndesc",
+    "click .column_change" : "change"
+  },
+
+  sortnameasc: function () {
+    this.collection.changeSort("name", "asc");
+    this.render();
+  },
+
+  sortnamedesc: function () {
+    this.collection.changeSort("name", "desc");
+    this.render();
+  },
+
+  sortcolumnasc: function () {
+    this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "asc");
+    this.render();
+  },
+
+  sortcolumndesc: function () {
+    this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "desc");
+    this.render();
+  },
+
+  change: function (evt) {
+    _.each(this.column, function (item, index) {
+      this.column[index].selected = !this.column[index].selected;
+
+      if (this.column[index].selected) {
+        this.collection.changeSort(this.column[index].getter, this.column[index].initsort);
+        this.collection.sort();
+      }
+    }, this);
+
+    this.trigger('column:change', this.selectedColumn());
+    this.render();
+  },
+
+  selectedColumn: function () {
+    return _.findWhere(this.column, { selected: true });
+  },
+
+  render: function () {
+    var selected = this.selectedColumn();
+    var other = _.findWhere(this.column, { selected: false });
+
+    this.$el.html(this.template({
+      filter: this.search,
+      secondColumn: selected.label,
+      changelabel: other.changelabel,
+    }));
+  }
+});
+
+module.exports = ListHeader;
+
+},{"./list-header.hbs":27,"backbone":40,"jquery":63,"moment":64,"underscore":134}],29:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<td>"
+    + alias4(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
+    + "</td>\n<td>"
+    + alias4(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper)))
+    + "</td>\n";
+},"useData":true});
+
+},{"hbsfy/runtime":62}],30:[function(require,module,exports){
+var _ = require('underscore');
+var $ = require('jquery');
+var Backbone = require('backbone');
+
+var template = require('./list-item.hbs');
+
+var ListItem = Backbone.View.extend({
+  tagName: 'tr',
+  template: template,
+
+  events: {
+    "click *" : "select"
+  },
+
+  attributes: function () {
+    return {
+      id: 'ship-item-' + this.model.get('id')
+    }
+  },
+
+  select: function () {
+    this.collection.selectShip(this.model);
+  },
+
+  initialize: function (options) {
+    this.index = 0;
+
+    this.listview = options.listview;
+    this.updateIndex();
+
+    this.listenTo(this.collection, 'sort', function () {
+      this.index = this.collection.indexOf(this.model);
+      this.insert();
+    }, this);
+  },
+
+  updateIndex: function () {
+    this.index = this.collection.indexOf(this.model);
+  },
+
+  insert: function () {
+    var before = null, after = null;
+    _.each(this.listview.listItems, function (item) {
+      if (item.index < this.index && (!before || before.index < item.index)) {
+        before = item;
+      }
+      if (item.index > this.index && (!after || after.index > item.index)) {
+        after = item;
+      }
+    }, this);
+
+// console.log('-------------');
+// console.log(before && before.model.getHelper().toTitel());
+// console.log(this.model.getHelper().toTitel());
+// console.log(after && after.model.getHelper().toTitel());
+
+    if (before) {
+      this.$el.insertAfter(before.$el);
+    } else if (after) {
+      this.$el.insertBefore(after.$el);
+    } else {
+      this.listview.getContainer().append(this.$el);
+    }
+  },
+
+  show: function () {
+    this.$el.show();
+  },
+
+  hide: function () {
+    this.$el.hide();
+  },
+
+  update: function () {
+    var s = this.listview.selectedColumn;
+
+    this.$el.html(this.template({
+      index: (this.index + 1),
+      name: this.model.getHelper().toTitel(),
+      value: s.format && s.format(this.model.get(s.getter)) || this.model.get(s.getter)
+    }));
+
+    this.updateClass();
+  },
+
+  updateClass: function () {
+    if (this.model.get('selected')) {
+      this.$el.addClass('success');
+    } else {
+      this.$el.removeClass('success');
+    }
+  },
+
+  render: function () {
+    this.update();
+    this.insert();
+    this.listenTo(this.model, 'change:selected', this.updateClass);
+  }
+});
+
+module.exports = ListItem;
+
+},{"./list-item.hbs":29,"backbone":40,"jquery":63,"underscore":134}],31:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<table class=\"table table-hover table-condensed shiplist fixedhead\">\n<thead></thead>\n<tbody></tbody>\n</table>\n";
+},"useData":true});
+
+},{"hbsfy/runtime":62}],32:[function(require,module,exports){
+var _ = require('underscore');
+window._ = _;
+var $ = require('jquery');
+var Backbone = require('backbone');
+
+var template = require('./list-view.hbs');
+
+var ListHeaderView = require('./list-header');
+var ListItemView = require('./list-item');
+
+var ListView = Backbone.View.extend({
+  listItems: {},
+  container: null,
+  template: template,
+
+  initialize: function () {
+    this.search = '';
+  },
+
+  execFilter: function () {
+    var hide = [];
+    if (this.search.length > 0) {
+      var found = this.collection.filter(function (ship) {
+        var name = ship.has('shipdata') && ship.get('shipdata').get('name').toLowerCase() || '';
+        var mmsi = ship.get('userid');
+
+        if (name.indexOf(this.search) > -1 || String(mmsi).indexOf(this.search, 0) === 0) {
+          return false;
+        }
+        return true;
+      }, this);
+
+      hide = _.map(found, function (ship) {
+        return ship.get('id');
+      });
+    }
+
+    _.each(this.listItems, function (item, id) {
+      if (hide.indexOf(parseInt(id)) > -1) {
+        item.hide();
+      } else {
+        item.show();
+      }
+    });
+  },
+
+  filter: function (evt) {
+    var search = $(evt.target).val();
+    this.search = search && search.toLowerCase() || '';
+    this.execFilter();
+  },
+
+  getContainer: function () {
+    return this.container;
+  },
+
+  addItemView: function (ship) {
+    var listItem = new ListItemView({
+      model: ship,
+      collection: this.collection,
+      listview: this
+    });
+
+    _.invoke(this.listItems, 'updateIndex');
+
+    listItem.render();
+
+    this.listItems[ship.get('id')] = listItem;
+
+//    console.log('add', this.listItems[ship.get('id')].index, ship.toTitel());
+
+  },
+
+  removeItemView: function (ship) {
+    this.listItems[ship.get('id')].remove();
+
+//    console.log('remove', this.listItems[ship.get('id')].index, ship.toTitel());
+
+    delete this.listItems[ship.get('id')];
+  },
+
+  render: function () {
+    this.$el.html(this.template({ }));
+
+    this.listHeaderView = new ListHeaderView({
+      el: this.$el.find('thead'),
+      collection: this.collection
+    });
+    this.selectedColumn = this.listHeaderView.selectedColumn();
+    this.listHeaderView.render();
+
+    this.listenTo(this.listHeaderView, 'column:change', function (selectedColumn) {
+      this.selectedColumn = selectedColumn;
+      _.invoke(this.listItems, 'update');
+    });
+
+    this.container = this.$el.find('tbody');
+
+    this.listenTo(this.collection, 'add', this.addItemView);
+    this.listenTo(this.collection, 'remove', this.removeItemView);
+
+    this.execFilter();
+
+    window.listItems = this.listItems;
+  }
+});
+
+module.exports = ListView;
+
+},{"./list-header":28,"./list-item":30,"./list-view.hbs":31,"backbone":40,"jquery":63,"underscore":134}],33:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper;
+
+  return "<div class=\"header clearfix\">\n  <form class=\"form-horizontal\">\n    <input class=\"form-control\" type=\"text\" placeholder=\"Filter by Name or MMSI\" value=\""
+    + container.escapeExpression(((helper = (helper = helpers.filter || (depth0 != null ? depth0.filter : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"filter","hash":{},"data":data}) : helper)))
+    + "\">\n  </form>\n</div>\n<div class=\"list\">\n  <div class=\"collapse in\">\n    <div class=\"inner\">\n      <div class=\"list-table\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"ship\">\n  <div class=\"collapse\">\n    <div class=\"inner\">\n      <div class=\"ship-details\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"footer\">\n  <ul class=\"nav nav-pills\">\n    <li role=\"presentation\" class=\"tolist\"><a href=\"#\">Ship list</a></li>\n    <li role=\"presentation\" class=\"disabled toship\"><a href=\"#\"></a></li>\n  </ul>\n</div>";
+},"useData":true});
+
+},{"hbsfy/runtime":62}],34:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+var $ = require('jquery');
+var Backbone = require('backbone');
+
+var ListView = require('./list-view');
+var ShipView = require('./ship-view');
+
+var template = require('./master-view.hbs');
+
+var MasterView = Backbone.View.extend({
+  template: template,
+  currenttab: 'list',
+
+  events: {
+    "keyup input": "filter",
+    "focus input": "openlistview",
+    "click .footer .tolist a": "openlistview",
+    "click .footer .toship:not(.disabled) a": "openshipview"
+  },
+
+  initialize: function (options) {
+    this.app = options.app;
+
+    this.listenTo(this.app, 'clickout', this.clickout);
+  },
+
+  clickout: function () {
+    if (this.currenttab != 'list') {
+      this.closeshipview();
+    } else {
+      this.closelistview();
+    }
+  },
+
+  setShipTabTitel: function (tab) {
+    if (this.shipView) {
+      this.$el.find('.footer li.toship a').html(this.shipView.model.getHelper().toTitel());
+    } else {
+      this.$el.find('.footer li.toship a').html('');
+    }
+  },
+
+  openlistview: function () {
+    this.$el.find('.list .collapse').collapse('show');
+    var btn = this.$el.find('.footer li.tolist');
+    $(btn).addClass('active');
+    this.$el.addClass('open');
+  },
+
+  closelistview: function () {
+    this.$el.find('.list .collapse').collapse('hide');
+    var btn = this.$el.find('.footer li.tolist');
+    $(btn).removeClass('active');
+    this.$el.removeClass('open');
+  },
+
+  openshipview: function () {
+    this.$el.find('.ship .collapse').collapse('show');
+    var btn = this.$el.find('.footer li.toship');
+    $(btn).addClass('active');
+    this.$el.addClass('open');
+  },
+
+  closeshipview: function () {
+    this.$el.find('.ship .collapse').collapse('hide');
+    var btn = this.$el.find('.footer li.toship');
+    $(btn).removeClass('active');
+    this.$el.removeClass('open');
+  },
+
+  filter: function (evt) {
+    this.listView.filter(evt);
+  },
+
+  render: function () {
+    this.$el.html(this.template());
+
+    this.listView = new ListView({
+      collection: this.collection,
+      el: this.$el.find('.list-table')
+    });
+
+    this.listView.render();
+  }
+});
+
+module.exports = MasterView;
+
+},{"./list-view":32,"./master-view.hbs":33,"./ship-view":36,"backbone":40,"jquery":63,"underscore":134}],35:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
+    return "    <li role=\"presentation\" class=\"active\"><a href=\"#shipdetails\" aria-controls=\"shipdetails\" role=\"tab\" data-toggle=\"tab\">Ship details</a></li>\n";
+},"3":function(container,depth0,helpers,partials,data) {
+    return " class=\"active\"";
+},"5":function(container,depth0,helpers,partials,data) {
+    return "    <li role=\"presentation\"><a href=\"#track\" aria-controls=\"track\" role=\"tab\" data-toggle=\"tab\">Track details</a></li>\n";
+},"7":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "    <div role=\"tabpanel\" class=\"tab-pane active\" id=\"shipdetails\">\n      <table class=\"table table-condensed details fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.ship : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "      </tbody>\n      </table>\n    </div>\n";
+},"8":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
+
+  return "        <tr>\n          <th scope=\"row\">"
+    + container.escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
+    + "</th>\n          <td>"
+    + ((stack1 = ((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</td>\n        </tr>\n";
+},"10":function(container,depth0,helpers,partials,data) {
+    return " active";
+},"12":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "    <div role=\"tabpanel\" class=\"tab-pane\" id=\"track\">\n      <table class=\"table table-hover table-condensed track fixedhead\">\n      <thead>\n        <tr>\n          <th>#</th>\n          <th>Position</th>\n        </tr>\n      </thead>\n      <tbody>\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.track : depth0),{"name":"each","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "      </tbody>\n      </table>\n    </div>\n";
+},"13":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "        <tr>\n          <th scope=\"row\">"
+    + alias4(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"index","hash":{},"data":data}) : helper)))
+    + "</th>\n          <td>\n            <table class=\"property\">\n            <tr>\n              <th>Timestamp</th>\n              <td>"
+    + ((stack1 = ((helper = (helper = helpers.timestamp || (depth0 != null ? depth0.timestamp : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"timestamp","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</td>\n            </tr>\n            <tr>\n              <th>Course/Speed</th>\n              <td>"
+    + ((stack1 = ((helper = (helper = helpers.nav || (depth0 != null ? depth0.nav : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nav","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</td>\n            </tr>\n            <tr>\n              <th>Latitude</th>\n              <td>"
+    + alias4(((helper = (helper = helpers.latitude || (depth0 != null ? depth0.latitude : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"latitude","hash":{},"data":data}) : helper)))
+    + "</td>\n            </tr>\n            <tr>\n              <th>Longitude</th>\n              <td>"
+    + alias4(((helper = (helper = helpers.longitude || (depth0 != null ? depth0.longitude : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"longitude","hash":{},"data":data}) : helper)))
+    + "</td>\n            </tr>\n            </table>\n          </td>\n        </tr>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : {};
+
+  return "<h3>"
+    + container.escapeExpression(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
+    + "</h3>\n<div>\n  <!-- Nav tabs -->\n  <ul class=\"nav nav-tabs\" role=\"tablist\">\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "    <li role=\"presentation\"><a href=\"#lastposition\""
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "aria-controls=\"lastposition\" role=\"tab\" data-toggle=\"tab\">Last position</a></li>\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "  </ul>\n\n  <!-- Tab panes -->\n  <div class=\"tab-content\">\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "    <div role=\"tabpanel\" class=\"tab-pane"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\" id=\"lastposition\">\n      <table class=\"table table-condensed position fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
+    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.position : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "      </tbody>\n      </table>\n    </div>\n"
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "  </div>\n</div>\n";
+},"useData":true});
+
+},{"hbsfy/runtime":62}],36:[function(require,module,exports){
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+var template = require('./ship-view.hbs');
+
+var ShipView = Backbone.View.extend({
+  template: template,
+
+  initialize: function () {
+    this.isShown = false;
+    this.listenTo(this.model.get('track'), "sync", this.render);
+  },
+
+  render: function () {
+    var track = this.model.get('track').getHelper().toPropertyList();
+
+    this.$el.html(this.template({
+      title: this.model.getHelper().toTitel(),
+      ship: this.model.has('shipdata') && this.model.get('shipdata').getHelper().toPropertyList(),
+      position: this.model.get('position').getHelper().toPropertyList(),
+      track: !_.isEmpty(track) ? track : false,
+      positiontab: this.model.has('shipdata') ? false : true
+    }));
+  }
+});
+
+module.exports = ShipView;
+
+},{"./ship-view.hbs":35,"backbone":40,"underscore":134}],37:[function(require,module,exports){
 module.exports={
   "aismsgnum": 1,
   "name": "position",
@@ -1983,7 +2638,7 @@ module.exports={
     }
   ]
 }
-},{}],26:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports={
   "aismsgnum": 5,
   "name": "shipdata",
@@ -2555,7 +3210,7 @@ module.exports={
     }
   ]
 }
-},{}],27:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab: */
 /**
  * Backbone-relational.js 0.10.0
@@ -4633,7 +5288,7 @@ module.exports={
 	};
 }));
 
-},{"backbone":28,"underscore":102}],28:[function(require,module,exports){
+},{"backbone":40,"underscore":134}],40:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.3
 
@@ -6531,7 +7186,7 @@ module.exports={
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":31,"underscore":102}],29:[function(require,module,exports){
+},{"jquery":63,"underscore":134}],41:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -8903,7 +9558,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":31}],30:[function(require,module,exports){
+},{"jquery":63}],42:[function(require,module,exports){
 /*
  * Geodesic routines from GeographicLib translated to JavaScript.  See
  * http://geographiclib.sf.net/html/other.html#javascript
@@ -11792,7 +12447,1110 @@ cb(GeographicLib);
   }
 });
 
-},{}],31:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+// istanbul ignore next
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+// istanbul ignore next
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+var _handlebarsBase = require('./handlebars/base');
+
+// Each of these augment the Handlebars object. No need to setup here.
+// (This is done to easily share code between commonjs and browse envs)
+
+var base = _interopRequireWildcard(_handlebarsBase);
+
+var _handlebarsSafeString = require('./handlebars/safe-string');
+
+var _handlebarsSafeString2 = _interopRequireDefault(_handlebarsSafeString);
+
+var _handlebarsException = require('./handlebars/exception');
+
+var _handlebarsException2 = _interopRequireDefault(_handlebarsException);
+
+var _handlebarsUtils = require('./handlebars/utils');
+
+var Utils = _interopRequireWildcard(_handlebarsUtils);
+
+var _handlebarsRuntime = require('./handlebars/runtime');
+
+var runtime = _interopRequireWildcard(_handlebarsRuntime);
+
+var _handlebarsNoConflict = require('./handlebars/no-conflict');
+
+// For compatibility and usage outside of module systems, make the Handlebars object a namespace
+
+var _handlebarsNoConflict2 = _interopRequireDefault(_handlebarsNoConflict);
+
+function create() {
+  var hb = new base.HandlebarsEnvironment();
+
+  Utils.extend(hb, base);
+  hb.SafeString = _handlebarsSafeString2['default'];
+  hb.Exception = _handlebarsException2['default'];
+  hb.Utils = Utils;
+  hb.escapeExpression = Utils.escapeExpression;
+
+  hb.VM = runtime;
+  hb.template = function (spec) {
+    return runtime.template(spec, hb);
+  };
+
+  return hb;
+}
+
+var inst = create();
+inst.create = create;
+
+_handlebarsNoConflict2['default'](inst);
+
+inst['default'] = inst;
+
+exports['default'] = inst;
+module.exports = exports['default'];
+
+
+},{"./handlebars/base":44,"./handlebars/exception":47,"./handlebars/no-conflict":57,"./handlebars/runtime":58,"./handlebars/safe-string":59,"./handlebars/utils":60}],44:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.HandlebarsEnvironment = HandlebarsEnvironment;
+// istanbul ignore next
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _utils = require('./utils');
+
+var _exception = require('./exception');
+
+var _exception2 = _interopRequireDefault(_exception);
+
+var _helpers = require('./helpers');
+
+var _decorators = require('./decorators');
+
+var _logger = require('./logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
+var VERSION = '4.0.3';
+exports.VERSION = VERSION;
+var COMPILER_REVISION = 7;
+
+exports.COMPILER_REVISION = COMPILER_REVISION;
+var REVISION_CHANGES = {
+  1: '<= 1.0.rc.2', // 1.0.rc.2 is actually rev2 but doesn't report it
+  2: '== 1.0.0-rc.3',
+  3: '== 1.0.0-rc.4',
+  4: '== 1.x.x',
+  5: '== 2.0.0-alpha.x',
+  6: '>= 2.0.0-beta.1',
+  7: '>= 4.0.0'
+};
+
+exports.REVISION_CHANGES = REVISION_CHANGES;
+var objectType = '[object Object]';
+
+function HandlebarsEnvironment(helpers, partials, decorators) {
+  this.helpers = helpers || {};
+  this.partials = partials || {};
+  this.decorators = decorators || {};
+
+  _helpers.registerDefaultHelpers(this);
+  _decorators.registerDefaultDecorators(this);
+}
+
+HandlebarsEnvironment.prototype = {
+  constructor: HandlebarsEnvironment,
+
+  logger: _logger2['default'],
+  log: _logger2['default'].log,
+
+  registerHelper: function registerHelper(name, fn) {
+    if (_utils.toString.call(name) === objectType) {
+      if (fn) {
+        throw new _exception2['default']('Arg not supported with multiple helpers');
+      }
+      _utils.extend(this.helpers, name);
+    } else {
+      this.helpers[name] = fn;
+    }
+  },
+  unregisterHelper: function unregisterHelper(name) {
+    delete this.helpers[name];
+  },
+
+  registerPartial: function registerPartial(name, partial) {
+    if (_utils.toString.call(name) === objectType) {
+      _utils.extend(this.partials, name);
+    } else {
+      if (typeof partial === 'undefined') {
+        throw new _exception2['default']('Attempting to register a partial as undefined');
+      }
+      this.partials[name] = partial;
+    }
+  },
+  unregisterPartial: function unregisterPartial(name) {
+    delete this.partials[name];
+  },
+
+  registerDecorator: function registerDecorator(name, fn) {
+    if (_utils.toString.call(name) === objectType) {
+      if (fn) {
+        throw new _exception2['default']('Arg not supported with multiple decorators');
+      }
+      _utils.extend(this.decorators, name);
+    } else {
+      this.decorators[name] = fn;
+    }
+  },
+  unregisterDecorator: function unregisterDecorator(name) {
+    delete this.decorators[name];
+  }
+};
+
+var log = _logger2['default'].log;
+
+exports.log = log;
+exports.createFrame = _utils.createFrame;
+exports.logger = _logger2['default'];
+
+
+},{"./decorators":45,"./exception":47,"./helpers":48,"./logger":56,"./utils":60}],45:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.registerDefaultDecorators = registerDefaultDecorators;
+// istanbul ignore next
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _decoratorsInline = require('./decorators/inline');
+
+var _decoratorsInline2 = _interopRequireDefault(_decoratorsInline);
+
+function registerDefaultDecorators(instance) {
+  _decoratorsInline2['default'](instance);
+}
+
+
+},{"./decorators/inline":46}],46:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _utils = require('../utils');
+
+exports['default'] = function (instance) {
+  instance.registerDecorator('inline', function (fn, props, container, options) {
+    var ret = fn;
+    if (!props.partials) {
+      props.partials = {};
+      ret = function (context, options) {
+        // Create a new partials stack frame prior to exec.
+        var original = container.partials;
+        container.partials = _utils.extend({}, original, props.partials);
+        var ret = fn(context, options);
+        container.partials = original;
+        return ret;
+      };
+    }
+
+    props.partials[options.args[0]] = options.fn;
+
+    return ret;
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{"../utils":60}],47:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
+
+function Exception(message, node) {
+  var loc = node && node.loc,
+      line = undefined,
+      column = undefined;
+  if (loc) {
+    line = loc.start.line;
+    column = loc.start.column;
+
+    message += ' - ' + line + ':' + column;
+  }
+
+  var tmp = Error.prototype.constructor.call(this, message);
+
+  // Unfortunately errors are not enumerable in Chrome (at least), so `for prop in tmp` doesn't work.
+  for (var idx = 0; idx < errorProps.length; idx++) {
+    this[errorProps[idx]] = tmp[errorProps[idx]];
+  }
+
+  /* istanbul ignore else */
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, Exception);
+  }
+
+  if (loc) {
+    this.lineNumber = line;
+    this.column = column;
+  }
+}
+
+Exception.prototype = new Error();
+
+exports['default'] = Exception;
+module.exports = exports['default'];
+
+
+},{}],48:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.registerDefaultHelpers = registerDefaultHelpers;
+// istanbul ignore next
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _helpersBlockHelperMissing = require('./helpers/block-helper-missing');
+
+var _helpersBlockHelperMissing2 = _interopRequireDefault(_helpersBlockHelperMissing);
+
+var _helpersEach = require('./helpers/each');
+
+var _helpersEach2 = _interopRequireDefault(_helpersEach);
+
+var _helpersHelperMissing = require('./helpers/helper-missing');
+
+var _helpersHelperMissing2 = _interopRequireDefault(_helpersHelperMissing);
+
+var _helpersIf = require('./helpers/if');
+
+var _helpersIf2 = _interopRequireDefault(_helpersIf);
+
+var _helpersLog = require('./helpers/log');
+
+var _helpersLog2 = _interopRequireDefault(_helpersLog);
+
+var _helpersLookup = require('./helpers/lookup');
+
+var _helpersLookup2 = _interopRequireDefault(_helpersLookup);
+
+var _helpersWith = require('./helpers/with');
+
+var _helpersWith2 = _interopRequireDefault(_helpersWith);
+
+function registerDefaultHelpers(instance) {
+  _helpersBlockHelperMissing2['default'](instance);
+  _helpersEach2['default'](instance);
+  _helpersHelperMissing2['default'](instance);
+  _helpersIf2['default'](instance);
+  _helpersLog2['default'](instance);
+  _helpersLookup2['default'](instance);
+  _helpersWith2['default'](instance);
+}
+
+
+},{"./helpers/block-helper-missing":49,"./helpers/each":50,"./helpers/helper-missing":51,"./helpers/if":52,"./helpers/log":53,"./helpers/lookup":54,"./helpers/with":55}],49:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _utils = require('../utils');
+
+exports['default'] = function (instance) {
+  instance.registerHelper('blockHelperMissing', function (context, options) {
+    var inverse = options.inverse,
+        fn = options.fn;
+
+    if (context === true) {
+      return fn(this);
+    } else if (context === false || context == null) {
+      return inverse(this);
+    } else if (_utils.isArray(context)) {
+      if (context.length > 0) {
+        if (options.ids) {
+          options.ids = [options.name];
+        }
+
+        return instance.helpers.each(context, options);
+      } else {
+        return inverse(this);
+      }
+    } else {
+      if (options.data && options.ids) {
+        var data = _utils.createFrame(options.data);
+        data.contextPath = _utils.appendContextPath(options.data.contextPath, options.name);
+        options = { data: data };
+      }
+
+      return fn(context, options);
+    }
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{"../utils":60}],50:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+// istanbul ignore next
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _utils = require('../utils');
+
+var _exception = require('../exception');
+
+var _exception2 = _interopRequireDefault(_exception);
+
+exports['default'] = function (instance) {
+  instance.registerHelper('each', function (context, options) {
+    if (!options) {
+      throw new _exception2['default']('Must pass iterator to #each');
+    }
+
+    var fn = options.fn,
+        inverse = options.inverse,
+        i = 0,
+        ret = '',
+        data = undefined,
+        contextPath = undefined;
+
+    if (options.data && options.ids) {
+      contextPath = _utils.appendContextPath(options.data.contextPath, options.ids[0]) + '.';
+    }
+
+    if (_utils.isFunction(context)) {
+      context = context.call(this);
+    }
+
+    if (options.data) {
+      data = _utils.createFrame(options.data);
+    }
+
+    function execIteration(field, index, last) {
+      if (data) {
+        data.key = field;
+        data.index = index;
+        data.first = index === 0;
+        data.last = !!last;
+
+        if (contextPath) {
+          data.contextPath = contextPath + field;
+        }
+      }
+
+      ret = ret + fn(context[field], {
+        data: data,
+        blockParams: _utils.blockParams([context[field], field], [contextPath + field, null])
+      });
+    }
+
+    if (context && typeof context === 'object') {
+      if (_utils.isArray(context)) {
+        for (var j = context.length; i < j; i++) {
+          if (i in context) {
+            execIteration(i, i, i === context.length - 1);
+          }
+        }
+      } else {
+        var priorKey = undefined;
+
+        for (var key in context) {
+          if (context.hasOwnProperty(key)) {
+            // We're running the iterations one step out of sync so we can detect
+            // the last iteration without have to scan the object twice and create
+            // an itermediate keys array.
+            if (priorKey !== undefined) {
+              execIteration(priorKey, i - 1);
+            }
+            priorKey = key;
+            i++;
+          }
+        }
+        if (priorKey !== undefined) {
+          execIteration(priorKey, i - 1, true);
+        }
+      }
+    }
+
+    if (i === 0) {
+      ret = inverse(this);
+    }
+
+    return ret;
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{"../exception":47,"../utils":60}],51:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+// istanbul ignore next
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _exception = require('../exception');
+
+var _exception2 = _interopRequireDefault(_exception);
+
+exports['default'] = function (instance) {
+  instance.registerHelper('helperMissing', function () /* [args, ]options */{
+    if (arguments.length === 1) {
+      // A missing field in a {{foo}} construct.
+      return undefined;
+    } else {
+      // Someone is actually trying to call something, blow up.
+      throw new _exception2['default']('Missing helper: "' + arguments[arguments.length - 1].name + '"');
+    }
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{"../exception":47}],52:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _utils = require('../utils');
+
+exports['default'] = function (instance) {
+  instance.registerHelper('if', function (conditional, options) {
+    if (_utils.isFunction(conditional)) {
+      conditional = conditional.call(this);
+    }
+
+    // Default behavior is to render the positive path if the value is truthy and not empty.
+    // The `includeZero` option may be set to treat the condtional as purely not empty based on the
+    // behavior of isEmpty. Effectively this determines if 0 is handled by the positive path or negative.
+    if (!options.hash.includeZero && !conditional || _utils.isEmpty(conditional)) {
+      return options.inverse(this);
+    } else {
+      return options.fn(this);
+    }
+  });
+
+  instance.registerHelper('unless', function (conditional, options) {
+    return instance.helpers['if'].call(this, conditional, { fn: options.inverse, inverse: options.fn, hash: options.hash });
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{"../utils":60}],53:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+exports['default'] = function (instance) {
+  instance.registerHelper('log', function () /* message, options */{
+    var args = [undefined],
+        options = arguments[arguments.length - 1];
+    for (var i = 0; i < arguments.length - 1; i++) {
+      args.push(arguments[i]);
+    }
+
+    var level = 1;
+    if (options.hash.level != null) {
+      level = options.hash.level;
+    } else if (options.data && options.data.level != null) {
+      level = options.data.level;
+    }
+    args[0] = level;
+
+    instance.log.apply(instance, args);
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{}],54:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+exports['default'] = function (instance) {
+  instance.registerHelper('lookup', function (obj, field) {
+    return obj && obj[field];
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{}],55:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _utils = require('../utils');
+
+exports['default'] = function (instance) {
+  instance.registerHelper('with', function (context, options) {
+    if (_utils.isFunction(context)) {
+      context = context.call(this);
+    }
+
+    var fn = options.fn;
+
+    if (!_utils.isEmpty(context)) {
+      var data = options.data;
+      if (options.data && options.ids) {
+        data = _utils.createFrame(options.data);
+        data.contextPath = _utils.appendContextPath(options.data.contextPath, options.ids[0]);
+      }
+
+      return fn(context, {
+        data: data,
+        blockParams: _utils.blockParams([context], [data && data.contextPath])
+      });
+    } else {
+      return options.inverse(this);
+    }
+  });
+};
+
+module.exports = exports['default'];
+
+
+},{"../utils":60}],56:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _utils = require('./utils');
+
+var logger = {
+  methodMap: ['debug', 'info', 'warn', 'error'],
+  level: 'info',
+
+  // Maps a given level value to the `methodMap` indexes above.
+  lookupLevel: function lookupLevel(level) {
+    if (typeof level === 'string') {
+      var levelMap = _utils.indexOf(logger.methodMap, level.toLowerCase());
+      if (levelMap >= 0) {
+        level = levelMap;
+      } else {
+        level = parseInt(level, 10);
+      }
+    }
+
+    return level;
+  },
+
+  // Can be overridden in the host environment
+  log: function log(level) {
+    level = logger.lookupLevel(level);
+
+    if (typeof console !== 'undefined' && logger.lookupLevel(logger.level) <= level) {
+      var method = logger.methodMap[level];
+      if (!console[method]) {
+        // eslint-disable-line no-console
+        method = 'log';
+      }
+
+      for (var _len = arguments.length, message = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        message[_key - 1] = arguments[_key];
+      }
+
+      console[method].apply(console, message); // eslint-disable-line no-console
+    }
+  }
+};
+
+exports['default'] = logger;
+module.exports = exports['default'];
+
+
+},{"./utils":60}],57:[function(require,module,exports){
+(function (global){
+/* global window */
+'use strict';
+
+exports.__esModule = true;
+
+exports['default'] = function (Handlebars) {
+  /* istanbul ignore next */
+  var root = typeof global !== 'undefined' ? global : window,
+      $Handlebars = root.Handlebars;
+  /* istanbul ignore next */
+  Handlebars.noConflict = function () {
+    if (root.Handlebars === Handlebars) {
+      root.Handlebars = $Handlebars;
+    }
+  };
+};
+
+module.exports = exports['default'];
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],58:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.checkRevision = checkRevision;
+exports.template = template;
+exports.wrapProgram = wrapProgram;
+exports.resolvePartial = resolvePartial;
+exports.invokePartial = invokePartial;
+exports.noop = noop;
+// istanbul ignore next
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+// istanbul ignore next
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+var _utils = require('./utils');
+
+var Utils = _interopRequireWildcard(_utils);
+
+var _exception = require('./exception');
+
+var _exception2 = _interopRequireDefault(_exception);
+
+var _base = require('./base');
+
+function checkRevision(compilerInfo) {
+  var compilerRevision = compilerInfo && compilerInfo[0] || 1,
+      currentRevision = _base.COMPILER_REVISION;
+
+  if (compilerRevision !== currentRevision) {
+    if (compilerRevision < currentRevision) {
+      var runtimeVersions = _base.REVISION_CHANGES[currentRevision],
+          compilerVersions = _base.REVISION_CHANGES[compilerRevision];
+      throw new _exception2['default']('Template was precompiled with an older version of Handlebars than the current runtime. ' + 'Please update your precompiler to a newer version (' + runtimeVersions + ') or downgrade your runtime to an older version (' + compilerVersions + ').');
+    } else {
+      // Use the embedded version info since the runtime doesn't know about this revision yet
+      throw new _exception2['default']('Template was precompiled with a newer version of Handlebars than the current runtime. ' + 'Please update your runtime to a newer version (' + compilerInfo[1] + ').');
+    }
+  }
+}
+
+function template(templateSpec, env) {
+  /* istanbul ignore next */
+  if (!env) {
+    throw new _exception2['default']('No environment passed to template');
+  }
+  if (!templateSpec || !templateSpec.main) {
+    throw new _exception2['default']('Unknown template object: ' + typeof templateSpec);
+  }
+
+  templateSpec.main.decorator = templateSpec.main_d;
+
+  // Note: Using env.VM references rather than local var references throughout this section to allow
+  // for external users to override these as psuedo-supported APIs.
+  env.VM.checkRevision(templateSpec.compiler);
+
+  function invokePartialWrapper(partial, context, options) {
+    if (options.hash) {
+      context = Utils.extend({}, context, options.hash);
+      if (options.ids) {
+        options.ids[0] = true;
+      }
+    }
+
+    partial = env.VM.resolvePartial.call(this, partial, context, options);
+    var result = env.VM.invokePartial.call(this, partial, context, options);
+
+    if (result == null && env.compile) {
+      options.partials[options.name] = env.compile(partial, templateSpec.compilerOptions, env);
+      result = options.partials[options.name](context, options);
+    }
+    if (result != null) {
+      if (options.indent) {
+        var lines = result.split('\n');
+        for (var i = 0, l = lines.length; i < l; i++) {
+          if (!lines[i] && i + 1 === l) {
+            break;
+          }
+
+          lines[i] = options.indent + lines[i];
+        }
+        result = lines.join('\n');
+      }
+      return result;
+    } else {
+      throw new _exception2['default']('The partial ' + options.name + ' could not be compiled when running in runtime-only mode');
+    }
+  }
+
+  // Just add water
+  var container = {
+    strict: function strict(obj, name) {
+      if (!(name in obj)) {
+        throw new _exception2['default']('"' + name + '" not defined in ' + obj);
+      }
+      return obj[name];
+    },
+    lookup: function lookup(depths, name) {
+      var len = depths.length;
+      for (var i = 0; i < len; i++) {
+        if (depths[i] && depths[i][name] != null) {
+          return depths[i][name];
+        }
+      }
+    },
+    lambda: function lambda(current, context) {
+      return typeof current === 'function' ? current.call(context) : current;
+    },
+
+    escapeExpression: Utils.escapeExpression,
+    invokePartial: invokePartialWrapper,
+
+    fn: function fn(i) {
+      var ret = templateSpec[i];
+      ret.decorator = templateSpec[i + '_d'];
+      return ret;
+    },
+
+    programs: [],
+    program: function program(i, data, declaredBlockParams, blockParams, depths) {
+      var programWrapper = this.programs[i],
+          fn = this.fn(i);
+      if (data || depths || blockParams || declaredBlockParams) {
+        programWrapper = wrapProgram(this, i, fn, data, declaredBlockParams, blockParams, depths);
+      } else if (!programWrapper) {
+        programWrapper = this.programs[i] = wrapProgram(this, i, fn);
+      }
+      return programWrapper;
+    },
+
+    data: function data(value, depth) {
+      while (value && depth--) {
+        value = value._parent;
+      }
+      return value;
+    },
+    merge: function merge(param, common) {
+      var obj = param || common;
+
+      if (param && common && param !== common) {
+        obj = Utils.extend({}, common, param);
+      }
+
+      return obj;
+    },
+
+    noop: env.VM.noop,
+    compilerInfo: templateSpec.compiler
+  };
+
+  function ret(context) {
+    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+    var data = options.data;
+
+    ret._setup(options);
+    if (!options.partial && templateSpec.useData) {
+      data = initData(context, data);
+    }
+    var depths = undefined,
+        blockParams = templateSpec.useBlockParams ? [] : undefined;
+    if (templateSpec.useDepths) {
+      if (options.depths) {
+        depths = context !== options.depths[0] ? [context].concat(options.depths) : options.depths;
+      } else {
+        depths = [context];
+      }
+    }
+
+    function main(context /*, options*/) {
+      return '' + templateSpec.main(container, context, container.helpers, container.partials, data, blockParams, depths);
+    }
+    main = executeDecorators(templateSpec.main, main, container, options.depths || [], data, blockParams);
+    return main(context, options);
+  }
+  ret.isTop = true;
+
+  ret._setup = function (options) {
+    if (!options.partial) {
+      container.helpers = container.merge(options.helpers, env.helpers);
+
+      if (templateSpec.usePartial) {
+        container.partials = container.merge(options.partials, env.partials);
+      }
+      if (templateSpec.usePartial || templateSpec.useDecorators) {
+        container.decorators = container.merge(options.decorators, env.decorators);
+      }
+    } else {
+      container.helpers = options.helpers;
+      container.partials = options.partials;
+      container.decorators = options.decorators;
+    }
+  };
+
+  ret._child = function (i, data, blockParams, depths) {
+    if (templateSpec.useBlockParams && !blockParams) {
+      throw new _exception2['default']('must pass block params');
+    }
+    if (templateSpec.useDepths && !depths) {
+      throw new _exception2['default']('must pass parent depths');
+    }
+
+    return wrapProgram(container, i, templateSpec[i], data, 0, blockParams, depths);
+  };
+  return ret;
+}
+
+function wrapProgram(container, i, fn, data, declaredBlockParams, blockParams, depths) {
+  function prog(context) {
+    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+    var currentDepths = depths;
+    if (depths && context !== depths[0]) {
+      currentDepths = [context].concat(depths);
+    }
+
+    return fn(container, context, container.helpers, container.partials, options.data || data, blockParams && [options.blockParams].concat(blockParams), currentDepths);
+  }
+
+  prog = executeDecorators(fn, prog, container, depths, data, blockParams);
+
+  prog.program = i;
+  prog.depth = depths ? depths.length : 0;
+  prog.blockParams = declaredBlockParams || 0;
+  return prog;
+}
+
+function resolvePartial(partial, context, options) {
+  if (!partial) {
+    if (options.name === '@partial-block') {
+      partial = options.data['partial-block'];
+    } else {
+      partial = options.partials[options.name];
+    }
+  } else if (!partial.call && !options.name) {
+    // This is a dynamic partial that returned a string
+    options.name = partial;
+    partial = options.partials[partial];
+  }
+  return partial;
+}
+
+function invokePartial(partial, context, options) {
+  options.partial = true;
+  if (options.ids) {
+    options.data.contextPath = options.ids[0] || options.data.contextPath;
+  }
+
+  var partialBlock = undefined;
+  if (options.fn && options.fn !== noop) {
+    options.data = _base.createFrame(options.data);
+    partialBlock = options.data['partial-block'] = options.fn;
+
+    if (partialBlock.partials) {
+      options.partials = Utils.extend({}, options.partials, partialBlock.partials);
+    }
+  }
+
+  if (partial === undefined && partialBlock) {
+    partial = partialBlock;
+  }
+
+  if (partial === undefined) {
+    throw new _exception2['default']('The partial ' + options.name + ' could not be found');
+  } else if (partial instanceof Function) {
+    return partial(context, options);
+  }
+}
+
+function noop() {
+  return '';
+}
+
+function initData(context, data) {
+  if (!data || !('root' in data)) {
+    data = data ? _base.createFrame(data) : {};
+    data.root = context;
+  }
+  return data;
+}
+
+function executeDecorators(fn, prog, container, depths, data, blockParams) {
+  if (fn.decorator) {
+    var props = {};
+    prog = fn.decorator(prog, props, container, depths && depths[0], data, blockParams, depths);
+    Utils.extend(prog, props);
+  }
+  return prog;
+}
+
+
+},{"./base":44,"./exception":47,"./utils":60}],59:[function(require,module,exports){
+// Build out our basic SafeString type
+'use strict';
+
+exports.__esModule = true;
+function SafeString(string) {
+  this.string = string;
+}
+
+SafeString.prototype.toString = SafeString.prototype.toHTML = function () {
+  return '' + this.string;
+};
+
+exports['default'] = SafeString;
+module.exports = exports['default'];
+
+
+},{}],60:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.extend = extend;
+exports.indexOf = indexOf;
+exports.escapeExpression = escapeExpression;
+exports.isEmpty = isEmpty;
+exports.createFrame = createFrame;
+exports.blockParams = blockParams;
+exports.appendContextPath = appendContextPath;
+var escape = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#x27;',
+  '`': '&#x60;',
+  '=': '&#x3D;'
+};
+
+var badChars = /[&<>"'`=]/g,
+    possible = /[&<>"'`=]/;
+
+function escapeChar(chr) {
+  return escape[chr];
+}
+
+function extend(obj /* , ...source */) {
+  for (var i = 1; i < arguments.length; i++) {
+    for (var key in arguments[i]) {
+      if (Object.prototype.hasOwnProperty.call(arguments[i], key)) {
+        obj[key] = arguments[i][key];
+      }
+    }
+  }
+
+  return obj;
+}
+
+var toString = Object.prototype.toString;
+
+// Sourced from lodash
+// https://github.com/bestiejs/lodash/blob/master/LICENSE.txt
+/* eslint-disable func-style */
+exports.toString = toString;
+var isFunction = function isFunction(value) {
+  return typeof value === 'function';
+};
+// fallback for older versions of Chrome and Safari
+/* istanbul ignore next */
+if (isFunction(/x/)) {
+  exports.isFunction = isFunction = function (value) {
+    return typeof value === 'function' && toString.call(value) === '[object Function]';
+  };
+}
+exports.isFunction = isFunction;
+
+/* eslint-enable func-style */
+
+/* istanbul ignore next */
+var isArray = Array.isArray || function (value) {
+  return value && typeof value === 'object' ? toString.call(value) === '[object Array]' : false;
+};
+
+// Older IE versions do not directly support indexOf so we must implement our own, sadly.
+exports.isArray = isArray;
+
+function indexOf(array, value) {
+  for (var i = 0, len = array.length; i < len; i++) {
+    if (array[i] === value) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function escapeExpression(string) {
+  if (typeof string !== 'string') {
+    // don't escape SafeStrings, since they're already safe
+    if (string && string.toHTML) {
+      return string.toHTML();
+    } else if (string == null) {
+      return '';
+    } else if (!string) {
+      return string + '';
+    }
+
+    // Force a string conversion as this will be done by the append regardless and
+    // the regex test will do this transparently behind the scenes, causing issues if
+    // an object's to string has escaped characters in it.
+    string = '' + string;
+  }
+
+  if (!possible.test(string)) {
+    return string;
+  }
+  return string.replace(badChars, escapeChar);
+}
+
+function isEmpty(value) {
+  if (!value && value !== 0) {
+    return true;
+  } else if (isArray(value) && value.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function createFrame(object) {
+  var frame = extend({}, object);
+  frame._parent = object;
+  return frame;
+}
+
+function blockParams(params, ids) {
+  params.path = ids;
+  return params;
+}
+
+function appendContextPath(contextPath, id) {
+  return (contextPath ? contextPath + '.' : '') + id;
+}
+
+
+},{}],61:[function(require,module,exports){
+// Create a simple path alias to allow browserify to resolve
+// the runtime on a supported path.
+module.exports = require('./dist/cjs/handlebars.runtime')['default'];
+
+},{"./dist/cjs/handlebars.runtime":43}],62:[function(require,module,exports){
+module.exports = require("handlebars/runtime")["default"];
+
+},{"handlebars/runtime":61}],63:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -21004,7 +22762,7 @@ return jQuery;
 
 }));
 
-},{}],32:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -24200,7 +25958,7 @@ return jQuery;
     return _moment;
 
 }));
-},{}],33:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var trim = require('./trim');
 var decap = require('./decapitalize');
 
@@ -24216,7 +25974,7 @@ module.exports = function camelize(str, decapitalize) {
   }
 };
 
-},{"./decapitalize":42,"./trim":94}],34:[function(require,module,exports){
+},{"./decapitalize":74,"./trim":126}],66:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function capitalize(str, lowercaseRest) {
@@ -24226,14 +25984,14 @@ module.exports = function capitalize(str, lowercaseRest) {
   return str.charAt(0).toUpperCase() + remainingChars;
 };
 
-},{"./helper/makeString":52}],35:[function(require,module,exports){
+},{"./helper/makeString":84}],67:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function chars(str) {
   return makeString(str).split('');
 };
 
-},{"./helper/makeString":52}],36:[function(require,module,exports){
+},{"./helper/makeString":84}],68:[function(require,module,exports){
 module.exports = function chop(str, step) {
   if (str == null) return [];
   str = String(str);
@@ -24241,7 +25999,7 @@ module.exports = function chop(str, step) {
   return step > 0 ? str.match(new RegExp('.{1,' + step + '}', 'g')) : [str];
 };
 
-},{}],37:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var camelize = require('./camelize');
 var makeString = require('./helper/makeString');
@@ -24251,14 +26009,14 @@ module.exports = function classify(str) {
   return capitalize(camelize(str.replace(/[\W_]/g, ' ')).replace(/\s/g, ''));
 };
 
-},{"./camelize":33,"./capitalize":34,"./helper/makeString":52}],38:[function(require,module,exports){
+},{"./camelize":65,"./capitalize":66,"./helper/makeString":84}],70:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function clean(str) {
   return trim(str).replace(/\s\s+/g, ' ');
 };
 
-},{"./trim":94}],39:[function(require,module,exports){
+},{"./trim":126}],71:[function(require,module,exports){
 
 var makeString = require('./helper/makeString');
 
@@ -24282,7 +26040,7 @@ module.exports = function cleanDiacritics(str) {
   });
 };
 
-},{"./helper/makeString":52}],40:[function(require,module,exports){
+},{"./helper/makeString":84}],72:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function(str, substr) {
@@ -24294,14 +26052,14 @@ module.exports = function(str, substr) {
   return str.split(substr).length - 1;
 };
 
-},{"./helper/makeString":52}],41:[function(require,module,exports){
+},{"./helper/makeString":84}],73:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function dasherize(str) {
   return trim(str).replace(/([A-Z])/g, '-$1').replace(/[-_\s]+/g, '-').toLowerCase();
 };
 
-},{"./trim":94}],42:[function(require,module,exports){
+},{"./trim":126}],74:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function decapitalize(str) {
@@ -24309,7 +26067,7 @@ module.exports = function decapitalize(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
 };
 
-},{"./helper/makeString":52}],43:[function(require,module,exports){
+},{"./helper/makeString":84}],75:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 function getIndent(str) {
@@ -24339,7 +26097,7 @@ module.exports = function dedent(str, pattern) {
   return str.replace(reg, '');
 };
 
-},{"./helper/makeString":52}],44:[function(require,module,exports){
+},{"./helper/makeString":84}],76:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -24354,7 +26112,7 @@ module.exports = function endsWith(str, ends, position) {
   return position >= 0 && str.indexOf(ends, position) === position;
 };
 
-},{"./helper/makeString":52,"./helper/toPositive":54}],45:[function(require,module,exports){
+},{"./helper/makeString":84,"./helper/toPositive":86}],77:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var escapeChars = require('./helper/escapeChars');
 var reversedEscapeChars = {};
@@ -24374,7 +26132,7 @@ module.exports = function escapeHTML(str) {
   });
 };
 
-},{"./helper/escapeChars":49,"./helper/makeString":52}],46:[function(require,module,exports){
+},{"./helper/escapeChars":81,"./helper/makeString":84}],78:[function(require,module,exports){
 module.exports = function() {
   var result = {};
 
@@ -24386,7 +26144,7 @@ module.exports = function() {
   return result;
 };
 
-},{}],47:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function adjacent(str, direction) {
@@ -24397,7 +26155,7 @@ module.exports = function adjacent(str, direction) {
   return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + direction);
 };
 
-},{"./makeString":52}],48:[function(require,module,exports){
+},{"./makeString":84}],80:[function(require,module,exports){
 var escapeRegExp = require('./escapeRegExp');
 
 module.exports = function defaultToWhiteSpace(characters) {
@@ -24409,7 +26167,7 @@ module.exports = function defaultToWhiteSpace(characters) {
     return '[' + escapeRegExp(characters) + ']';
 };
 
-},{"./escapeRegExp":50}],49:[function(require,module,exports){
+},{"./escapeRegExp":82}],81:[function(require,module,exports){
 /* We're explicitly defining the list of entities we want to escape.
 nbsp is an HTML entity, but we don't want to escape all space characters in a string, hence its omission in this map.
 
@@ -24430,14 +26188,14 @@ var escapeChars = {
 
 module.exports = escapeChars;
 
-},{}],50:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function escapeRegExp(str) {
   return makeString(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 };
 
-},{"./makeString":52}],51:[function(require,module,exports){
+},{"./makeString":84}],83:[function(require,module,exports){
 /*
 We're explicitly defining the list of entities that might see in escape HTML strings
 */
@@ -24458,7 +26216,7 @@ var htmlEntities = {
 
 module.exports = htmlEntities;
 
-},{}],52:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 /**
  * Ensure some object is a coerced to a string
  **/
@@ -24467,7 +26225,7 @@ module.exports = function makeString(object) {
   return '' + object;
 };
 
-},{}],53:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 module.exports = function strRepeat(str, qty){
   if (qty < 1) return '';
   var result = '';
@@ -24478,12 +26236,12 @@ module.exports = function strRepeat(str, qty){
   return result;
 };
 
-},{}],54:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 module.exports = function toPositive(number) {
   return number < 0 ? 0 : (+number || 0);
 };
 
-},{}],55:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var underscored = require('./underscored');
 var trim = require('./trim');
@@ -24492,7 +26250,7 @@ module.exports = function humanize(str) {
   return capitalize(trim(underscored(str).replace(/_id$/, '').replace(/_/g, ' ')));
 };
 
-},{"./capitalize":34,"./trim":94,"./underscored":96}],56:[function(require,module,exports){
+},{"./capitalize":66,"./trim":126,"./underscored":128}],88:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function include(str, needle) {
@@ -24500,7 +26258,7 @@ module.exports = function include(str, needle) {
   return makeString(str).indexOf(needle) !== -1;
 };
 
-},{"./helper/makeString":52}],57:[function(require,module,exports){
+},{"./helper/makeString":84}],89:[function(require,module,exports){
 //  Underscore.string
 //  (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
 //  Underscore.string is freely distributable under the terms of the MIT license.
@@ -24640,21 +26398,21 @@ for (var key in prototypeMethods) prototype2method(prototypeMethods[key]);
 
 module.exports = s;
 
-},{"./camelize":33,"./capitalize":34,"./chars":35,"./chop":36,"./classify":37,"./clean":38,"./cleanDiacritics":39,"./count":40,"./dasherize":41,"./decapitalize":42,"./dedent":43,"./endsWith":44,"./escapeHTML":45,"./exports":46,"./helper/escapeRegExp":50,"./humanize":55,"./include":56,"./insert":58,"./isBlank":59,"./join":60,"./levenshtein":61,"./lines":62,"./lpad":63,"./lrpad":64,"./ltrim":65,"./naturalCmp":66,"./numberFormat":67,"./pad":68,"./pred":69,"./prune":70,"./quote":71,"./repeat":72,"./replaceAll":73,"./reverse":74,"./rpad":75,"./rtrim":76,"./slugify":77,"./splice":78,"./sprintf":79,"./startsWith":80,"./strLeft":81,"./strLeftBack":82,"./strRight":83,"./strRightBack":84,"./stripTags":85,"./succ":86,"./surround":87,"./swapCase":88,"./titleize":89,"./toBoolean":90,"./toNumber":91,"./toSentence":92,"./toSentenceSerial":93,"./trim":94,"./truncate":95,"./underscored":96,"./unescapeHTML":97,"./unquote":98,"./vsprintf":99,"./words":100,"./wrap":101}],58:[function(require,module,exports){
+},{"./camelize":65,"./capitalize":66,"./chars":67,"./chop":68,"./classify":69,"./clean":70,"./cleanDiacritics":71,"./count":72,"./dasherize":73,"./decapitalize":74,"./dedent":75,"./endsWith":76,"./escapeHTML":77,"./exports":78,"./helper/escapeRegExp":82,"./humanize":87,"./include":88,"./insert":90,"./isBlank":91,"./join":92,"./levenshtein":93,"./lines":94,"./lpad":95,"./lrpad":96,"./ltrim":97,"./naturalCmp":98,"./numberFormat":99,"./pad":100,"./pred":101,"./prune":102,"./quote":103,"./repeat":104,"./replaceAll":105,"./reverse":106,"./rpad":107,"./rtrim":108,"./slugify":109,"./splice":110,"./sprintf":111,"./startsWith":112,"./strLeft":113,"./strLeftBack":114,"./strRight":115,"./strRightBack":116,"./stripTags":117,"./succ":118,"./surround":119,"./swapCase":120,"./titleize":121,"./toBoolean":122,"./toNumber":123,"./toSentence":124,"./toSentenceSerial":125,"./trim":126,"./truncate":127,"./underscored":128,"./unescapeHTML":129,"./unquote":130,"./vsprintf":131,"./words":132,"./wrap":133}],90:[function(require,module,exports){
 var splice = require('./splice');
 
 module.exports = function insert(str, i, substr) {
   return splice(str, i, 0, substr);
 };
 
-},{"./splice":78}],59:[function(require,module,exports){
+},{"./splice":110}],91:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function isBlank(str) {
   return (/^\s*$/).test(makeString(str));
 };
 
-},{"./helper/makeString":52}],60:[function(require,module,exports){
+},{"./helper/makeString":84}],92:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var slice = [].slice;
 
@@ -24665,7 +26423,7 @@ module.exports = function join() {
   return args.join(makeString(separator));
 };
 
-},{"./helper/makeString":52}],61:[function(require,module,exports){
+},{"./helper/makeString":84}],93:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 /**
@@ -24719,27 +26477,27 @@ module.exports = function levenshtein(str1, str2) {
   return nextCol;
 };
 
-},{"./helper/makeString":52}],62:[function(require,module,exports){
+},{"./helper/makeString":84}],94:[function(require,module,exports){
 module.exports = function lines(str) {
   if (str == null) return [];
   return String(str).split(/\r\n?|\n/);
 };
 
-},{}],63:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lpad(str, length, padStr) {
   return pad(str, length, padStr);
 };
 
-},{"./pad":68}],64:[function(require,module,exports){
+},{"./pad":100}],96:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lrpad(str, length, padStr) {
   return pad(str, length, padStr, 'both');
 };
 
-},{"./pad":68}],65:[function(require,module,exports){
+},{"./pad":100}],97:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimLeft = String.prototype.trimLeft;
@@ -24751,7 +26509,7 @@ module.exports = function ltrim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":48,"./helper/makeString":52}],66:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":80,"./helper/makeString":84}],98:[function(require,module,exports){
 module.exports = function naturalCmp(str1, str2) {
   if (str1 == str2) return 0;
   if (!str1) return -1;
@@ -24782,7 +26540,7 @@ module.exports = function naturalCmp(str1, str2) {
   return str1 < str2 ? -1 : 1;
 };
 
-},{}],67:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 module.exports = function numberFormat(number, dec, dsep, tsep) {
   if (isNaN(number) || number == null) return '';
 
@@ -24796,7 +26554,7 @@ module.exports = function numberFormat(number, dec, dsep, tsep) {
   return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, '$1' + tsep) + decimals;
 };
 
-},{}],68:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -24824,14 +26582,14 @@ module.exports = function pad(str, length, padStr, type) {
   }
 };
 
-},{"./helper/makeString":52,"./helper/strRepeat":53}],69:[function(require,module,exports){
+},{"./helper/makeString":84,"./helper/strRepeat":85}],101:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, -1);
 };
 
-},{"./helper/adjacent":47}],70:[function(require,module,exports){
+},{"./helper/adjacent":79}],102:[function(require,module,exports){
 /**
  * _s.prune: a more elegant version of truncate
  * prune extra chars, never leaving a half-chopped word.
@@ -24860,14 +26618,14 @@ module.exports = function prune(str, length, pruneStr) {
   return (template + pruneStr).length > str.length ? str : str.slice(0, template.length) + pruneStr;
 };
 
-},{"./helper/makeString":52,"./rtrim":76}],71:[function(require,module,exports){
+},{"./helper/makeString":84,"./rtrim":108}],103:[function(require,module,exports){
 var surround = require('./surround');
 
 module.exports = function quote(str, quoteChar) {
   return surround(str, quoteChar || '"');
 };
 
-},{"./surround":87}],72:[function(require,module,exports){
+},{"./surround":119}],104:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -24884,7 +26642,7 @@ module.exports = function repeat(str, qty, separator) {
   return repeat.join(separator);
 };
 
-},{"./helper/makeString":52,"./helper/strRepeat":53}],73:[function(require,module,exports){
+},{"./helper/makeString":84,"./helper/strRepeat":85}],105:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function replaceAll(str, find, replace, ignorecase) {
@@ -24894,21 +26652,21 @@ module.exports = function replaceAll(str, find, replace, ignorecase) {
   return makeString(str).replace(reg, replace);
 };
 
-},{"./helper/makeString":52}],74:[function(require,module,exports){
+},{"./helper/makeString":84}],106:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function reverse(str) {
   return chars(str).reverse().join('');
 };
 
-},{"./chars":35}],75:[function(require,module,exports){
+},{"./chars":67}],107:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function rpad(str, length, padStr) {
   return pad(str, length, padStr, 'right');
 };
 
-},{"./pad":68}],76:[function(require,module,exports){
+},{"./pad":100}],108:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimRight = String.prototype.trimRight;
@@ -24920,7 +26678,7 @@ module.exports = function rtrim(str, characters) {
   return str.replace(new RegExp(characters + '+$'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":48,"./helper/makeString":52}],77:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":80,"./helper/makeString":84}],109:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var trim = require('./trim');
@@ -24931,7 +26689,7 @@ module.exports = function slugify(str) {
   return trim(dasherize(cleanDiacritics(str).replace(/[^\w\s-]/g, '-').toLowerCase()), '-');
 };
 
-},{"./cleanDiacritics":39,"./dasherize":41,"./helper/defaultToWhiteSpace":48,"./helper/makeString":52,"./trim":94}],78:[function(require,module,exports){
+},{"./cleanDiacritics":71,"./dasherize":73,"./helper/defaultToWhiteSpace":80,"./helper/makeString":84,"./trim":126}],110:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function splice(str, i, howmany, substr) {
@@ -24940,7 +26698,7 @@ module.exports = function splice(str, i, howmany, substr) {
   return arr.join('');
 };
 
-},{"./chars":35}],79:[function(require,module,exports){
+},{"./chars":67}],111:[function(require,module,exports){
 // sprintf() for JavaScript 0.7-beta1
 // http://www.diveintojavascript.com/projects/javascript-sprintf
 //
@@ -25066,7 +26824,7 @@ var sprintf = (function() {
 
 module.exports = sprintf;
 
-},{"./helper/strRepeat":53}],80:[function(require,module,exports){
+},{"./helper/strRepeat":85}],112:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -25077,7 +26835,7 @@ module.exports = function startsWith(str, starts, position) {
   return str.lastIndexOf(starts, position) === position;
 };
 
-},{"./helper/makeString":52,"./helper/toPositive":54}],81:[function(require,module,exports){
+},{"./helper/makeString":84,"./helper/toPositive":86}],113:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeft(str, sep) {
@@ -25087,7 +26845,7 @@ module.exports = function strLeft(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":52}],82:[function(require,module,exports){
+},{"./helper/makeString":84}],114:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeftBack(str, sep) {
@@ -25097,7 +26855,7 @@ module.exports = function strLeftBack(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":52}],83:[function(require,module,exports){
+},{"./helper/makeString":84}],115:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRight(str, sep) {
@@ -25107,7 +26865,7 @@ module.exports = function strRight(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":52}],84:[function(require,module,exports){
+},{"./helper/makeString":84}],116:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRightBack(str, sep) {
@@ -25117,26 +26875,26 @@ module.exports = function strRightBack(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":52}],85:[function(require,module,exports){
+},{"./helper/makeString":84}],117:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function stripTags(str) {
   return makeString(str).replace(/<\/?[^>]+>/g, '');
 };
 
-},{"./helper/makeString":52}],86:[function(require,module,exports){
+},{"./helper/makeString":84}],118:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, 1);
 };
 
-},{"./helper/adjacent":47}],87:[function(require,module,exports){
+},{"./helper/adjacent":79}],119:[function(require,module,exports){
 module.exports = function surround(str, wrapper) {
   return [wrapper, str, wrapper].join('');
 };
 
-},{}],88:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function swapCase(str) {
@@ -25145,7 +26903,7 @@ module.exports = function swapCase(str) {
   });
 };
 
-},{"./helper/makeString":52}],89:[function(require,module,exports){
+},{"./helper/makeString":84}],121:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function titleize(str) {
@@ -25154,7 +26912,7 @@ module.exports = function titleize(str) {
   });
 };
 
-},{"./helper/makeString":52}],90:[function(require,module,exports){
+},{"./helper/makeString":84}],122:[function(require,module,exports){
 var trim = require('./trim');
 
 function boolMatch(s, matchers) {
@@ -25176,7 +26934,7 @@ module.exports = function toBoolean(str, trueValues, falseValues) {
   if (boolMatch(str, falseValues || ["false", "0"])) return false;
 };
 
-},{"./trim":94}],91:[function(require,module,exports){
+},{"./trim":126}],123:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function toNumber(num, precision) {
@@ -25185,7 +26943,7 @@ module.exports = function toNumber(num, precision) {
   return Math.round(num * factor) / factor;
 };
 
-},{"./trim":94}],92:[function(require,module,exports){
+},{"./trim":126}],124:[function(require,module,exports){
 var rtrim = require('./rtrim');
 
 module.exports = function toSentence(array, separator, lastSeparator, serial) {
@@ -25199,14 +26957,14 @@ module.exports = function toSentence(array, separator, lastSeparator, serial) {
   return a.length ? a.join(separator) + lastSeparator + lastMember : lastMember;
 };
 
-},{"./rtrim":76}],93:[function(require,module,exports){
+},{"./rtrim":108}],125:[function(require,module,exports){
 var toSentence = require('./toSentence');
 
 module.exports = function toSentenceSerial(array, sep, lastSep) {
   return toSentence(array, sep, lastSep, true);
 };
 
-},{"./toSentence":92}],94:[function(require,module,exports){
+},{"./toSentence":124}],126:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrim = String.prototype.trim;
@@ -25218,7 +26976,7 @@ module.exports = function trim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+|' + characters + '+$', 'g'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":48,"./helper/makeString":52}],95:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":80,"./helper/makeString":84}],127:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function truncate(str, length, truncateStr) {
@@ -25228,14 +26986,14 @@ module.exports = function truncate(str, length, truncateStr) {
   return str.length > length ? str.slice(0, length) + truncateStr : str;
 };
 
-},{"./helper/makeString":52}],96:[function(require,module,exports){
+},{"./helper/makeString":84}],128:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function underscored(str) {
   return trim(str).replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
 };
 
-},{"./trim":94}],97:[function(require,module,exports){
+},{"./trim":126}],129:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var htmlEntities = require('./helper/htmlEntities');
 
@@ -25255,7 +27013,7 @@ module.exports = function unescapeHTML(str) {
   });
 };
 
-},{"./helper/htmlEntities":51,"./helper/makeString":52}],98:[function(require,module,exports){
+},{"./helper/htmlEntities":83,"./helper/makeString":84}],130:[function(require,module,exports){
 module.exports = function unquote(str, quoteChar) {
   quoteChar = quoteChar || '"';
   if (str[0] === quoteChar && str[str.length - 1] === quoteChar)
@@ -25263,7 +27021,7 @@ module.exports = function unquote(str, quoteChar) {
   else return str;
 };
 
-},{}],99:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 var sprintf = require('./sprintf');
 
 module.exports = function vsprintf(fmt, argv) {
@@ -25271,7 +27029,7 @@ module.exports = function vsprintf(fmt, argv) {
   return sprintf.apply(null, argv);
 };
 
-},{"./sprintf":79}],100:[function(require,module,exports){
+},{"./sprintf":111}],132:[function(require,module,exports){
 var isBlank = require('./isBlank');
 var trim = require('./trim');
 
@@ -25280,7 +27038,7 @@ module.exports = function words(str, delimiter) {
   return trim(str, delimiter).split(delimiter || /\s+/);
 };
 
-},{"./isBlank":59,"./trim":94}],101:[function(require,module,exports){
+},{"./isBlank":91,"./trim":126}],133:[function(require,module,exports){
 // Wrap
 // wraps a string by a certain width
 
@@ -25381,7 +27139,7 @@ module.exports = function wrap(str, options){
 		return result;
 	}
 };
-},{"./helper/makeString":52}],102:[function(require,module,exports){
+},{"./helper/makeString":84}],134:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -26931,4 +28689,4 @@ module.exports = function wrap(str, options){
   }
 }.call(this));
 
-},{}]},{},[6]);
+},{}]},{},[8]);

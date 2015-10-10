@@ -6,22 +6,27 @@ var Backbone = require('backbone');
 var MapUtil = require('../lib/map-util');
 var MapGL = require('./map');
 
-var TrackLayer = function (ships) {
-  this.ships = ships;
+var TrackLayer = function (options) {
+  this.ships = options.ships;
+  this.app = options.app;
   this.mapgl = MapGL;
+
+  this.layer = {};
+  this.mouseoverid = 0;
+  this.clickid = 0;
+  this.track = null;
+  this.ship = null;
 
   this.listenTo(this.ships, 'change:selected', this.process);
 };
 
 _.extend(TrackLayer.prototype, Backbone.Events, {
-  layer: { },
-  track: null,
-  ship: null,
-
   process: function (ship) {
     if (ship.get('selected') === true) {
       this.ship = ship;
       this.track = ship.get('track');
+
+      this.listenToOnce(ship, 'onBeforeRemove', this.removeFromMap);
 
       this.listenToOnce(this.track, 'sync', this.addToMap);
       this.listenToOnce(this.track, 'sync', function () {
@@ -37,7 +42,6 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     }
   },
 
-  mouseoverid: 0,
   onMousemove: function (lngLat, perimeter) {
     if (this.track && this.track.length > 2) {
       var position = _.first(this.track.getPositionsForLngLat(lngLat, perimeter));
@@ -64,9 +68,11 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     }
   },
 
-  clickid: 0,
   onClick: function (e) {
-    if (!this.track) return;
+    if (!this.track) {
+      this.app.trigger('clickout');
+      return;
+    }
 
     this.mapgl.featuresAt(e.point, { layer: 'positions', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
       var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
@@ -81,6 +87,8 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       if (id) {
         this.track.get(id).set('selected', true);
         this.clickid = id;
+      } else {
+        this.mapgl.fire('clickout');
       }
     }, this));
   },
@@ -90,6 +98,8 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.track.get(this.clickid).set('selected', false);
       this.clickid = 0;
     }
+
+    this.app.trigger('clickout');
   },
 
   onAddPosition: function (position) {
@@ -229,10 +239,15 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.mapgl.removeLayer('positions');
     }
 
-    this.layer = { };
+    if (this.track) {
+      this.track.reset();
+    }
+
+    this.layer = {};
     this.mouseoverid = 0;
     this.clickid = 0;
-    this.track.reset();
+    this.track = null;
+    this.ship = null;
   }
 });
 

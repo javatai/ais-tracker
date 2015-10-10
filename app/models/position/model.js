@@ -54,10 +54,7 @@ var Position = Backbone.RelationalModel.extend({
   },
 
   getLngLat: function () {
-    return {
-      lng: this.get('longitude'),
-      lat: this.get('latitude')
-    }
+    return new mapboxgl.LngLat(this.get('longitude'), this.get('latitude'));
   },
 
   distanceTo: function (LngLat) {

@@ -61,7 +61,33 @@ var Ships = Backbone.Collection.extend({
   },
 
   initialize: function () {
+    this.selectedId = 0;
     this.initSort("name", "asc");
+  },
+
+
+  selectShip: function (idOrModel) {
+    var id;
+    if (idOrModel instanceof Ship) {
+      id = idOrModel.get('id');
+    } else {
+      id = idOrModel;
+    }
+
+    if (this.selectedId) {
+      if (!id || (id !== this.selectedId)) {
+        this.get(this.selectedId).set('selected', false);
+        this.selectedId = 0;
+      }
+    }
+
+    if (id) {
+      this.get(id).set('selected', true);
+      this.selectedId = id;
+      return true;
+    } else {
+      return false;
+    }
   },
 
   initSort: function (sortProperty, direction) {
@@ -80,6 +106,11 @@ var Ships = Backbone.Collection.extend({
       }
       return false;
     });
+  },
+
+  _removeModels: function (toRemove) {
+    _.invoke(toRemove, 'beforeRemove');
+    Backbone.Collection.prototype._removeModels.apply(this, arguments);
   }
 });
 

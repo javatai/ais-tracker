@@ -77,6 +77,26 @@ var Ship = Backbone.RelationalModel.extend({
   distanceTo: function (LngLat) {
     var coords = this.get('position').getLngLat();
     return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
+  },
+
+  toTitel: function () {
+    return this.getHelper().toTitel();
+  },
+
+  beforeRemove: function () {
+    this.trigger('onBeforeRemove', this);
+
+    if (this.shipHelper) {
+      delete this.shipHelper;
+    }
+    if (this.shipMarker) {
+      this.shipMarker.removeFromMap();
+      delete this.shipMarker;
+    }
+    if (this.shipMarker) {
+      this.shipMarker.removeFromMap();
+      delete this.shipMarker;
+    }
   }
 });
 

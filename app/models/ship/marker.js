@@ -1,10 +1,14 @@
 'use strict';
 
+var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
+var MapUtil = require('../../lib/map-util');
 var GeographicLib = require("geographiclib");
 
 var ShipMarker = function (ship, mapgl) {
+  this.layer = {};
+
   this.ship = ship;
   this.mapgl = mapgl;
 
@@ -13,14 +17,34 @@ var ShipMarker = function (ship, mapgl) {
 };
 
 _.extend(ShipMarker.prototype, Backbone.Events, {
-  layer: {},
+  calculateOffsetBounds: function (lnglat) {
+    var geod = GeographicLib.Geodesic.WGS84;
+
+    var N = geod.Direct(lnglat.lat, lnglat.lng, 0, 250);
+    var E = geod.Direct(lnglat.lat, lnglat.lng, 90, 250);
+    var S = geod.Direct(lnglat.lat, lnglat.lng, 180, 250);
+    var W = geod.Direct(lnglat.lat, lnglat.lng, 270, 250);
+
+    var wpx = $(this.mapgl.getContainer).width();
+    var wm = geod.Inverse(N.lat2, E.lon2, S.lat2, W.lon2).s12;
+
+    var m = 420 * wm / wpx;
+    var P = geod.Direct(S.lat2, W.lon2, 270, m);
+
+    var SW = new mapboxgl.LngLat(P.lon2, P.lat2);
+    var NE = new mapboxgl.LngLat(E.lon2, N.lat2);
+
+    return new mapboxgl.LngLatBounds(SW, NE);
+  },
 
   process: function () {
     if (this.ship.has('position')) {
       this.addToMap();
 
       if (this.ship.get('selected') === true) {
-        this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate(), zoom: 15 });
+        var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
+
+        this.mapgl.fitBounds(bounds);
       }
     }
   },
@@ -196,13 +220,13 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
   },
 
   removeFromMap: function () {
-    this.stopListening(this.get('ship'), 'change', this.process);
+    this.stopListening(this.ship, 'change', this.process);
 
     if (this.layer[this.getMapId('marker')]) {
       this.mapgl.removeLayer(this.getMapId('marker'));
     }
 
-    if (!this.mapgl.getSource(this.getMapId('marker'))) {
+    if (this.mapgl.getSource(this.getMapId('marker'))) {
       this.mapgl.removeSource(this.getMapId('marker'));
     }
 
@@ -210,11 +234,9 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
       this.mapgl.removeLayer(this.getMapId('shape'));
     }
 
-    if (!this.mapgl.getSource(this.getMapId('shape'))) {
+    if (this.mapgl.getSource(this.getMapId('shape'))) {
       this.mapgl.removeSource(this.getMapId('shape'));
     }
-
-    this.layer = { };
   }
 });
 

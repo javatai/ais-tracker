@@ -7,18 +7,21 @@ var MapUtil = require('../lib/map-util');
 var MapGL = require('./map');
 var TrackLayer = require('./track-layer');
 
-var ShipsLayer = function (ships) {
-  this.ships = ships;
+var ShipsLayer = function (options) {
+  this.ships = options.ships;
+  this.app = options.app;
   this.mapgl = MapGL;
 
-  this.trackLayer = new TrackLayer(this.ships);
+  this.layer = {};
+  this.mouseoverid = 0;
+  this.first = null;
+
+  this.trackLayer = new TrackLayer(options);
 
   this.mapgl.on('style.load', _.bind(this.process, this));
 };
 
 _.extend(ShipsLayer.prototype, Backbone.Events, {
-  layer: { },
-
   process: function () {
     this.listenTo(this.ships, 'add', this.onAddShip);
     this.listenTo(this.ships, 'remove', this.onRemoveShip);
@@ -30,40 +33,34 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.mapgl.on('click', _.bind(this.onClick, this));
   },
 
-  clickid: 0,
-  onClick: function (e) {
-    this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
-      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
-
-      if (this.clickid) {
-        if (!id || (id !== this.clickid)) {
-          this.ships.get(this.clickid).set('selected', false);
-          this.clickid = 0;
-        }
-      }
-
-      if (id) {
-        this.ships.get(id).set('selected', true);
-        this.clickid = id;
-        this.trackLayer.onClickout();
-      } else {
-        this.trackLayer.onClick(e);
-      }
-    }, this));
-  },
-
-  mouseoverid: 0,
-  onMousemove: function (e) {
-    this.mapgl.getCanvas().style.cursor = "";
-
+  calculatePerimeter: function () {
     var bounds = this.mapgl.getBounds();
     var nw = bounds.getNorthWest();
     var ne = bounds.getNorthEast();
 
     var dist = Math.round(MapUtil.distance(nw.lat, nw.lng, ne.lat, ne.lng));
-    var width = $('#map').width();
+    var width = $(this.mapgl.getContainer).width();
 
-    var perimeter = 10 * (dist/width);
+    return 10 * (dist/width);
+  },
+
+  onClick: function (e) {
+    this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
+      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
+
+      if (this.ships.selectShip(id)) {
+        this.trackLayer.onClickout();
+      } else {
+        this.trackLayer.onClick(e);
+      }
+
+    }, this));
+  },
+
+  onMousemove: function (e) {
+    this.mapgl.getCanvas().style.cursor = "";
+
+    var perimeter = this.calculatePerimeter();
     var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
 
     if (this.mouseoverid) {
@@ -84,6 +81,8 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
   },
 
   onAddShip: function (ship) {
+//    console.log('add ship', ship.toTitel())
+
     ship.getLabel(this.mapgl);
     ship.getMarker(this.mapgl);
 
@@ -218,11 +217,6 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     if (this.mapgl.getSource('ships')) {
       this.mapgl.removeSource('ships');
     }
-
-    this.layer = { };
-    this.mouseoverid = 0;
-    this.clickid = 0;
-    this.first = null;
   }
 })
 
