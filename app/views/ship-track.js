@@ -15,25 +15,26 @@ var ShipTrack = Backbone.View.extend({
   render: function () {
     this.$el.html(this.template());
 
+    this.collection.each(function (position, index) {
+      if (index < this.collection.length - 1) {
+        var shipTrackItem = new ShipTrackItemView({
+          index: this.index++,
+          model: position
+        });
+
+        shipTrackItem.render();
+        this.items[position.get('id')] = shipTrackItem;
+        this.$el.prepend(shipTrackItem.$el);
+      }
+    }, this);
+
     var shipTrackItem = new ShipTrackItemView({
-      index: this.index++,
+      index: this.index,
       model: this.model
     });
-
     shipTrackItem.render();
     this.items[this.model.get('id')] = shipTrackItem;
-    this.$el.append(shipTrackItem.$el);
-
-    this.collection.each(function (position) {
-      var shipTrackItem = new ShipTrackItemView({
-        index: this.index++,
-        model: position
-      });
-
-      shipTrackItem.render();
-      this.items[position.get('id')] = shipTrackItem;
-      this.$el.append(shipTrackItem.$el);
-    }, this);
+    this.$el.prepend(shipTrackItem.$el);
   }
 });
 

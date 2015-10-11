@@ -1648,9 +1648,6 @@ _.extend(ShipdataHelper.prototype, {
     'IMO number': function (data) {
       return data.get('imonumber');
     },
-    'AIS version': function (data) {
-      return this.aismessage.lookup('aisversion', data.get('aisversion'));
-    },
     'Callsign': function (data) {
       return data.get('callsign');
     },
@@ -1671,9 +1668,6 @@ _.extend(ShipdataHelper.prototype, {
     },
     Draught: function (data) {
       return data.has('draught') && data.get('draught') + ' m' || false;
-    },
-    'Position type': function (data) {
-      return this.aismessage.lookup('positiontype', data.get('positiontype'));
     },
     Destination: function (data) {
       return data.get('destination');
@@ -1696,6 +1690,12 @@ _.extend(ShipdataHelper.prototype, {
       if (m) timestamp.minute(m);
 
       return timestamp.format('YYYY-MM-DD HH:mm:ss UTC');
+    },
+    'AIS version': function (data) {
+      return this.aismessage.lookup('aisversion', data.get('aisversion'));
+    },
+    'Position type': function (data) {
+      return this.aismessage.lookup('positiontype', data.get('positiontype'));
     },
     Datetime: function (data) {
       var timestamp = moment.utc(data.get('datetime'));
@@ -1757,7 +1757,7 @@ var TrackHelper = require('./helper');
 
 var Track = Positions.extend({
   comparator: function (a, b) {
-    return new Date(b.get('datetime')) - new Date(a.get('datetime'));
+    return new Date(a.get('datetime')) - new Date(b.get('datetime'));
   },
 
   id: null,
@@ -2418,25 +2418,26 @@ var ShipTrack = Backbone.View.extend({
   render: function () {
     this.$el.html(this.template());
 
+    this.collection.each(function (position, index) {
+      if (index < this.collection.length - 1) {
+        var shipTrackItem = new ShipTrackItemView({
+          index: this.index++,
+          model: position
+        });
+
+        shipTrackItem.render();
+        this.items[position.get('id')] = shipTrackItem;
+        this.$el.prepend(shipTrackItem.$el);
+      }
+    }, this);
+
     var shipTrackItem = new ShipTrackItemView({
-      index: this.index++,
+      index: this.index,
       model: this.model
     });
-
     shipTrackItem.render();
     this.items[this.model.get('id')] = shipTrackItem;
-    this.$el.append(shipTrackItem.$el);
-
-    this.collection.each(function (position) {
-      var shipTrackItem = new ShipTrackItemView({
-        index: this.index++,
-        model: position
-      });
-
-      shipTrackItem.render();
-      this.items[position.get('id')] = shipTrackItem;
-      this.$el.append(shipTrackItem.$el);
-    }, this);
+    this.$el.prepend(shipTrackItem.$el);
   }
 });
 

@@ -8,7 +8,7 @@ var TrackHelper = require('./helper');
 
 var Track = Positions.extend({
   comparator: function (a, b) {
-    return new Date(b.get('datetime')) - new Date(a.get('datetime'));
+    return new Date(a.get('datetime')) - new Date(b.get('datetime'));
   },
 
   id: null,
