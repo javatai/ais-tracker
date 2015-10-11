@@ -28,5 +28,6 @@ node_modules
 
 docs
 test.js
+config/config.json
 html/main.js
 html/style.css
