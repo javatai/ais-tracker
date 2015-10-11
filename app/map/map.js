@@ -1,16 +1,16 @@
 'use strict';
 
-var config = require('../config');
+var config = require('../config').frontend.map;
 
 var mapboxgl = require('mapbox-gl');
 
-mapboxgl.accessToken = config.frontend.map.accessToken;
+mapboxgl.accessToken = config.accessToken;
 
 var map = new mapboxgl.Map({
   container: 'map',
-  style: config.map.style,
-  center: config.map.center,
-  zoom: config.map.zoom
+  style: config.style,
+  center: config.center,
+  zoom: config.zoom
 });
 
 window.mapgl = map;

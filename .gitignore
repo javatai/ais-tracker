@@ -30,4 +30,6 @@ docs
 test.js
 config/config.json
 html/main.js
+html/main.min.js
 html/style.css
+html/style.min.css

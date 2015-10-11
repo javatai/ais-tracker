@@ -26,15 +26,15 @@
   table {
     margin-bottom: 0px;
 
-    .fixedhead {
-      > thead a {
+    &.fixedhead {
+      >thead a {
         color: #333;
         text-decoration: none;
         margin-bottom: 0px;
         background-color: @bg-col;
       }
 
-      > tbody {
+      >tbody {
         height: 375px;
         width: 360px;
         overflow-y: scroll;
@@ -43,31 +43,35 @@
         border-bottom: 2px solid #ddd;
       }
 
-      > thead a:focus,
-      > thead a:hover {
+      >thead a:focus,
+      >thead a:hover {
         color: #888;
         text-decoration: none;
       }
 
-      > thead,
-      > tbody {
+      >thead,
+      >tbody {
         display: block;
       }
     }
   }
 
   .list {
-    table.fixedhead > thead th:nth-child(1),
-    table.fixedhead > tbody td:nth-child(1) {
-      width: 225px;
-    }
+    table {
+      &.fixedhead {
+        >thead th:nth-child(1),
+        >tbody td:nth-child(1) {
+          width: 225px;
+        }
 
-    table.fixedhead > thead th:nth-child(2) {
-      width: 135px;
-    }
+        >thead th:nth-child(2) {
+          width: 135px;
+        }
 
-    table.fixedhead > tbody td:nth-child(2) {
-      width: 120px;
+        >tbody td:nth-child(2) {
+          width: 120px;
+        }
+      }
     }
   }
 
@@ -76,50 +80,59 @@
       margin-top: 0px;
     }
 
-    table.fixedhead > tbody {
-      height: 300px;
+    table {
+      &.fixedhead {
+        >tbody {
+          height: 300px;
+        }
+
+        >thead th:nth-child(1),
+        >tbody th:nth-child(1) {
+          width: 120px;
+        }
+
+        >thead th:nth-child(2) {
+          width: 240px;
+        }
+
+        >tbody td:nth-child(2) {
+          width: 225px;
+        }
+      }
     }
 
-    table.fixedhead > thead th:nth-child(1),
-    table.fixedhead > tbody th:nth-child(1) {
-      width: 120px;
+    &.position {
+      >thead th:nth-child(1),
+      >tbody th:nth-child(1) {
+        width: 145px;
+      }
+
+      >thead th:nth-child(2) {
+        width: 215px;
+      }
+
+      >tbody td:nth-child(2) {
+        width: 200px;
+      }
     }
 
-    table.fixedhead > thead th:nth-child(2) {
-      width: 240px;
-    }
-    table.fixedhead > tbody td:nth-child(2) {
-      width: 225px;
+    &.track {
+      >thead th:nth-child(1),
+      >tbody th:nth-child(1) {
+        width: 40px;
+      }
+
+      >thead th:nth-child(2) {
+        width: 320px;
+      }
+
+      >tbody td:nth-child(2) {
+        width: 305px;
+      }
     }
 
-    table.position > thead th:nth-child(1),
-    table.position > tbody th:nth-child(1) {
-      width: 145px;
-    }
-
-    table.position > thead th:nth-child(2) {
-      width: 215px;
-    }
-    table.position > tbody td:nth-child(2) {
-      width: 200px;
-    }
-
-    table.track > thead th:nth-child(1),
-    table.track > tbody th:nth-child(1) {
-      width: 40px;
-    }
-
-    table.track > thead th:nth-child(2) {
-      width: 320px;
-    }
-
-    table.track > tbody td:nth-child(2) {
-      width: 305px;
-    }
-
-    table.property th {
+    &.property th {
       padding-right: 10px;
     }
   }
 }
-

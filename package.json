@@ -33,15 +33,19 @@
     "browserify": "^11.2.0",
     "browserify-shim": "^3.8.10",
     "less": "^2.5.3",
+    "minifier": "^0.7.1",
     "watchify": "^3.4.0"
   },
   "scripts": {
     "build-js": "node_modules/browserify/bin/cmd.js app/main.js > html/main.js",
     "watch-js": "node_modules/watchify/bin/cmd.js app/main.js -o html/main.js -dv",
+    "minify-js": "node node_modules/minifier/index.js -o html/main.min.js html/main.js",
     "build-css": "node_modules/less/bin/lessc app/style/style.less html/style.css",
     "watch-css": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less html/style.css",
+    "minify-css": "node node_modules/minifier/index.js -o html/style.min.css html/style.css",
     "build": "npm run build-js && npm run build-css",
-    "watch": "npm run watch-js & npm run watch-css"
+    "watch": "npm run watch-js & npm run watch-css",
+    "minify": "npm run build && npm run minify-js && npm run minify-css"
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"
