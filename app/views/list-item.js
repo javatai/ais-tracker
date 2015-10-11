@@ -50,11 +50,6 @@ var ListItem = Backbone.View.extend({
       }
     }, this);
 
-// console.log('-------------');
-// console.log(before && before.model.getHelper().toTitel());
-// console.log(this.model.getHelper().toTitel());
-// console.log(after && after.model.getHelper().toTitel());
-
     if (before) {
       this.$el.insertAfter(before.$el);
     } else if (after) {

@@ -5,6 +5,7 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 
 window.$ = $;
+window.Backbone = Backbone;
 
 var Ships = require('../models/ship/collection');
 var Router = require('./router');

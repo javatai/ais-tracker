@@ -24,13 +24,13 @@ var ShipView = Backbone.View.extend({
     }
   },
 
-  chkPosition: function () {
+  chkPosition: function (e) {
     if (!this.model.has('position')) {
       e.stopPropagation();
     }
   },
 
-  chkTrack: function () {
+  chkTrack: function (e) {
     if (!this.model.get('track').length) {
       e.stopPropagation();
     }

@@ -41,6 +41,7 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 
 window.$ = $;
+window.Backbone = Backbone;
 
 var Ships = require('../models/ship/collection');
 var Router = require('./router');
@@ -261,6 +262,12 @@ var Router = Backbone.Router.extend({
     this.ships.once('sync', function () {
       Backbone.history.start();
     });
+
+    this.listenTo(this.ships, 'remove', function (ship) {
+      if (Backbone.history.fragment === 'mmsi/' + ship.get('userid')) {
+        this.navigate('');
+      }
+    }, this);
 
     var navigate = _.debounce(_.bind(function (route) {
       this.navigate(route);
@@ -1133,8 +1140,19 @@ var Ships = Backbone.Collection.extend({
   initialize: function () {
     this.selectedId = 0;
     this.initSort("name", "asc");
-  },
 
+    this.on('remove', function (ship) {
+      if (ship.get('id') === this.selectedId) {
+        this.selectedId = 0;
+      }
+    }, this);
+
+    this.on('change:selected', function (ship) {
+      if (ship.get('id') === this.selectedId) {
+        this.selectedId = 0;
+      }
+    });
+  },
 
   selectShip: function (idOrModel) {
     var id;
@@ -1962,11 +1980,6 @@ var ListItem = Backbone.View.extend({
       }
     }, this);
 
-// console.log('-------------');
-// console.log(before && before.model.getHelper().toTitel());
-// console.log(this.model.getHelper().toTitel());
-// console.log(after && after.model.getHelper().toTitel());
-
     if (before) {
       this.$el.insertAfter(before.$el);
     } else if (after) {
@@ -2033,7 +2046,7 @@ var ListItemView = require('./list-item');
 
 var ListView = Backbone.View.extend({
   tagName: 'div',
-  className: 'item active',
+  className: 'item',
   listItems: {},
   container: null,
   template: template,
@@ -2169,6 +2182,19 @@ var MasterView = Backbone.View.extend({
     this.shipviews = [];
 
     this.listenTo(this.app, 'clickout', this.closeview);
+    this.listenTo(this.collection, 'remove', this.chkShipviews);
+  },
+
+  chkShipviews: function (ship) {
+    _.each(this.shipviews, function (view, index) {
+      if (view.model.get('id') === ship.get('id')) {
+        this.openlistview();
+        this.$el.find('.carousel').on('slid.bs.carousel', _.bind(function () {
+          this.shipviews.splice(index, 1);
+          view.remove();
+        }, this));
+      }
+    }, this);
   },
 
   tolistview: function () {
@@ -2193,6 +2219,9 @@ var MasterView = Backbone.View.extend({
   },
 
   openlistview: function () {
+    if (!this.$el.find('.item.active').length) {
+      this.$el.find('.item').first().addClass('active');
+    }
     this.$el.find('.carousel').carousel(0);
     this.openview();
 
@@ -2215,13 +2244,20 @@ var MasterView = Backbone.View.extend({
       var shipview = new ShipView({
         model: ship
       });
+
       shipview.render();
       this.shipviews.push(shipview);
 
+      this.$el.find('.carousel-inner').append(shipview.$el);
+
       this.openview();
 
-      this.$el.find('.carousel-inner').append(shipview.$el);
-      this.$el.find('.carousel').carousel(this.shipviews.length);
+      if (!this.$el.find('.item.active').length) {
+        this.$el.find('.item').last().addClass('active');
+      } else {
+        this.$el.find('.carousel').carousel(this.shipviews.length);
+      }
+
       this.closelistview();
     }
   },
@@ -2454,13 +2490,13 @@ var ShipView = Backbone.View.extend({
     }
   },
 
-  chkPosition: function () {
+  chkPosition: function (e) {
     if (!this.model.has('position')) {
       e.stopPropagation();
     }
   },
 
-  chkTrack: function () {
+  chkTrack: function (e) {
     if (!this.model.get('track').length) {
       e.stopPropagation();
     }

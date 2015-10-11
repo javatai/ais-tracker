@@ -63,8 +63,19 @@ var Ships = Backbone.Collection.extend({
   initialize: function () {
     this.selectedId = 0;
     this.initSort("name", "asc");
-  },
 
+    this.on('remove', function (ship) {
+      if (ship.get('id') === this.selectedId) {
+        this.selectedId = 0;
+      }
+    }, this);
+
+    this.on('change:selected', function (ship) {
+      if (ship.get('id') === this.selectedId) {
+        this.selectedId = 0;
+      }
+    });
+  },
 
   selectShip: function (idOrModel) {
     var id;

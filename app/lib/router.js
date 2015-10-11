@@ -15,6 +15,12 @@ var Router = Backbone.Router.extend({
       Backbone.history.start();
     });
 
+    this.listenTo(this.ships, 'remove', function (ship) {
+      if (Backbone.history.fragment === 'mmsi/' + ship.get('userid')) {
+        this.navigate('');
+      }
+    }, this);
+
     var navigate = _.debounce(_.bind(function (route) {
       this.navigate(route);
     }, this), 300);

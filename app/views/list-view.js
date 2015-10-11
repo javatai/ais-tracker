@@ -10,7 +10,7 @@ var ListItemView = require('./list-item');
 
 var ListView = Backbone.View.extend({
   tagName: 'div',
-  className: 'item active',
+  className: 'item',
   listItems: {},
   container: null,
   template: template,
