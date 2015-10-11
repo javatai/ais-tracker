@@ -35,8 +35,6 @@ module.exports = function (server) {
 
       res.send(ship);
     });
-
-    return next();
   });
 
   server.get('/api/ships', function (req, res, next) {
@@ -102,7 +100,5 @@ module.exports = function (server) {
         return ship;
       }));
     });
-
-    return next();
   });
 }

@@ -37,7 +37,5 @@ module.exports = function (server) {
         }));
       });
     });
-
-    return next();
   });
 }

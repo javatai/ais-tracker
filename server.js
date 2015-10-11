@@ -1,30 +1,15 @@
 "use strict";
 
 var sequelize = require('./lib/init');
-var restify = require('restify');
 
-// Initialize server
-var server = restify.createServer();
-
-server.use(
-  function crossOrigin(req,res,next){
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    return next();
-  }
-);
-
-server.use(restify.dateParser());
-server.use(restify.queryParser());
-server.use(restify.bodyParser());
+var express = require('express');
+var app = express();
 
 // Create REST resource
-require('./api/ship')(server);
-require('./api/track')(server);
+require('./api/ship')(app);
+require('./api/track')(app);
 
-server.get(/\/html\/?.*/, restify.serveStatic({
-  directory: __dirname,
-  default: 'index.html'
-}));
+// Service static files
+app.use('/html', express.static('html'));
 
 module.exports = server;
