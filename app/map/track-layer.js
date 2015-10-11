@@ -89,7 +89,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
         }
       }
 
-      if (id) {
+      if (id && this.track.get(id)) {
         this.track.get(id).set('selected', true);
         this.clickid = id;
 
