@@ -48,11 +48,11 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
       var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
 
-      if (this.ships.selectShip(id)) {
-        this.trackLayer.onClickout();
-      } else {
-        this.trackLayer.onClick(e);
-      }
+      this.trackLayer.onClick(e).done(_.bind(function () {
+        if (!this.ships.selectShip(id)) {
+          this.app.trigger('clickout');
+        }
+      }, this));
 
     }, this));
   },

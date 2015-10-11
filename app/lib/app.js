@@ -4,6 +4,8 @@ var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
 
+window.$ = $;
+
 var Ships = require('../models/ship/collection');
 var Router = require('./router');
 var ShipsLayer = require('../map/ships-layer');

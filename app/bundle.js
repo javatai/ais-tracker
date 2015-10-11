@@ -33,12 +33,14 @@ var AisMessage = Backbone.Collection.extend({
 });
 
 module.exports = AisMessage;
-},{"backbone":40,"underscore":134}],3:[function(require,module,exports){
+},{"backbone":47,"underscore":141}],3:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
+
+window.$ = $;
 
 var Ships = require('../models/ship/collection');
 var Router = require('./router');
@@ -74,7 +76,7 @@ _.extend(App.prototype, Backbone.Events, {
 });
 
 module.exports = App;
-},{"../map/ships-layer":10,"../models/ship/collection":17,"../views/master-view":34,"./router":7,"backbone":40,"jquery":63,"underscore":134}],4:[function(require,module,exports){
+},{"../map/ships-layer":10,"../models/ship/collection":17,"../views/master-view":34,"./router":7,"backbone":47,"jquery":70,"underscore":141}],4:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -123,7 +125,7 @@ _.extend(Label.prototype, Backbone.Events, {
 
 module.exports = Label;
 
-},{"./popup":6,"backbone":40,"underscore":134}],5:[function(require,module,exports){
+},{"./popup":6,"backbone":47,"underscore":141}],5:[function(require,module,exports){
 var MapUtil = {
   distance: function(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;    // Math.PI / 180
@@ -242,7 +244,7 @@ mapboxgl.Popup.prototype._update = function () {
 
 module.exports = mapboxgl.Popup;
 
-},{"jquery":63,"underscore":134}],7:[function(require,module,exports){
+},{"jquery":70,"underscore":141}],7:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -284,7 +286,7 @@ var Router = Backbone.Router.extend({
 });
 
 module.exports = Router;
-},{"backbone":40,"underscore":134}],8:[function(require,module,exports){
+},{"backbone":47,"underscore":141}],8:[function(require,module,exports){
 var $ = require('jquery');
 var bootstrap = require('bootstrap');
 var Backbone = require('backbone');
@@ -295,7 +297,7 @@ var App = require('./lib/app');
 var app = new App();
 app.run();
 
-},{"./lib/app":3,"backbone":40,"backbone-relational":39,"bootstrap":41,"jquery":63}],9:[function(require,module,exports){
+},{"./lib/app":3,"backbone":47,"backbone-relational":46,"bootstrap":48,"jquery":70}],9:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -316,7 +318,7 @@ map.addControl(new mapboxgl.Navigation());
 
 module.exports = map;
 
-},{"../config.json":1,"underscore":134}],10:[function(require,module,exports){
+},{"../config.json":1,"underscore":141}],10:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -367,11 +369,11 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
       var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
 
-      if (this.ships.selectShip(id)) {
-        this.trackLayer.onClickout();
-      } else {
-        this.trackLayer.onClick(e);
-      }
+      this.trackLayer.onClick(e).done(_.bind(function () {
+        if (!this.ships.selectShip(id)) {
+          this.app.trigger('clickout');
+        }
+      }, this));
 
     }, this));
   },
@@ -541,7 +543,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
 
 module.exports = ShipsLayer;
 
-},{"../lib/map-util":5,"./map":9,"./track-layer":11,"backbone":40,"jquery":63,"underscore":134}],11:[function(require,module,exports){
+},{"../lib/map-util":5,"./map":9,"./track-layer":11,"backbone":47,"jquery":70,"underscore":141}],11:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -565,7 +567,7 @@ var TrackLayer = function (options) {
 };
 
 _.extend(TrackLayer.prototype, Backbone.Events, {
-  process: function (ship) {
+  execute: function (ship) {
     if (ship.get('selected') === true) {
       this.ship = ship;
       this.track = ship.get('track');
@@ -584,6 +586,10 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     if (ship.get('selected') === false) {
       this.removeFromMap();
     }
+  },
+
+  process: function (ship) {
+    _.delay(_.bind(this.execute, this), 1000, ship);
   },
 
   onMousemove: function (lngLat, perimeter) {
@@ -613,13 +619,14 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   onClick: function (e) {
+    var dfd = $.Deferred();
+
     if (!this.track) {
-      this.app.trigger('clickout');
-      return;
+      dfd.resolve();
     }
 
     this.mapgl.featuresAt(e.point, { layer: 'positions', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
-      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
+      var id = !_.isEmpty(features) ? Number(_.first(features).properties.id.substr(1)) : 0;
 
       if (this.clickid) {
         if (!id || (id !== this.clickid)) {
@@ -631,10 +638,14 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       if (id) {
         this.track.get(id).set('selected', true);
         this.clickid = id;
+
+        dfd.resolve();
       } else {
-        this.mapgl.fire('clickout');
+        dfd.resolve();
       }
     }, this));
+
+    return dfd;
   },
 
   onClickout: function () {
@@ -642,8 +653,6 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.track.get(this.clickid).set('selected', false);
       this.clickid = 0;
     }
-
-    this.app.trigger('clickout');
   },
 
   onAddPosition: function (position) {
@@ -797,7 +806,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
 
 module.exports = TrackLayer;
 
-},{"../lib/map-util":5,"./map":9,"backbone":40,"jquery":63,"underscore":134}],12:[function(require,module,exports){
+},{"../lib/map-util":5,"./map":9,"backbone":47,"jquery":70,"underscore":141}],12:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -811,7 +820,7 @@ var Positions = Backbone.Collection.extend({
 
 module.exports = Positions;
 
-},{"./model":16,"backbone":40}],13:[function(require,module,exports){
+},{"./model":16,"backbone":47}],13:[function(require,module,exports){
 'use strict';
 
 var MapUtil = require('../../lib/map-util');
@@ -933,7 +942,7 @@ _.extend(PositionHelper.prototype, {
 
 module.exports = PositionHelper;
 
-},{"../../lib/ais-message":2,"../../lib/map-util":5,"ais-receiver/ais-messages/json/ais_msg_1.json":37,"moment":64,"underscore":134}],14:[function(require,module,exports){
+},{"../../lib/ais-message":2,"../../lib/map-util":5,"ais-receiver/ais-messages/json/ais_msg_1.json":44,"moment":71,"underscore":141}],14:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -962,7 +971,7 @@ _.extend(PositionLabel.prototype, Label.prototype, {
 
 module.exports = PositionLabel;
 
-},{"../../lib/label":4,"backbone":40,"underscore":134}],15:[function(require,module,exports){
+},{"../../lib/label":4,"backbone":47,"underscore":141}],15:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -982,7 +991,7 @@ _.extend(PositionMarker.prototype, Backbone.Events, {
       },
       "properties": {
         "title": this.position.getHelper().toTitel(),
-        "id": this.position.get('id')
+        "id": 'p' + this.position.get('id')
       }
     }
   }
@@ -990,7 +999,7 @@ _.extend(PositionMarker.prototype, Backbone.Events, {
 
 module.exports = PositionMarker;
 
-},{"backbone":40,"underscore":134}],16:[function(require,module,exports){
+},{"backbone":47,"underscore":141}],16:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1058,7 +1067,7 @@ var Position = Backbone.RelationalModel.extend({
 
 module.exports = Position;
 
-},{"../../lib/map-util":5,"./helper":13,"./label":14,"./marker":15,"backbone":40,"moment":64,"underscore":134,"underscore.string":89}],17:[function(require,module,exports){
+},{"../../lib/map-util":5,"./helper":13,"./label":14,"./marker":15,"backbone":47,"moment":71,"underscore":141,"underscore.string":96}],17:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1136,9 +1145,13 @@ var Ships = Backbone.Collection.extend({
     }
 
     if (this.selectedId) {
-      if (!id || (id !== this.selectedId)) {
-        this.get(this.selectedId).set('selected', false);
+      var ship = this.get(this.selectedId);
+      var position = ship.get('track').findWhere({ selected: true });
+      if (id !== this.selectedId && !position) {
+        ship.set('selected', false);
         this.selectedId = 0;
+      } else {
+        return true;
       }
     }
 
@@ -1177,7 +1190,7 @@ var Ships = Backbone.Collection.extend({
 
 module.exports = Ships;
 
-},{"./model":21,"backbone":40,"underscore":134}],18:[function(require,module,exports){
+},{"./model":21,"backbone":47,"underscore":141}],18:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1194,7 +1207,7 @@ _.extend(ShipHelper.prototype, {
 
 module.exports = ShipHelper;
 
-},{"underscore":134}],19:[function(require,module,exports){
+},{"underscore":141}],19:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1227,7 +1240,7 @@ _.extend(ShipLabel.prototype, Label.prototype, {
 
 module.exports = ShipLabel;
 
-},{"../../lib/label":4,"backbone":40,"underscore":134}],20:[function(require,module,exports){
+},{"../../lib/label":4,"backbone":47,"underscore":141}],20:[function(require,module,exports){
 'use strict';
 
 var $ = require('jquery');
@@ -1267,14 +1280,17 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     return new mapboxgl.LngLatBounds(SW, NE);
   },
 
+  moveIntoView: function () {
+    var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
+    this.mapgl.fitBounds(bounds);
+  },
+
   process: function () {
     if (this.ship.has('position')) {
       this.addToMap();
 
-      if (this.ship.get('selected') === true) {
-        var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
-
-        this.mapgl.fitBounds(bounds);
+      if (this.ship.changed.selected) {
+        _.delay(_.bind(this.moveIntoView, this), 1000);
       }
     }
   },
@@ -1472,7 +1488,7 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
 
 module.exports = ShipMarker;
 
-},{"../../lib/map-util":5,"backbone":40,"geographiclib":42,"jquery":63,"underscore":134}],21:[function(require,module,exports){
+},{"../../lib/map-util":5,"backbone":47,"geographiclib":49,"jquery":70,"underscore":141}],21:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1577,7 +1593,7 @@ var Ship = Backbone.RelationalModel.extend({
 
 module.exports = Ship;
 
-},{"../../lib/map-util":5,"../position/collection":12,"../position/model":16,"../shipdata/collection":22,"../shipdata/model":24,"../track/collection":25,"./helper":18,"./label":19,"./marker":20,"backbone":40,"underscore":134}],22:[function(require,module,exports){
+},{"../../lib/map-util":5,"../position/collection":12,"../position/model":16,"../shipdata/collection":22,"../shipdata/model":24,"../track/collection":25,"./helper":18,"./label":19,"./marker":20,"backbone":47,"underscore":141}],22:[function(require,module,exports){
 'use strict';
 
 var Backbone = require('backbone');
@@ -1591,7 +1607,7 @@ var ShipData = Backbone.Collection.extend({
 
 module.exports = ShipData;
 
-},{"./model":24,"backbone":40}],23:[function(require,module,exports){
+},{"./model":24,"backbone":47}],23:[function(require,module,exports){
 'use strict';
 
 var moment = require('moment');
@@ -1690,7 +1706,7 @@ _.extend(ShipdataHelper.prototype, {
 
 module.exports = ShipdataHelper;
 
-},{"../../lib/ais-message":2,"ais-receiver/ais-messages/json/ais_msg_5.json":38,"moment":64,"underscore":134}],24:[function(require,module,exports){
+},{"../../lib/ais-message":2,"ais-receiver/ais-messages/json/ais_msg_5.json":45,"moment":71,"underscore":141}],24:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1712,7 +1728,7 @@ var Shipdatum = Backbone.RelationalModel.extend({
 
 module.exports = Shipdatum;
 
-},{"./helper":23,"backbone":40,"underscore":134}],25:[function(require,module,exports){
+},{"./helper":23,"backbone":47,"underscore":141}],25:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1723,7 +1739,7 @@ var TrackHelper = require('./helper');
 
 var Track = Positions.extend({
   comparator: function (a, b) {
-    return new Date(a.get('datetime')) - new Date(b.get('datetime'));
+    return new Date(b.get('datetime')) - new Date(a.get('datetime'));
   },
 
   id: null,
@@ -1752,7 +1768,7 @@ var Track = Positions.extend({
 
 module.exports = Track;
 
-},{"../../lib/map-util":5,"../position/collection":12,"./helper":26,"underscore":134}],26:[function(require,module,exports){
+},{"../../lib/map-util":5,"../position/collection":12,"./helper":26,"underscore":141}],26:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -1779,7 +1795,7 @@ _.extend(TrackHelper.prototype, {
 
 module.exports = TrackHelper;
 
-},{"underscore":134}],27:[function(require,module,exports){
+},{"underscore":141}],27:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -1792,7 +1808,7 @@ module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":f
     + "</a></li>\n      </ul>\n    </div>\n  </th>\n</tr>";
 },"useData":true});
 
-},{"hbsfy/runtime":62}],28:[function(require,module,exports){
+},{"hbsfy/runtime":69}],28:[function(require,module,exports){
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -1880,7 +1896,7 @@ var ListHeader = Backbone.View.extend({
 
 module.exports = ListHeader;
 
-},{"./list-header.hbs":27,"backbone":40,"jquery":63,"moment":64,"underscore":134}],29:[function(require,module,exports){
+},{"./list-header.hbs":27,"backbone":47,"jquery":70,"moment":71,"underscore":141}],29:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -1893,7 +1909,7 @@ module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":f
     + "</td>\n";
 },"useData":true});
 
-},{"hbsfy/runtime":62}],30:[function(require,module,exports){
+},{"hbsfy/runtime":69}],30:[function(require,module,exports){
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -1903,6 +1919,7 @@ var template = require('./list-item.hbs');
 var ListItem = Backbone.View.extend({
   tagName: 'tr',
   template: template,
+  className: 'list-item',
 
   events: {
     "click *" : "select"
@@ -1996,14 +2013,14 @@ var ListItem = Backbone.View.extend({
 
 module.exports = ListItem;
 
-},{"./list-item.hbs":29,"backbone":40,"jquery":63,"underscore":134}],31:[function(require,module,exports){
+},{"./list-item.hbs":29,"backbone":47,"jquery":70,"underscore":141}],31:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    return "<table class=\"table table-hover table-condensed shiplist fixedhead\">\n<thead></thead>\n<tbody></tbody>\n</table>\n";
+    return "<div class=\"list\">\n  <div class=\"inner\">\n    <table class=\"table table-hover table-condensed shiplist fixedhead\">\n    <thead></thead>\n    <tbody></tbody>\n    </table>\n  </div>\n</div>\n\n\n";
 },"useData":true});
 
-},{"hbsfy/runtime":62}],32:[function(require,module,exports){
+},{"hbsfy/runtime":69}],32:[function(require,module,exports){
 var _ = require('underscore');
 window._ = _;
 var $ = require('jquery');
@@ -2015,6 +2032,8 @@ var ListHeaderView = require('./list-header');
 var ListItemView = require('./list-item');
 
 var ListView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'item active',
   listItems: {},
   container: null,
   template: template,
@@ -2074,7 +2093,6 @@ var ListView = Backbone.View.extend({
     this.listItems[ship.get('id')] = listItem;
 
 //    console.log('add', this.listItems[ship.get('id')].index, ship.toTitel());
-
   },
 
   removeItemView: function (ship) {
@@ -2113,7 +2131,7 @@ var ListView = Backbone.View.extend({
 
 module.exports = ListView;
 
-},{"./list-header":28,"./list-item":30,"./list-view.hbs":31,"backbone":40,"jquery":63,"underscore":134}],33:[function(require,module,exports){
+},{"./list-header":28,"./list-item":30,"./list-view.hbs":31,"backbone":47,"jquery":70,"underscore":141}],33:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -2121,10 +2139,10 @@ module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":f
 
   return "<div class=\"header clearfix\">\n  <form class=\"form-horizontal\">\n    <input class=\"form-control\" type=\"text\" placeholder=\"Filter by Name or MMSI\" value=\""
     + container.escapeExpression(((helper = (helper = helpers.filter || (depth0 != null ? depth0.filter : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"filter","hash":{},"data":data}) : helper)))
-    + "\">\n  </form>\n</div>\n<div class=\"list\">\n  <div class=\"collapse in\">\n    <div class=\"inner\">\n      <div class=\"list-table\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"ship\">\n  <div class=\"collapse\">\n    <div class=\"inner\">\n      <div class=\"ship-details\"></div>\n    </div>\n  </div>\n</div>\n<div class=\"footer\">\n  <ul class=\"nav nav-pills\">\n    <li role=\"presentation\" class=\"tolist\"><a href=\"#\">Ship list</a></li>\n    <li role=\"presentation\" class=\"disabled toship\"><a href=\"#\"></a></li>\n  </ul>\n</div>";
+    + "\">\n  </form>\n</div>\n<div class=\"collapse\">\n  <div id=\"carousel\" class=\"carousel slide\">\n    <div class=\"carousel-inner\" role=\"listbox\">\n    </div>\n  </div>\n</div>\n<div class=\"footer\">\n  <ul class=\"nav nav-pills\">\n    <li role=\"presentation\" class=\"tolist\"><a href=\"#\">Ship list</a></li>\n  </ul>\n</div>";
 },"useData":true});
 
-},{"hbsfy/runtime":62}],34:[function(require,module,exports){
+},{"hbsfy/runtime":69}],34:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -2138,180 +2156,409 @@ var template = require('./master-view.hbs');
 
 var MasterView = Backbone.View.extend({
   template: template,
-  currenttab: 'list',
 
   events: {
     "keyup input": "filter",
-    "focus input": "openlistview",
-    "click .footer .tolist a": "openlistview",
-    "click .footer .toship:not(.disabled) a": "openshipview"
+    "focus input": "tolistview",
+    "click .footer .tolist a": "tolistview"
   },
 
   initialize: function (options) {
     this.app = options.app;
+    this.isOpen = false;
+    this.shipviews = [];
 
-    this.listenTo(this.app, 'clickout', this.clickout);
+    this.listenTo(this.app, 'clickout', this.closeview);
   },
 
-  clickout: function () {
-    if (this.currenttab != 'list') {
-      this.closeshipview();
-    } else {
+  tolistview: function () {
+    _.each(this.shipviews, function (view) {
+      view.model.set('selected', false);
+    });
+    this.openlistview();
+  },
+
+  closeview: function () {
+    if (this.isOpen === true) {
+      this.$el.find('.collapse').collapse('hide');
+    }
+    this.isOpen = false;
+  },
+
+  openview: function () {
+    if (this.isOpen === false) {
+      this.$el.find('.collapse').collapse('show');
+    }
+    this.isOpen = true;
+  },
+
+  openlistview: function () {
+    this.$el.find('.carousel').carousel(0);
+    this.openview();
+
+    var btn = this.$el.find('.footer li.tolist');
+    $(btn).addClass('active');
+  },
+
+  closelistview: function () {
+    var btn = this.$el.find('.footer li.tolist');
+    $(btn).removeClass('active');
+  },
+
+  filter: function (evt) {
+    this.tolistview();
+    this.listView.filter(evt);
+  },
+
+  selectShip: function (ship, selected) {
+    if (selected) {
+      var shipview = new ShipView({
+        model: ship
+      });
+      shipview.render();
+      this.shipviews.push(shipview);
+
+      this.openview();
+
+      this.$el.find('.carousel-inner').append(shipview.$el);
+      this.$el.find('.carousel').carousel(this.shipviews.length);
       this.closelistview();
     }
   },
 
-  setShipTabTitel: function (tab) {
-    if (this.shipView) {
-      this.$el.find('.footer li.toship a').html(this.shipView.model.getHelper().toTitel());
-    } else {
-      this.$el.find('.footer li.toship a').html('');
+  cleanup: function () {
+    if (this.shipviews.length > 1) {
+      var shipview = this.shipviews.splice(0, 1);
+      shipview[0].remove();
     }
-  },
-
-  openlistview: function () {
-    this.$el.find('.list .collapse').collapse('show');
-    var btn = this.$el.find('.footer li.tolist');
-    $(btn).addClass('active');
-    this.$el.addClass('open');
-  },
-
-  closelistview: function () {
-    this.$el.find('.list .collapse').collapse('hide');
-    var btn = this.$el.find('.footer li.tolist');
-    $(btn).removeClass('active');
-    this.$el.removeClass('open');
-  },
-
-  openshipview: function () {
-    this.$el.find('.ship .collapse').collapse('show');
-    var btn = this.$el.find('.footer li.toship');
-    $(btn).addClass('active');
-    this.$el.addClass('open');
-  },
-
-  closeshipview: function () {
-    this.$el.find('.ship .collapse').collapse('hide');
-    var btn = this.$el.find('.footer li.toship');
-    $(btn).removeClass('active');
-    this.$el.removeClass('open');
-  },
-
-  filter: function (evt) {
-    this.listView.filter(evt);
   },
 
   render: function () {
     this.$el.html(this.template());
+    this.$el.find('.carousel').carousel({
+      interval: false,
+      pause: false
+    });
+    this.$el.find('.carousel').on('slid.bs.carousel', _.bind(this.cleanup, this));
 
     this.listView = new ListView({
       collection: this.collection,
-      el: this.$el.find('.list-table')
     });
 
     this.listView.render();
+
+    this.$el.find('.carousel-inner').append(this.listView.$el);
+
+    this.listenTo(this.collection, 'change:selected', this.selectShip);
   }
 });
 
 module.exports = MasterView;
 
-},{"./list-view":32,"./master-view.hbs":33,"./ship-view":36,"backbone":40,"jquery":63,"underscore":134}],35:[function(require,module,exports){
+},{"./list-view":32,"./master-view.hbs":33,"./ship-view":43,"backbone":47,"jquery":70,"underscore":141}],35:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
-    return "    <li role=\"presentation\" class=\"active\"><a href=\"#shipdetails\" aria-controls=\"shipdetails\" role=\"tab\" data-toggle=\"tab\">Ship details</a></li>\n";
-},"3":function(container,depth0,helpers,partials,data) {
-    return " class=\"active\"";
-},"5":function(container,depth0,helpers,partials,data) {
-    return "    <li role=\"presentation\"><a href=\"#track\" aria-controls=\"track\" role=\"tab\" data-toggle=\"tab\">Track details</a></li>\n";
-},"7":function(container,depth0,helpers,partials,data) {
-    var stack1;
-
-  return "    <div role=\"tabpanel\" class=\"tab-pane active\" id=\"shipdetails\">\n      <table class=\"table table-condensed details fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.ship : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n";
-},"8":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function";
 
-  return "        <tr>\n          <th scope=\"row\">"
+  return "  <tr>\n    <th scope=\"row\">"
     + container.escapeExpression(((helper = (helper = helpers.name || (depth0 != null ? depth0.name : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"name","hash":{},"data":data}) : helper)))
-    + "</th>\n          <td>"
+    + "</th>\n    <td>"
     + ((stack1 = ((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"value","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</td>\n        </tr>\n";
-},"10":function(container,depth0,helpers,partials,data) {
-    return " active";
-},"12":function(container,depth0,helpers,partials,data) {
+    + "</td>\n  </tr>\n";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "    <div role=\"tabpanel\" class=\"tab-pane\" id=\"track\">\n      <table class=\"table table-hover table-condensed track fixedhead\">\n      <thead>\n        <tr>\n          <th>#</th>\n          <th>Position</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.track : depth0),{"name":"each","hash":{},"fn":container.program(13, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n";
-},"13":function(container,depth0,helpers,partials,data) {
+  return "<thead>\n  <tr>\n    <th>Name</th>\n    <th>Value</th>\n  </tr>\n</thead>\n<tbody>\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.properties : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "</tbody>\n";
+},"useData":true});
+
+},{"hbsfy/runtime":69}],36:[function(require,module,exports){
+var Backbone = require('backbone');
+
+var template = require('./ship-details.hbs');
+
+var ShipDetails = Backbone.View.extend({
+  template: template,
+  tagName: 'table',
+  className: 'table table-condensed details fixedhead',
+
+  render: function () {
+    this.$el.html(this.template({
+      properties: this.model.has('shipdata') && this.model.get('shipdata').getHelper().toPropertyList()
+    }));
+  }
+});
+
+module.exports = ShipDetails;
+
+},{"./ship-details.hbs":35,"backbone":47}],37:[function(require,module,exports){
+var Backbone = require('backbone');
+
+var template = require('./ship-details.hbs');
+
+var ShipPosition = Backbone.View.extend({
+  template: template,
+  tagName: 'table',
+  className: 'table table-condensed position fixedhead',
+
+  render: function () {
+    this.$el.html(this.template({
+      properties: this.model && this.model.getHelper().toPropertyList()
+    }));
+  }
+});
+
+module.exports = ShipPosition;
+
+},{"./ship-details.hbs":35,"backbone":47}],38:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "        <tr>\n          <th scope=\"row\">"
+  return "<th scope=\"row\">"
     + alias4(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"index","hash":{},"data":data}) : helper)))
-    + "</th>\n          <td>\n            <table class=\"property\">\n            <tr>\n              <th>Timestamp</th>\n              <td>"
+    + "</th>\n<td>\n  <table class=\"property\">\n  <tr>\n    <th>Timestamp</th>\n    <td>"
     + ((stack1 = ((helper = (helper = helpers.timestamp || (depth0 != null ? depth0.timestamp : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"timestamp","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</td>\n            </tr>\n            <tr>\n              <th>Course/Speed</th>\n              <td>"
+    + "</td>\n  </tr>\n  <tr>\n    <th>Course/Speed</th>\n    <td>"
     + ((stack1 = ((helper = (helper = helpers.nav || (depth0 != null ? depth0.nav : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nav","hash":{},"data":data}) : helper))) != null ? stack1 : "")
-    + "</td>\n            </tr>\n            <tr>\n              <th>Latitude</th>\n              <td>"
+    + "</td>\n  </tr>\n  <tr>\n    <th>Latitude</th>\n    <td>"
     + alias4(((helper = (helper = helpers.latitude || (depth0 != null ? depth0.latitude : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"latitude","hash":{},"data":data}) : helper)))
-    + "</td>\n            </tr>\n            <tr>\n              <th>Longitude</th>\n              <td>"
+    + "</td>\n  </tr>\n  <tr>\n    <th>Longitude</th>\n    <td>"
     + alias4(((helper = (helper = helpers.longitude || (depth0 != null ? depth0.longitude : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"longitude","hash":{},"data":data}) : helper)))
-    + "</td>\n            </tr>\n            </table>\n          </td>\n        </tr>\n";
+    + "</td>\n  </tr>\n  </table>\n</td>\n";
+},"useData":true});
+
+},{"hbsfy/runtime":69}],39:[function(require,module,exports){
+var Backbone = require('backbone');
+
+var template = require('./ship-track-item.hbs');
+
+var ShipTrackItem = Backbone.View.extend({
+  template: template,
+  tagName: 'tr',
+
+  initialize: function (options) {
+    this.options = options;
+  },
+
+  render: function () {
+    this.$el.html(this.template({
+      index: this.options.index,
+      latitude: this.model.getHelper().format('Latitude'),
+      longitude: this.model.getHelper().format('Longitude'),
+      nav: this.model.getHelper().getNav(),
+      timestamp: this.model.getHelper().format('Timestamp')
+    }));
+  }
+});
+
+module.exports = ShipTrackItem;
+
+},{"./ship-track-item.hbs":38,"backbone":47}],40:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<table class=\"table table-hover table-condensed track fixedhead\">\n<thead>\n  <tr>\n    <th>#</th>\n    <th>Position</th>\n  </tr>\n</thead>\n<tbody></tbody>\n</table>";
+},"useData":true});
+
+},{"hbsfy/runtime":69}],41:[function(require,module,exports){
+var Backbone = require('backbone');
+var ShipTrackItemView = require('./ship-track-item');
+var template = require('./ship-track.hbs');
+
+var ShipTrack = Backbone.View.extend({
+  template: template,
+  tagName: 'table',
+  className: 'table table-hover table-condensed track fixedhead',
+
+  initialize: function () {
+    this.index = 1;
+    this.items = { };
+  },
+
+  render: function () {
+    this.$el.html(this.template());
+
+    var shipTrackItem = new ShipTrackItemView({
+      index: this.index++,
+      model: this.model
+    });
+
+    shipTrackItem.render();
+    this.items[this.model.get('id')] = shipTrackItem;
+    this.$el.append(shipTrackItem.$el);
+
+    this.collection.each(function (position) {
+      var shipTrackItem = new ShipTrackItemView({
+        index: this.index++,
+        model: position
+      });
+
+      shipTrackItem.render();
+      this.items[position.get('id')] = shipTrackItem;
+      this.$el.append(shipTrackItem.$el);
+    }, this);
+  }
+});
+
+module.exports = ShipTrack;
+
+},{"./ship-track-item":39,"./ship-track.hbs":40,"backbone":47}],42:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
+    return "active";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=depth0 != null ? depth0 : {};
 
-  return "<h3>"
+  return "<div class=\"ship\">\n  <div class=\"inner\">\n    <h3>"
     + container.escapeExpression(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"title","hash":{},"data":data}) : helper)))
-    + "</h3>\n<div>\n  <!-- Nav tabs -->\n  <ul class=\"nav nav-tabs\" role=\"tablist\">\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    <li role=\"presentation\"><a href=\"#lastposition\""
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "aria-controls=\"lastposition\" role=\"tab\" data-toggle=\"tab\">Last position</a></li>\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "  </ul>\n\n  <!-- Tab panes -->\n  <div class=\"tab-content\">\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.ship : depth0),{"name":"if","hash":{},"fn":container.program(7, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "    <div role=\"tabpanel\" class=\"tab-pane"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.positiontab : depth0),{"name":"if","hash":{},"fn":container.program(10, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "\" id=\"lastposition\">\n      <table class=\"table table-condensed position fixedhead\">\n      <thead>\n        <tr>\n          <th>Name</th>\n          <th>Value</th>\n        </tr>\n      </thead>\n      <tbody>\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.position : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "      </tbody>\n      </table>\n    </div>\n"
-    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.track : depth0),{"name":"if","hash":{},"fn":container.program(12, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "  </div>\n</div>\n";
+    + "</h3>\n    <div>\n      <!-- Nav tabs -->\n      <ul class=\"nav nav-tabs\" role=\"tablist\">\n        <li role=\"presentation\" class=\"shipdetails "
+    + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.active : depth0)) != null ? stack1.ship : stack1),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\">\n          <a href=\"#shipdetails\" aria-controls=\"shipdetails\" role=\"tab\" data-toggle=\"tab\">Details</a>\n        </li>\n        <li role=\"presentation\" class=\"lastposition "
+    + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.active : depth0)) != null ? stack1.position : stack1),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\">\n          <a href=\"#lastposition\" aria-controls=\"lastposition\" role=\"tab\" data-toggle=\"tab\">Last position</a>\n        </li>\n        <li role=\"presentation\" class=\"track disabled\">\n          <a href=\"#track\" aria-controls=\"track\" role=\"tab\" data-toggle=\"tab\">Track</a>\n        </li>\n      </ul>\n\n      <!-- Tab panes -->\n      <div class=\"tab-content\">\n        <div role=\"tabpanel\" class=\"tab-pane "
+    + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.active : depth0)) != null ? stack1.ship : stack1),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\" id=\"shipdetails\"></div>\n        <div role=\"tabpanel\" class=\"tab-pane "
+    + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.active : depth0)) != null ? stack1.position : stack1),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\" id=\"lastposition\"></div>\n        <div role=\"tabpanel\" class=\"tab-pane\" id=\"track\"></div>\n        <div role=\"tabpanel\" class=\"tab-pane\" id=\"trackposition\"></div>\n      </div>\n    </div>\n  </div>\n</div>\n";
 },"useData":true});
 
-},{"hbsfy/runtime":62}],36:[function(require,module,exports){
+},{"hbsfy/runtime":69}],43:[function(require,module,exports){
 var _ = require('underscore');
 var Backbone = require('backbone');
 
 var template = require('./ship-view.hbs');
 
+var ShipDetailsView = require('./ship-details');
+var ShipPositionView = require('./ship-position');
+var ShipTrackView = require('./ship-track');
+
 var ShipView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'item',
   template: template,
 
-  initialize: function () {
-    this.isShown = false;
-    this.listenTo(this.model.get('track'), "sync", this.render);
+  events: {
+    "click a[href='#shipdetails']": "chkShipdata",
+    "click a[href='#lastposition']": "chkPosition",
+    "click a[href='#track']": "chkTrack"
+  },
+
+  chkShipdata: function (e) {
+    if (!this.model.has('shipdata')) {
+      e.stopPropagation();
+    }
+  },
+
+  chkPosition: function () {
+    if (!this.model.has('position')) {
+      e.stopPropagation();
+    }
+  },
+
+  chkTrack: function () {
+    if (!this.model.get('track').length) {
+      e.stopPropagation();
+    }
+  },
+
+  trackTab: function () {
+    if (this.model.get('track').length) {
+      this.$el.find('.nav-tabs .track').removeClass('disabled');
+    } else {
+      this.$el.find('.nav-tabs .track').addClass('disabled');
+    }
+  },
+
+  addTrack: function () {
+    this.track = new ShipTrackView({
+      collection: this.model.get('track'),
+      model: this.model.get('position')
+    });
+    this.track.render();
+    this.$el.find('#track').append(this.track.$el);
+    this.trackTab();
+  },
+
+  updateTrack: function () {
+    this.track.render();
+    this.trackTab();
+  },
+
+  shipdataTab: function () {
+    if (this.model.has('shipdata')) {
+      this.$el.find('.nav-tabs .shipdetails').removeClass('disabled');
+    } else {
+      this.$el.find('.nav-tabs .shipdetails').addClass('disabled');
+    }
+  },
+
+  addShipdata: function () {
+    this.shipdata = new ShipDetailsView({
+      model: this.model
+    });
+    this.shipdata.render();
+    this.$el.find('#shipdetails').append(this.shipdata.$el);
+    this.shipdataTab();
+  },
+
+  updateShipdata: function () {
+    this.shipdata.render();
+    this.shipdataTab();
+  },
+
+  positionTab: function () {
+    if (this.model.has('position')) {
+      this.$el.find('.nav-tabs .lastposition').removeClass('disabled');
+    } else {
+      this.$el.find('.nav-tabs .lastposition').addClass('disabled');
+    }
+  },
+
+  addPosition: function () {
+    this.position = new ShipPositionView({
+      model: this.model.get('position')
+    });
+    this.position.render();
+    this.$el.find('#lastposition').append(this.position.$el);
+    this.positionTab();
+  },
+
+  updatePosition: function () {
+    this.position.render();
+    this.positionTab();
   },
 
   render: function () {
-    var track = this.model.get('track').getHelper().toPropertyList();
-
     this.$el.html(this.template({
       title: this.model.getHelper().toTitel(),
-      ship: this.model.has('shipdata') && this.model.get('shipdata').getHelper().toPropertyList(),
-      position: this.model.get('position').getHelper().toPropertyList(),
-      track: !_.isEmpty(track) ? track : false,
-      positiontab: this.model.has('shipdata') ? false : true
+      active: {
+        ship: this.model.has('shipdata'),
+        position: !this.model.has('shipdata')
+      }
     }));
+
+    this.addShipdata();
+    this.addPosition();
+    this.addTrack();
+
+    this.listenTo(this.model.get('shipdata'), 'change', this.updateShipdata);
+    this.listenTo(this.model.get('position'), 'change', this.updatePosition);
+    this.listenToOnce(this.model.get('track'), "sync", function () {
+      this.updateTrack();
+      this.listenTo(this.model.get('track'), "remove", this.updateTrack);
+      this.listenTo(this.model.get('track'), "add", this.updateTrack);
+    }, this);
   }
 });
 
 module.exports = ShipView;
 
-},{"./ship-view.hbs":35,"backbone":40,"underscore":134}],37:[function(require,module,exports){
+},{"./ship-details":36,"./ship-position":37,"./ship-track":41,"./ship-view.hbs":42,"backbone":47,"underscore":141}],44:[function(require,module,exports){
 module.exports={
   "aismsgnum": 1,
   "name": "position",
@@ -2638,7 +2885,7 @@ module.exports={
     }
   ]
 }
-},{}],38:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports={
   "aismsgnum": 5,
   "name": "shipdata",
@@ -3210,7 +3457,7 @@ module.exports={
     }
   ]
 }
-},{}],39:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /* vim: set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab: */
 /**
  * Backbone-relational.js 0.10.0
@@ -5288,7 +5535,7 @@ module.exports={
 	};
 }));
 
-},{"backbone":40,"underscore":134}],40:[function(require,module,exports){
+},{"backbone":47,"underscore":141}],47:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.3
 
@@ -7186,7 +7433,7 @@ module.exports={
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":63,"underscore":134}],41:[function(require,module,exports){
+},{"jquery":70,"underscore":141}],48:[function(require,module,exports){
 (function (global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -9558,7 +9805,7 @@ if (typeof jQuery === 'undefined') {
 }).call(global, module, undefined, undefined);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":63}],42:[function(require,module,exports){
+},{"jquery":70}],49:[function(require,module,exports){
 /*
  * Geodesic routines from GeographicLib translated to JavaScript.  See
  * http://geographiclib.sf.net/html/other.html#javascript
@@ -12447,7 +12694,7 @@ cb(GeographicLib);
   }
 });
 
-},{}],43:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12516,7 +12763,7 @@ exports['default'] = inst;
 module.exports = exports['default'];
 
 
-},{"./handlebars/base":44,"./handlebars/exception":47,"./handlebars/no-conflict":57,"./handlebars/runtime":58,"./handlebars/safe-string":59,"./handlebars/utils":60}],44:[function(require,module,exports){
+},{"./handlebars/base":51,"./handlebars/exception":54,"./handlebars/no-conflict":64,"./handlebars/runtime":65,"./handlebars/safe-string":66,"./handlebars/utils":67}],51:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12622,7 +12869,7 @@ exports.createFrame = _utils.createFrame;
 exports.logger = _logger2['default'];
 
 
-},{"./decorators":45,"./exception":47,"./helpers":48,"./logger":56,"./utils":60}],45:[function(require,module,exports){
+},{"./decorators":52,"./exception":54,"./helpers":55,"./logger":63,"./utils":67}],52:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12640,7 +12887,7 @@ function registerDefaultDecorators(instance) {
 }
 
 
-},{"./decorators/inline":46}],46:[function(require,module,exports){
+},{"./decorators/inline":53}],53:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12671,7 +12918,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":60}],47:[function(require,module,exports){
+},{"../utils":67}],54:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12713,7 +12960,7 @@ exports['default'] = Exception;
 module.exports = exports['default'];
 
 
-},{}],48:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12761,7 +13008,7 @@ function registerDefaultHelpers(instance) {
 }
 
 
-},{"./helpers/block-helper-missing":49,"./helpers/each":50,"./helpers/helper-missing":51,"./helpers/if":52,"./helpers/log":53,"./helpers/lookup":54,"./helpers/with":55}],49:[function(require,module,exports){
+},{"./helpers/block-helper-missing":56,"./helpers/each":57,"./helpers/helper-missing":58,"./helpers/if":59,"./helpers/log":60,"./helpers/lookup":61,"./helpers/with":62}],56:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12802,7 +13049,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":60}],50:[function(require,module,exports){
+},{"../utils":67}],57:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12898,7 +13145,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":47,"../utils":60}],51:[function(require,module,exports){
+},{"../exception":54,"../utils":67}],58:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12925,7 +13172,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../exception":47}],52:[function(require,module,exports){
+},{"../exception":54}],59:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12956,7 +13203,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":60}],53:[function(require,module,exports){
+},{"../utils":67}],60:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12984,7 +13231,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],54:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -12998,7 +13245,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{}],55:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13033,7 +13280,7 @@ exports['default'] = function (instance) {
 module.exports = exports['default'];
 
 
-},{"../utils":60}],56:[function(require,module,exports){
+},{"../utils":67}],63:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13082,7 +13329,7 @@ exports['default'] = logger;
 module.exports = exports['default'];
 
 
-},{"./utils":60}],57:[function(require,module,exports){
+},{"./utils":67}],64:[function(require,module,exports){
 (function (global){
 /* global window */
 'use strict';
@@ -13105,7 +13352,7 @@ module.exports = exports['default'];
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],58:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13399,7 +13646,7 @@ function executeDecorators(fn, prog, container, depths, data, blockParams) {
 }
 
 
-},{"./base":44,"./exception":47,"./utils":60}],59:[function(require,module,exports){
+},{"./base":51,"./exception":54,"./utils":67}],66:[function(require,module,exports){
 // Build out our basic SafeString type
 'use strict';
 
@@ -13416,7 +13663,7 @@ exports['default'] = SafeString;
 module.exports = exports['default'];
 
 
-},{}],60:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -13542,15 +13789,15 @@ function appendContextPath(contextPath, id) {
 }
 
 
-},{}],61:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime')['default'];
 
-},{"./dist/cjs/handlebars.runtime":43}],62:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":50}],69:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":61}],63:[function(require,module,exports){
+},{"handlebars/runtime":68}],70:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -22762,7 +23009,7 @@ return jQuery;
 
 }));
 
-},{}],64:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -25958,7 +26205,7 @@ return jQuery;
     return _moment;
 
 }));
-},{}],65:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 var trim = require('./trim');
 var decap = require('./decapitalize');
 
@@ -25974,7 +26221,7 @@ module.exports = function camelize(str, decapitalize) {
   }
 };
 
-},{"./decapitalize":74,"./trim":126}],66:[function(require,module,exports){
+},{"./decapitalize":81,"./trim":133}],73:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function capitalize(str, lowercaseRest) {
@@ -25984,14 +26231,14 @@ module.exports = function capitalize(str, lowercaseRest) {
   return str.charAt(0).toUpperCase() + remainingChars;
 };
 
-},{"./helper/makeString":84}],67:[function(require,module,exports){
+},{"./helper/makeString":91}],74:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function chars(str) {
   return makeString(str).split('');
 };
 
-},{"./helper/makeString":84}],68:[function(require,module,exports){
+},{"./helper/makeString":91}],75:[function(require,module,exports){
 module.exports = function chop(str, step) {
   if (str == null) return [];
   str = String(str);
@@ -25999,7 +26246,7 @@ module.exports = function chop(str, step) {
   return step > 0 ? str.match(new RegExp('.{1,' + step + '}', 'g')) : [str];
 };
 
-},{}],69:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var camelize = require('./camelize');
 var makeString = require('./helper/makeString');
@@ -26009,14 +26256,14 @@ module.exports = function classify(str) {
   return capitalize(camelize(str.replace(/[\W_]/g, ' ')).replace(/\s/g, ''));
 };
 
-},{"./camelize":65,"./capitalize":66,"./helper/makeString":84}],70:[function(require,module,exports){
+},{"./camelize":72,"./capitalize":73,"./helper/makeString":91}],77:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function clean(str) {
   return trim(str).replace(/\s\s+/g, ' ');
 };
 
-},{"./trim":126}],71:[function(require,module,exports){
+},{"./trim":133}],78:[function(require,module,exports){
 
 var makeString = require('./helper/makeString');
 
@@ -26040,7 +26287,7 @@ module.exports = function cleanDiacritics(str) {
   });
 };
 
-},{"./helper/makeString":84}],72:[function(require,module,exports){
+},{"./helper/makeString":91}],79:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function(str, substr) {
@@ -26052,14 +26299,14 @@ module.exports = function(str, substr) {
   return str.split(substr).length - 1;
 };
 
-},{"./helper/makeString":84}],73:[function(require,module,exports){
+},{"./helper/makeString":91}],80:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function dasherize(str) {
   return trim(str).replace(/([A-Z])/g, '-$1').replace(/[-_\s]+/g, '-').toLowerCase();
 };
 
-},{"./trim":126}],74:[function(require,module,exports){
+},{"./trim":133}],81:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function decapitalize(str) {
@@ -26067,7 +26314,7 @@ module.exports = function decapitalize(str) {
   return str.charAt(0).toLowerCase() + str.slice(1);
 };
 
-},{"./helper/makeString":84}],75:[function(require,module,exports){
+},{"./helper/makeString":91}],82:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 function getIndent(str) {
@@ -26097,7 +26344,7 @@ module.exports = function dedent(str, pattern) {
   return str.replace(reg, '');
 };
 
-},{"./helper/makeString":84}],76:[function(require,module,exports){
+},{"./helper/makeString":91}],83:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -26112,7 +26359,7 @@ module.exports = function endsWith(str, ends, position) {
   return position >= 0 && str.indexOf(ends, position) === position;
 };
 
-},{"./helper/makeString":84,"./helper/toPositive":86}],77:[function(require,module,exports){
+},{"./helper/makeString":91,"./helper/toPositive":93}],84:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var escapeChars = require('./helper/escapeChars');
 var reversedEscapeChars = {};
@@ -26132,7 +26379,7 @@ module.exports = function escapeHTML(str) {
   });
 };
 
-},{"./helper/escapeChars":81,"./helper/makeString":84}],78:[function(require,module,exports){
+},{"./helper/escapeChars":88,"./helper/makeString":91}],85:[function(require,module,exports){
 module.exports = function() {
   var result = {};
 
@@ -26144,7 +26391,7 @@ module.exports = function() {
   return result;
 };
 
-},{}],79:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function adjacent(str, direction) {
@@ -26155,7 +26402,7 @@ module.exports = function adjacent(str, direction) {
   return str.slice(0, -1) + String.fromCharCode(str.charCodeAt(str.length - 1) + direction);
 };
 
-},{"./makeString":84}],80:[function(require,module,exports){
+},{"./makeString":91}],87:[function(require,module,exports){
 var escapeRegExp = require('./escapeRegExp');
 
 module.exports = function defaultToWhiteSpace(characters) {
@@ -26167,7 +26414,7 @@ module.exports = function defaultToWhiteSpace(characters) {
     return '[' + escapeRegExp(characters) + ']';
 };
 
-},{"./escapeRegExp":82}],81:[function(require,module,exports){
+},{"./escapeRegExp":89}],88:[function(require,module,exports){
 /* We're explicitly defining the list of entities we want to escape.
 nbsp is an HTML entity, but we don't want to escape all space characters in a string, hence its omission in this map.
 
@@ -26188,14 +26435,14 @@ var escapeChars = {
 
 module.exports = escapeChars;
 
-},{}],82:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 var makeString = require('./makeString');
 
 module.exports = function escapeRegExp(str) {
   return makeString(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 };
 
-},{"./makeString":84}],83:[function(require,module,exports){
+},{"./makeString":91}],90:[function(require,module,exports){
 /*
 We're explicitly defining the list of entities that might see in escape HTML strings
 */
@@ -26216,7 +26463,7 @@ var htmlEntities = {
 
 module.exports = htmlEntities;
 
-},{}],84:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 /**
  * Ensure some object is a coerced to a string
  **/
@@ -26225,7 +26472,7 @@ module.exports = function makeString(object) {
   return '' + object;
 };
 
-},{}],85:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 module.exports = function strRepeat(str, qty){
   if (qty < 1) return '';
   var result = '';
@@ -26236,12 +26483,12 @@ module.exports = function strRepeat(str, qty){
   return result;
 };
 
-},{}],86:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 module.exports = function toPositive(number) {
   return number < 0 ? 0 : (+number || 0);
 };
 
-},{}],87:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 var capitalize = require('./capitalize');
 var underscored = require('./underscored');
 var trim = require('./trim');
@@ -26250,7 +26497,7 @@ module.exports = function humanize(str) {
   return capitalize(trim(underscored(str).replace(/_id$/, '').replace(/_/g, ' ')));
 };
 
-},{"./capitalize":66,"./trim":126,"./underscored":128}],88:[function(require,module,exports){
+},{"./capitalize":73,"./trim":133,"./underscored":135}],95:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function include(str, needle) {
@@ -26258,7 +26505,7 @@ module.exports = function include(str, needle) {
   return makeString(str).indexOf(needle) !== -1;
 };
 
-},{"./helper/makeString":84}],89:[function(require,module,exports){
+},{"./helper/makeString":91}],96:[function(require,module,exports){
 //  Underscore.string
 //  (c) 2010 Esa-Matti Suuronen <esa-matti aet suuronen dot org>
 //  Underscore.string is freely distributable under the terms of the MIT license.
@@ -26398,21 +26645,21 @@ for (var key in prototypeMethods) prototype2method(prototypeMethods[key]);
 
 module.exports = s;
 
-},{"./camelize":65,"./capitalize":66,"./chars":67,"./chop":68,"./classify":69,"./clean":70,"./cleanDiacritics":71,"./count":72,"./dasherize":73,"./decapitalize":74,"./dedent":75,"./endsWith":76,"./escapeHTML":77,"./exports":78,"./helper/escapeRegExp":82,"./humanize":87,"./include":88,"./insert":90,"./isBlank":91,"./join":92,"./levenshtein":93,"./lines":94,"./lpad":95,"./lrpad":96,"./ltrim":97,"./naturalCmp":98,"./numberFormat":99,"./pad":100,"./pred":101,"./prune":102,"./quote":103,"./repeat":104,"./replaceAll":105,"./reverse":106,"./rpad":107,"./rtrim":108,"./slugify":109,"./splice":110,"./sprintf":111,"./startsWith":112,"./strLeft":113,"./strLeftBack":114,"./strRight":115,"./strRightBack":116,"./stripTags":117,"./succ":118,"./surround":119,"./swapCase":120,"./titleize":121,"./toBoolean":122,"./toNumber":123,"./toSentence":124,"./toSentenceSerial":125,"./trim":126,"./truncate":127,"./underscored":128,"./unescapeHTML":129,"./unquote":130,"./vsprintf":131,"./words":132,"./wrap":133}],90:[function(require,module,exports){
+},{"./camelize":72,"./capitalize":73,"./chars":74,"./chop":75,"./classify":76,"./clean":77,"./cleanDiacritics":78,"./count":79,"./dasherize":80,"./decapitalize":81,"./dedent":82,"./endsWith":83,"./escapeHTML":84,"./exports":85,"./helper/escapeRegExp":89,"./humanize":94,"./include":95,"./insert":97,"./isBlank":98,"./join":99,"./levenshtein":100,"./lines":101,"./lpad":102,"./lrpad":103,"./ltrim":104,"./naturalCmp":105,"./numberFormat":106,"./pad":107,"./pred":108,"./prune":109,"./quote":110,"./repeat":111,"./replaceAll":112,"./reverse":113,"./rpad":114,"./rtrim":115,"./slugify":116,"./splice":117,"./sprintf":118,"./startsWith":119,"./strLeft":120,"./strLeftBack":121,"./strRight":122,"./strRightBack":123,"./stripTags":124,"./succ":125,"./surround":126,"./swapCase":127,"./titleize":128,"./toBoolean":129,"./toNumber":130,"./toSentence":131,"./toSentenceSerial":132,"./trim":133,"./truncate":134,"./underscored":135,"./unescapeHTML":136,"./unquote":137,"./vsprintf":138,"./words":139,"./wrap":140}],97:[function(require,module,exports){
 var splice = require('./splice');
 
 module.exports = function insert(str, i, substr) {
   return splice(str, i, 0, substr);
 };
 
-},{"./splice":110}],91:[function(require,module,exports){
+},{"./splice":117}],98:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function isBlank(str) {
   return (/^\s*$/).test(makeString(str));
 };
 
-},{"./helper/makeString":84}],92:[function(require,module,exports){
+},{"./helper/makeString":91}],99:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var slice = [].slice;
 
@@ -26423,7 +26670,7 @@ module.exports = function join() {
   return args.join(makeString(separator));
 };
 
-},{"./helper/makeString":84}],93:[function(require,module,exports){
+},{"./helper/makeString":91}],100:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 /**
@@ -26477,27 +26724,27 @@ module.exports = function levenshtein(str1, str2) {
   return nextCol;
 };
 
-},{"./helper/makeString":84}],94:[function(require,module,exports){
+},{"./helper/makeString":91}],101:[function(require,module,exports){
 module.exports = function lines(str) {
   if (str == null) return [];
   return String(str).split(/\r\n?|\n/);
 };
 
-},{}],95:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lpad(str, length, padStr) {
   return pad(str, length, padStr);
 };
 
-},{"./pad":100}],96:[function(require,module,exports){
+},{"./pad":107}],103:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function lrpad(str, length, padStr) {
   return pad(str, length, padStr, 'both');
 };
 
-},{"./pad":100}],97:[function(require,module,exports){
+},{"./pad":107}],104:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimLeft = String.prototype.trimLeft;
@@ -26509,7 +26756,7 @@ module.exports = function ltrim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":80,"./helper/makeString":84}],98:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":87,"./helper/makeString":91}],105:[function(require,module,exports){
 module.exports = function naturalCmp(str1, str2) {
   if (str1 == str2) return 0;
   if (!str1) return -1;
@@ -26540,7 +26787,7 @@ module.exports = function naturalCmp(str1, str2) {
   return str1 < str2 ? -1 : 1;
 };
 
-},{}],99:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 module.exports = function numberFormat(number, dec, dsep, tsep) {
   if (isNaN(number) || number == null) return '';
 
@@ -26554,7 +26801,7 @@ module.exports = function numberFormat(number, dec, dsep, tsep) {
   return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, '$1' + tsep) + decimals;
 };
 
-},{}],100:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -26582,14 +26829,14 @@ module.exports = function pad(str, length, padStr, type) {
   }
 };
 
-},{"./helper/makeString":84,"./helper/strRepeat":85}],101:[function(require,module,exports){
+},{"./helper/makeString":91,"./helper/strRepeat":92}],108:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, -1);
 };
 
-},{"./helper/adjacent":79}],102:[function(require,module,exports){
+},{"./helper/adjacent":86}],109:[function(require,module,exports){
 /**
  * _s.prune: a more elegant version of truncate
  * prune extra chars, never leaving a half-chopped word.
@@ -26618,14 +26865,14 @@ module.exports = function prune(str, length, pruneStr) {
   return (template + pruneStr).length > str.length ? str : str.slice(0, template.length) + pruneStr;
 };
 
-},{"./helper/makeString":84,"./rtrim":108}],103:[function(require,module,exports){
+},{"./helper/makeString":91,"./rtrim":115}],110:[function(require,module,exports){
 var surround = require('./surround');
 
 module.exports = function quote(str, quoteChar) {
   return surround(str, quoteChar || '"');
 };
 
-},{"./surround":119}],104:[function(require,module,exports){
+},{"./surround":126}],111:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var strRepeat = require('./helper/strRepeat');
 
@@ -26642,7 +26889,7 @@ module.exports = function repeat(str, qty, separator) {
   return repeat.join(separator);
 };
 
-},{"./helper/makeString":84,"./helper/strRepeat":85}],105:[function(require,module,exports){
+},{"./helper/makeString":91,"./helper/strRepeat":92}],112:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function replaceAll(str, find, replace, ignorecase) {
@@ -26652,21 +26899,21 @@ module.exports = function replaceAll(str, find, replace, ignorecase) {
   return makeString(str).replace(reg, replace);
 };
 
-},{"./helper/makeString":84}],106:[function(require,module,exports){
+},{"./helper/makeString":91}],113:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function reverse(str) {
   return chars(str).reverse().join('');
 };
 
-},{"./chars":67}],107:[function(require,module,exports){
+},{"./chars":74}],114:[function(require,module,exports){
 var pad = require('./pad');
 
 module.exports = function rpad(str, length, padStr) {
   return pad(str, length, padStr, 'right');
 };
 
-},{"./pad":100}],108:[function(require,module,exports){
+},{"./pad":107}],115:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrimRight = String.prototype.trimRight;
@@ -26678,7 +26925,7 @@ module.exports = function rtrim(str, characters) {
   return str.replace(new RegExp(characters + '+$'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":80,"./helper/makeString":84}],109:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":87,"./helper/makeString":91}],116:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var trim = require('./trim');
@@ -26689,7 +26936,7 @@ module.exports = function slugify(str) {
   return trim(dasherize(cleanDiacritics(str).replace(/[^\w\s-]/g, '-').toLowerCase()), '-');
 };
 
-},{"./cleanDiacritics":71,"./dasherize":73,"./helper/defaultToWhiteSpace":80,"./helper/makeString":84,"./trim":126}],110:[function(require,module,exports){
+},{"./cleanDiacritics":78,"./dasherize":80,"./helper/defaultToWhiteSpace":87,"./helper/makeString":91,"./trim":133}],117:[function(require,module,exports){
 var chars = require('./chars');
 
 module.exports = function splice(str, i, howmany, substr) {
@@ -26698,7 +26945,7 @@ module.exports = function splice(str, i, howmany, substr) {
   return arr.join('');
 };
 
-},{"./chars":67}],111:[function(require,module,exports){
+},{"./chars":74}],118:[function(require,module,exports){
 // sprintf() for JavaScript 0.7-beta1
 // http://www.diveintojavascript.com/projects/javascript-sprintf
 //
@@ -26824,7 +27071,7 @@ var sprintf = (function() {
 
 module.exports = sprintf;
 
-},{"./helper/strRepeat":85}],112:[function(require,module,exports){
+},{"./helper/strRepeat":92}],119:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var toPositive = require('./helper/toPositive');
 
@@ -26835,7 +27082,7 @@ module.exports = function startsWith(str, starts, position) {
   return str.lastIndexOf(starts, position) === position;
 };
 
-},{"./helper/makeString":84,"./helper/toPositive":86}],113:[function(require,module,exports){
+},{"./helper/makeString":91,"./helper/toPositive":93}],120:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeft(str, sep) {
@@ -26845,7 +27092,7 @@ module.exports = function strLeft(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":84}],114:[function(require,module,exports){
+},{"./helper/makeString":91}],121:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strLeftBack(str, sep) {
@@ -26855,7 +27102,7 @@ module.exports = function strLeftBack(str, sep) {
   return~ pos ? str.slice(0, pos) : str;
 };
 
-},{"./helper/makeString":84}],115:[function(require,module,exports){
+},{"./helper/makeString":91}],122:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRight(str, sep) {
@@ -26865,7 +27112,7 @@ module.exports = function strRight(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":84}],116:[function(require,module,exports){
+},{"./helper/makeString":91}],123:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function strRightBack(str, sep) {
@@ -26875,26 +27122,26 @@ module.exports = function strRightBack(str, sep) {
   return~ pos ? str.slice(pos + sep.length, str.length) : str;
 };
 
-},{"./helper/makeString":84}],117:[function(require,module,exports){
+},{"./helper/makeString":91}],124:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function stripTags(str) {
   return makeString(str).replace(/<\/?[^>]+>/g, '');
 };
 
-},{"./helper/makeString":84}],118:[function(require,module,exports){
+},{"./helper/makeString":91}],125:[function(require,module,exports){
 var adjacent = require('./helper/adjacent');
 
 module.exports = function succ(str) {
   return adjacent(str, 1);
 };
 
-},{"./helper/adjacent":79}],119:[function(require,module,exports){
+},{"./helper/adjacent":86}],126:[function(require,module,exports){
 module.exports = function surround(str, wrapper) {
   return [wrapper, str, wrapper].join('');
 };
 
-},{}],120:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function swapCase(str) {
@@ -26903,7 +27150,7 @@ module.exports = function swapCase(str) {
   });
 };
 
-},{"./helper/makeString":84}],121:[function(require,module,exports){
+},{"./helper/makeString":91}],128:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function titleize(str) {
@@ -26912,7 +27159,7 @@ module.exports = function titleize(str) {
   });
 };
 
-},{"./helper/makeString":84}],122:[function(require,module,exports){
+},{"./helper/makeString":91}],129:[function(require,module,exports){
 var trim = require('./trim');
 
 function boolMatch(s, matchers) {
@@ -26934,7 +27181,7 @@ module.exports = function toBoolean(str, trueValues, falseValues) {
   if (boolMatch(str, falseValues || ["false", "0"])) return false;
 };
 
-},{"./trim":126}],123:[function(require,module,exports){
+},{"./trim":133}],130:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function toNumber(num, precision) {
@@ -26943,7 +27190,7 @@ module.exports = function toNumber(num, precision) {
   return Math.round(num * factor) / factor;
 };
 
-},{"./trim":126}],124:[function(require,module,exports){
+},{"./trim":133}],131:[function(require,module,exports){
 var rtrim = require('./rtrim');
 
 module.exports = function toSentence(array, separator, lastSeparator, serial) {
@@ -26957,14 +27204,14 @@ module.exports = function toSentence(array, separator, lastSeparator, serial) {
   return a.length ? a.join(separator) + lastSeparator + lastMember : lastMember;
 };
 
-},{"./rtrim":108}],125:[function(require,module,exports){
+},{"./rtrim":115}],132:[function(require,module,exports){
 var toSentence = require('./toSentence');
 
 module.exports = function toSentenceSerial(array, sep, lastSep) {
   return toSentence(array, sep, lastSep, true);
 };
 
-},{"./toSentence":124}],126:[function(require,module,exports){
+},{"./toSentence":131}],133:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var defaultToWhiteSpace = require('./helper/defaultToWhiteSpace');
 var nativeTrim = String.prototype.trim;
@@ -26976,7 +27223,7 @@ module.exports = function trim(str, characters) {
   return str.replace(new RegExp('^' + characters + '+|' + characters + '+$', 'g'), '');
 };
 
-},{"./helper/defaultToWhiteSpace":80,"./helper/makeString":84}],127:[function(require,module,exports){
+},{"./helper/defaultToWhiteSpace":87,"./helper/makeString":91}],134:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 
 module.exports = function truncate(str, length, truncateStr) {
@@ -26986,14 +27233,14 @@ module.exports = function truncate(str, length, truncateStr) {
   return str.length > length ? str.slice(0, length) + truncateStr : str;
 };
 
-},{"./helper/makeString":84}],128:[function(require,module,exports){
+},{"./helper/makeString":91}],135:[function(require,module,exports){
 var trim = require('./trim');
 
 module.exports = function underscored(str) {
   return trim(str).replace(/([a-z\d])([A-Z]+)/g, '$1_$2').replace(/[-\s]+/g, '_').toLowerCase();
 };
 
-},{"./trim":126}],129:[function(require,module,exports){
+},{"./trim":133}],136:[function(require,module,exports){
 var makeString = require('./helper/makeString');
 var htmlEntities = require('./helper/htmlEntities');
 
@@ -27013,7 +27260,7 @@ module.exports = function unescapeHTML(str) {
   });
 };
 
-},{"./helper/htmlEntities":83,"./helper/makeString":84}],130:[function(require,module,exports){
+},{"./helper/htmlEntities":90,"./helper/makeString":91}],137:[function(require,module,exports){
 module.exports = function unquote(str, quoteChar) {
   quoteChar = quoteChar || '"';
   if (str[0] === quoteChar && str[str.length - 1] === quoteChar)
@@ -27021,7 +27268,7 @@ module.exports = function unquote(str, quoteChar) {
   else return str;
 };
 
-},{}],131:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 var sprintf = require('./sprintf');
 
 module.exports = function vsprintf(fmt, argv) {
@@ -27029,7 +27276,7 @@ module.exports = function vsprintf(fmt, argv) {
   return sprintf.apply(null, argv);
 };
 
-},{"./sprintf":111}],132:[function(require,module,exports){
+},{"./sprintf":118}],139:[function(require,module,exports){
 var isBlank = require('./isBlank');
 var trim = require('./trim');
 
@@ -27038,7 +27285,7 @@ module.exports = function words(str, delimiter) {
   return trim(str, delimiter).split(delimiter || /\s+/);
 };
 
-},{"./isBlank":91,"./trim":126}],133:[function(require,module,exports){
+},{"./isBlank":98,"./trim":133}],140:[function(require,module,exports){
 // Wrap
 // wraps a string by a certain width
 
@@ -27139,7 +27386,7 @@ module.exports = function wrap(str, options){
 		return result;
 	}
 };
-},{"./helper/makeString":84}],134:[function(require,module,exports){
+},{"./helper/makeString":91}],141:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors

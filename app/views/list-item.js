@@ -7,6 +7,7 @@ var template = require('./list-item.hbs');
 var ListItem = Backbone.View.extend({
   tagName: 'tr',
   template: template,
+  className: 'list-item',
 
   events: {
     "click *" : "select"

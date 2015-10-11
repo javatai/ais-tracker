@@ -9,6 +9,8 @@ var ListHeaderView = require('./list-header');
 var ListItemView = require('./list-item');
 
 var ListView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'item active',
   listItems: {},
   container: null,
   template: template,
@@ -68,7 +70,6 @@ var ListView = Backbone.View.extend({
     this.listItems[ship.get('id')] = listItem;
 
 //    console.log('add', this.listItems[ship.get('id')].index, ship.toTitel());
-
   },
 
   removeItemView: function (ship) {

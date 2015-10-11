@@ -75,9 +75,13 @@ var Ships = Backbone.Collection.extend({
     }
 
     if (this.selectedId) {
-      if (!id || (id !== this.selectedId)) {
-        this.get(this.selectedId).set('selected', false);
+      var ship = this.get(this.selectedId);
+      var position = ship.get('track').findWhere({ selected: true });
+      if (id !== this.selectedId && !position) {
+        ship.set('selected', false);
         this.selectedId = 0;
+      } else {
+        return true;
       }
     }
 

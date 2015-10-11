@@ -21,7 +21,7 @@ var TrackLayer = function (options) {
 };
 
 _.extend(TrackLayer.prototype, Backbone.Events, {
-  process: function (ship) {
+  execute: function (ship) {
     if (ship.get('selected') === true) {
       this.ship = ship;
       this.track = ship.get('track');
@@ -40,6 +40,10 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     if (ship.get('selected') === false) {
       this.removeFromMap();
     }
+  },
+
+  process: function (ship) {
+    _.delay(_.bind(this.execute, this), 1000, ship);
   },
 
   onMousemove: function (lngLat, perimeter) {
@@ -69,13 +73,14 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   onClick: function (e) {
+    var dfd = $.Deferred();
+
     if (!this.track) {
-      this.app.trigger('clickout');
-      return;
+      dfd.resolve();
     }
 
     this.mapgl.featuresAt(e.point, { layer: 'positions', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
-      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
+      var id = !_.isEmpty(features) ? Number(_.first(features).properties.id.substr(1)) : 0;
 
       if (this.clickid) {
         if (!id || (id !== this.clickid)) {
@@ -87,10 +92,14 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       if (id) {
         this.track.get(id).set('selected', true);
         this.clickid = id;
+
+        dfd.resolve();
       } else {
-        this.mapgl.fire('clickout');
+        dfd.resolve();
       }
     }, this));
+
+    return dfd;
   },
 
   onClickout: function () {
@@ -98,8 +107,6 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.track.get(this.clickid).set('selected', false);
       this.clickid = 0;
     }
-
-    this.app.trigger('clickout');
   },
 
   onAddPosition: function (position) {

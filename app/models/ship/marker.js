@@ -37,14 +37,17 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     return new mapboxgl.LngLatBounds(SW, NE);
   },
 
+  moveIntoView: function () {
+    var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
+    this.mapgl.fitBounds(bounds);
+  },
+
   process: function () {
     if (this.ship.has('position')) {
       this.addToMap();
 
-      if (this.ship.get('selected') === true) {
-        var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
-
-        this.mapgl.fitBounds(bounds);
+      if (this.ship.changed.selected) {
+        _.delay(_.bind(this.moveIntoView, this), 1000);
       }
     }
   },

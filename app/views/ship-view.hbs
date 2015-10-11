@@ -1,94 +1,27 @@
-<h3>{{title}}</h3>
-<div>
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    {{#if ship}}
-    <li role="presentation" class="active"><a href="#shipdetails" aria-controls="shipdetails" role="tab" data-toggle="tab">Ship details</a></li>
-    {{/if}}
-    <li role="presentation"><a href="#lastposition"{{#if positiontab}} class="active"{{/if}}aria-controls="lastposition" role="tab" data-toggle="tab">Last position</a></li>
-    {{#if track}}
-    <li role="presentation"><a href="#track" aria-controls="track" role="tab" data-toggle="tab">Track details</a></li>
-    {{/if}}
-  </ul>
+<div class="ship">
+  <div class="inner">
+    <h3>{{title}}</h3>
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="shipdetails {{#if active.ship}}active{{/if}}">
+          <a href="#shipdetails" aria-controls="shipdetails" role="tab" data-toggle="tab">Details</a>
+        </li>
+        <li role="presentation" class="lastposition {{#if active.position}}active{{/if}}">
+          <a href="#lastposition" aria-controls="lastposition" role="tab" data-toggle="tab">Last position</a>
+        </li>
+        <li role="presentation" class="track disabled">
+          <a href="#track" aria-controls="track" role="tab" data-toggle="tab">Track</a>
+        </li>
+      </ul>
 
-  <!-- Tab panes -->
-  <div class="tab-content">
-    {{#if ship}}
-    <div role="tabpanel" class="tab-pane active" id="shipdetails">
-      <table class="table table-condensed details fixedhead">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each ship}}
-        <tr>
-          <th scope="row">{{name}}</th>
-          <td>{{{value}}}</td>
-        </tr>
-        {{/each}}
-      </tbody>
-      </table>
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane {{#if active.ship}}active{{/if}}" id="shipdetails"></div>
+        <div role="tabpanel" class="tab-pane {{#if active.position}}active{{/if}}" id="lastposition"></div>
+        <div role="tabpanel" class="tab-pane" id="track"></div>
+        <div role="tabpanel" class="tab-pane" id="trackposition"></div>
+      </div>
     </div>
-    {{/if}}
-    <div role="tabpanel" class="tab-pane{{#if positiontab}} active{{/if}}" id="lastposition">
-      <table class="table table-condensed position fixedhead">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each position}}
-        <tr>
-          <th scope="row">{{name}}</th>
-          <td>{{{value}}}</td>
-        </tr>
-        {{/each}}
-      </tbody>
-      </table>
-    </div>
-    {{#if track}}
-    <div role="tabpanel" class="tab-pane" id="track">
-      <table class="table table-hover table-condensed track fixedhead">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Position</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each track}}
-        <tr>
-          <th scope="row">{{index}}</th>
-          <td>
-            <table class="property">
-            <tr>
-              <th>Timestamp</th>
-              <td>{{{timestamp}}}</td>
-            </tr>
-            <tr>
-              <th>Course/Speed</th>
-              <td>{{{nav}}}</td>
-            </tr>
-            <tr>
-              <th>Latitude</th>
-              <td>{{latitude}}</td>
-            </tr>
-            <tr>
-              <th>Longitude</th>
-              <td>{{longitude}}</td>
-            </tr>
-            </table>
-          </td>
-        </tr>
-        {{/each}}
-      </tbody>
-      </table>
-    </div>
-    {{/if}}
   </div>
 </div>

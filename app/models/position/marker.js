@@ -17,7 +17,7 @@ _.extend(PositionMarker.prototype, Backbone.Events, {
       },
       "properties": {
         "title": this.position.getHelper().toTitel(),
-        "id": this.position.get('id')
+        "id": 'p' + this.position.get('id')
       }
     }
   }
