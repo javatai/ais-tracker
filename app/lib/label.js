@@ -5,14 +5,26 @@ var Backbone = require('backbone');
 
 var Popup = require('./popup');
 
-var Label = function (map) {
-  this.mapgl = map;
+var Label = function () {
+  this.listenTo(this.model, 'change', this.process);
 };
 
 _.extend(Label.prototype, Backbone.Events, {
   label: null,
 
+  process: function () {
+    if (this.model.get('mouseover') === true) {
+      this.showLabel();
+    } else {
+      this.hideLabel();
+    }
+  },
+
   showLabel: function () {
+    if (this.label) {
+      this.hideLabel();
+    }
+
     this.label = new Popup()
       .setLngLat(this.getCoordinates())
       .setHTML(this.toTitel())
@@ -31,7 +43,5 @@ _.extend(Label.prototype, Backbone.Events, {
     }
   }
 });
-
-Label.extend = Backbone.Model.extend;
 
 module.exports = Label;

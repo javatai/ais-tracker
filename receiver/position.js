@@ -45,10 +45,14 @@ module.exports = function (receiver) {
           limit: 1
         }).then(function(track) {
           var last = track[0];
-          var distancemoved = distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude'));
-          if (!last || distancemoved > config.setup.movemin) {
-            console.log(ais.message.UserID, distancemoved);
+          if (!last) {
             ship.addTrack(position);
+          } else {
+            var distancemoved = distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude'));
+            if (distancemoved > config.setup.movemin) {
+              ship.addTrack(position);
+            }
+            console.log(ais.message.UserID, Number(distancemoved.toFixed(2)));
           }
         });
       });

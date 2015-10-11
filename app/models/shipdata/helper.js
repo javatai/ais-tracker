@@ -20,9 +20,6 @@ _.extend(ShipdataHelper.prototype, {
     'IMO number': function (data) {
       return data.get('imonumber');
     },
-    'AIS version': function (data) {
-      return this.aismessage.lookup('aisversion', data.get('aisversion'));
-    },
     'Callsign': function (data) {
       return data.get('callsign');
     },
@@ -43,9 +40,6 @@ _.extend(ShipdataHelper.prototype, {
     },
     Draught: function (data) {
       return data.has('draught') && data.get('draught') + ' m' || false;
-    },
-    'Position type': function (data) {
-      return this.aismessage.lookup('positiontype', data.get('positiontype'));
     },
     Destination: function (data) {
       return data.get('destination');
@@ -68,6 +62,12 @@ _.extend(ShipdataHelper.prototype, {
       if (m) timestamp.minute(m);
 
       return timestamp.format('YYYY-MM-DD HH:mm:ss UTC');
+    },
+    'AIS version': function (data) {
+      return this.aismessage.lookup('aisversion', data.get('aisversion'));
+    },
+    'Position type': function (data) {
+      return this.aismessage.lookup('positiontype', data.get('positiontype'));
     },
     Datetime: function (data) {
       var timestamp = moment.utc(data.get('datetime'));

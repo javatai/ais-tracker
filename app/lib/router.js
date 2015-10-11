@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('underscore');
 var Backbone = require('backbone');
 
 var Router = Backbone.Router.extend({
@@ -8,17 +9,37 @@ var Router = Backbone.Router.extend({
   },
 
   initialize: function (options) {
-    this.collection = options.collection;
-    this.appevents = options.appevents;
+    this.ships = options.ships;
+
+    this.ships.once('sync', function () {
+      Backbone.history.start();
+    });
+
+    this.listenTo(this.ships, 'remove', function (ship) {
+      if (Backbone.history.fragment === 'mmsi/' + ship.get('userid')) {
+        this.navigate('');
+      }
+    }, this);
+
+    var navigate = _.debounce(_.bind(function (route) {
+      this.navigate(route);
+    }, this), 300);
+
+    this.listenTo(this.ships, 'change:selected', function (ship, selected) {
+      if (selected) {
+        navigate('mmsi/' + ship.get('userid'));
+      } else {
+        navigate('');
+      }
+    });
   },
 
-  search: function(mmsi) {
-    var ship = this.collection.findWhere({ userid: Number(mmsi) });
+  search: function (mmsi) {
+    var ship = this.ships.findWhere({ userid: Number(mmsi) });
     if (ship) {
-      this.appevents.trigger('router:select', ship);
-    }
-    else {
-      this.navigate("");
+      this.ships.selectShip(ship);
+    } else {
+      this.navigate('');
     }
   }
 });
