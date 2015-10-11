@@ -28,3 +28,5 @@ node_modules
 
 docs
 test.js
+html/main.js
+html/style.css

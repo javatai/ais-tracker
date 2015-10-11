@@ -2,7 +2,12 @@
 
 var _ = require('underscore');
 var $ = require('jquery');
+
 var Backbone = require('backbone');
+require('backbone-relational');
+Backbone.$ = $;
+
+var bootstrap = require('bootstrap');
 
 window.$ = $;
 window.Backbone = Backbone;

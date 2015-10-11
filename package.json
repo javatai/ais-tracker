@@ -15,6 +15,7 @@
   "homepage": "https://github.com/3epnm/ais-server#readme",
   "dependencies": {
     "ais-receiver": "git://github.com/3epnm/ais-receiver.git",
+    "mapbox-gl-js": "git://github.com/mapbox/mapbox-gl-js.git",
     "backbone": "^1.2.3",
     "backbone-relational": "^0.10.0",
     "geographiclib": "^1.45.0",
@@ -29,13 +30,18 @@
     "underscore.string": "^3.2.2"
   },
   "devDependencies": {
-    "browserify-shim": "^3.8.10",
     "browserify": "^11.2.0",
+    "browserify-shim": "^3.8.10",
+    "less": "^2.5.3",
     "watchify": "^3.4.0"
   },
   "scripts": {
-    "build-js": "browserify app/main.js > app/bundle.js",
-    "watch-js": "watchify app/main.js -o app/bundle.js"
+    "build-js": "node_modules/browserify/bin/cmd.js app/main.js > html/main.js",
+    "watch-js": "node_modules/watchify/bin/cmd.js app/main.js -o html/main.js -dv",
+    "build-css": "node_modules/less/bin/lessc app/style/style.less html/style.css",
+    "watch-css": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less html/style.css",
+    "build": "npm run build-js && npm run build-css",
+    "watch": "npm run watch-js & npm run watch-css"
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"

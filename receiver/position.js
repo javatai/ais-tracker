@@ -52,6 +52,7 @@ module.exports = function (receiver) {
             if (distancemoved > config.setup.movemin) {
               ship.addTrack(position);
             }
+            // console.log(ais.message.UserID, Number(distancemoved.toFixed(2)));
           }
         });
       });

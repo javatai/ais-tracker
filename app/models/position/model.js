@@ -5,6 +5,7 @@ _.str = require("underscore.string");
 var Backbone = require('backbone');
 var moment = require('moment');
 var MapUtil = require('../../lib/map-util');
+var mapboxgl = require('mapbox-gl');
 
 var PositionHelper = require('./helper');
 var PositionMarker = require('./marker');

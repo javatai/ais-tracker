@@ -22,7 +22,7 @@ server.use(restify.bodyParser());
 require('./api/ship')(server);
 require('./api/track')(server);
 
-server.get(/\/app\/?.*/, restify.serveStatic({
+server.get(/\/html\/?.*/, restify.serveStatic({
   directory: __dirname,
   default: 'index.html'
 }));

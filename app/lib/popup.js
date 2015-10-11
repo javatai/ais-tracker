@@ -3,6 +3,8 @@
 var _ = require('underscore');
 var $ = require('jquery');
 
+var mapboxgl = require('mapbox-gl');
+
 var _onClickClose = mapboxgl.Popup.prototype._onClickClose;
 
 mapboxgl.Popup.prototype._onClickClose = function() {

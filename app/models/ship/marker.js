@@ -5,6 +5,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var MapUtil = require('../../lib/map-util');
 var GeographicLib = require("geographiclib");
+var mapboxgl = require('mapbox-gl');
 
 var ShipMarker = function (ship, mapgl) {
   this.layer = {};
@@ -46,7 +47,7 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     if (this.ship.has('position')) {
       this.addToMap();
 
-      if (this.ship.changed.selected && this.mapgl.getZoom() < 16) {
+      if (this.ship.changed.selected) {
         _.delay(_.bind(this.moveIntoView, this), 1000);
       }
     }

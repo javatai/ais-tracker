@@ -1,7 +1,8 @@
 'use strict';
 
-var _ = require('underscore');
 var config = require('../config.json');
+
+var mapboxgl = require('mapbox-gl');
 
 mapboxgl.accessToken = config.map.accessToken;
 
