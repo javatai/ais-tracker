@@ -1,10 +1,10 @@
 'use strict';
 
-var config = require('../config.json');
+var config = require('../config');
 
 var mapboxgl = require('mapbox-gl');
 
-mapboxgl.accessToken = config.map.accessToken;
+mapboxgl.accessToken = config.frontend.map.accessToken;
 
 var map = new mapboxgl.Map({
   container: 'map',

@@ -22,6 +22,14 @@
         "limit": 1000,
         "order": "datetime DESC"
       }
+    },
+    "frontend": {
+      "map": {
+        "accessToken": "",
+        "style": "mapbox://styles/mapbox/streets-v8",
+        "center": [ 9.996006002132162, 53.50766131847098 ],
+        "zoom": 12
+      }
     }
   },
   "test": {
@@ -47,6 +55,14 @@
         "limit": 1000,
         "order": "datetime DESC"
       }
+    },
+    "frontend": {
+      "map": {
+        "accessToken": "",
+        "style": "mapbox://styles/mapbox/streets-v8",
+        "center": [ 9.996006002132162, 53.50766131847098 ],
+        "zoom": 12
+      }
     }
   },
   "production": {
@@ -71,6 +87,14 @@
       "ship": {
         "limit": 1000,
         "order": "datetime DESC"
+      }
+    },
+    "frontend": {
+      "map": {
+        "accessToken": "",
+        "style": "mapbox://styles/mapbox/streets-v8",
+        "center": [ 9.996006002132162, 53.50766131847098 ],
+        "zoom": 12
       }
     }
   }
