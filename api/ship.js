@@ -9,7 +9,7 @@ var Position = require('../models/position');
 var ShipData = require('../models/shipdata');
 var Ship = require('../models/ship');
 
-module.exports = function (server, epilogue) {
+module.exports = function (server) {
   server.get('/api/ship/:shipid', function (req, res, next) {
     Ship.findOne({
       include: [

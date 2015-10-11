@@ -17,7 +17,6 @@
     "ais-receiver": "git://github.com/3epnm/ais-receiver.git",
     "backbone": "^1.2.3",
     "backbone-relational": "^0.10.0",
-    "epilogue": "^0.6.1",
     "geographiclib": "^1.45.0",
     "jquery": "^2.1.4",
     "moment": "^2.10.6",

@@ -1,8 +1,6 @@
 "use strict";
 
 var sequelize = require('./lib/init');
-
-var epilogue = require('epilogue');
 var restify = require('restify');
 
 // Initialize server
@@ -20,17 +18,9 @@ server.use(restify.dateParser());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
-// Initialize epilogue
-epilogue.initialize({
-  app: server,
-  sequelize: sequelize
-});
-
 // Create REST resource
-require('./api/position')(server, epilogue);
-require('./api/shipdata')(server, epilogue);
-require('./api/ship')(server, epilogue);
-require('./api/track')(server, epilogue);
+require('./api/ship')(server);
+require('./api/track')(server);
 
 server.get(/\/app\/?.*/, restify.serveStatic({
   directory: __dirname,

@@ -46,7 +46,7 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     if (this.ship.has('position')) {
       this.addToMap();
 
-      if (this.ship.changed.selected) {
+      if (this.ship.changed.selected && this.mapgl.getZoom() < 16) {
         _.delay(_.bind(this.moveIntoView, this), 1000);
       }
     }
