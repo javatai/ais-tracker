@@ -3,12 +3,16 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
+var socket = require('../../lib/socket');
+
 var Ship = require('./model');
+var ShipData = require('../shipdata/model');
 
 var Ships = Backbone.Collection.extend({
   url: '/api/ships',
   model: Ship,
 
+  currentSort: { strategy: "name", direction: "asc" },
   selectedStrategy: null,
 
   comparator: function (a, b) {
@@ -62,7 +66,7 @@ var Ships = Backbone.Collection.extend({
 
   initialize: function () {
     this.selectedId = 0;
-    this.initSort("name", "asc");
+    this.initSort(this.currentSort.strategy, this.currentSort.direction);
 
     this.on('remove', function (ship) {
       if (ship.get('id') === this.selectedId) {
@@ -75,6 +79,22 @@ var Ships = Backbone.Collection.extend({
         this.selectedId = 0;
       }
     });
+
+    this.listenToOnce(this, 'sync', function () {
+      socket.on('ship:create', this.onShipCreated.bind(this));
+      socket.on('ship:update', this.onShipUpdated.bind(this));
+    });
+  },
+
+  onShipCreated: function (message) {
+    this.add(Ship.findOrCreate(message));
+  },
+
+  onShipUpdated: function (message) {
+    if (!this.get(message.id)) {
+      var ship = Ship.findOrCreate(message);
+      this.add(ship);
+    }
   },
 
   selectShip: function (idOrModel) {
@@ -106,6 +126,10 @@ var Ships = Backbone.Collection.extend({
   },
 
   initSort: function (sortProperty, direction) {
+    this.currentSort = {
+      strategy: sortProperty,
+      direction: direction
+    }
     this.comparator = this.strategies[direction || 'asc'][sortProperty];
   },
 

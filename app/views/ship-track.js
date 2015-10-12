@@ -7,16 +7,14 @@ var ShipTrack = Backbone.View.extend({
   tagName: 'table',
   className: 'table table-hover table-condensed track fixedhead',
 
-  initialize: function () {
-    this.index = 1;
-    this.items = { };
-  },
-
   render: function () {
     this.$el.html(this.template());
 
-    this.collection.each(function (position, index) {
-      if (index < this.collection.length - 1) {
+    this.items = { };
+    this.index = 1;
+
+    this.model.get('track').each(function (position, index) {
+      if (index < this.model.get('track').length - 1) {
         var shipTrackItem = new ShipTrackItemView({
           index: this.index++,
           model: position
@@ -30,10 +28,10 @@ var ShipTrack = Backbone.View.extend({
 
     var shipTrackItem = new ShipTrackItemView({
       index: this.index,
-      model: this.model
+      model: this.model.get('position')
     });
     shipTrackItem.render();
-    this.items[this.model.get('id')] = shipTrackItem;
+    this.items[this.model.get('position').get('id')] = shipTrackItem;
     this.$el.prepend(shipTrackItem.$el);
   }
 });

@@ -23,6 +23,7 @@
     "mapbox-gl-js": "git://github.com/mapbox/mapbox-gl-js.git",
     "moment": "^2.10.6",
     "mysql": "^2.9.0",
+    "q": "^1.4.1",
     "sequelize": "^3.9.0",
     "socket.io": "^1.3.7",
     "sqlite3": "^3.1.0",
@@ -48,7 +49,9 @@
     "minify": "npm run build && npm run minify-js && npm run minify-css"
   },
   "browser": {
-    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js"
+    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
+    "bootstrap-notify": "./app/contrib/bootstrap.notify-3.1.5.js",
+    "jquery-color": "./app/contrib/jquery.color-2.1.2.js"
   },
   "browserify": {
     "transform": [
@@ -58,6 +61,16 @@
   },
   "browserify-shim": {
     "bootstrap": {
+      "depends": [
+        "jquery:jQuery"
+      ]
+    },
+    "bootstrap-notify": {
+      "depends": [
+        "jquery:jQuery"
+      ]
+    },
+    "jquery-color": {
       "depends": [
         "jquery:jQuery"
       ]

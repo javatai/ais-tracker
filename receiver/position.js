@@ -3,9 +3,12 @@
 var env = process.env.NODE_ENV || "development";
 var config = require(__dirname + '/../config/config.json')[env];
 
+var events = require('../lib/events');
+
 var _ = require('underscore');
 var Position = require('../models/position');
 var Ship = require('../models/ship');
+var ShipData = require('../models/shipdata');
 
 function distance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;    // Math.PI / 180
@@ -37,6 +40,9 @@ module.exports = function (receiver) {
       raw: JSON.stringify(ais.ais)
     }).then(function(position) {
       Ship.findOrCreate({
+        include: [
+          { model: ShipData, as: 'shipdata' }
+        ],
         where: { userid: position.get('userid') }
       }).spread(function(ship, created) {
         ship.setPosition(position);
@@ -51,12 +57,22 @@ module.exports = function (receiver) {
             var distancemoved = distance(position.get('latitude'), position.get('longitude'), last.get('latitude'), last.get('longitude'));
             if (distancemoved > config.setup.movemin) {
               ship.addTrack(position);
+
+              var json = ship.toJSON();
+              var name = json.shipdata && json.shipdata.name || json.userid;
+
+              // console.log(name, Number(distancemoved.toFixed(2)));
+
+              events.emit('track:add', {
+                userid: json.userid,
+                distancemoved: distancemoved,
+                shipname: json.shipdata && json.shipdata.name || json.userid,
+                position: position.toJSON()
+              });
             }
-            // console.log(ais.message.UserID, Number(distancemoved.toFixed(2)));
           }
         });
       });
     });
-
   });
 }

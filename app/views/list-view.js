@@ -23,13 +23,7 @@ var ListView = Backbone.View.extend({
     var hide = [];
     if (this.search.length > 0) {
       var found = this.collection.filter(function (ship) {
-        var name = ship.has('shipdata') && ship.get('shipdata').get('name').toLowerCase() || '';
-        var mmsi = ship.get('userid');
-
-        if (name.indexOf(this.search) > -1 || String(mmsi).indexOf(this.search, 0) === 0) {
-          return false;
-        }
-        return true;
+        return ship.affectedByFilter(this.search);
       }, this);
 
       hide = _.map(found, function (ship) {
@@ -47,7 +41,11 @@ var ListView = Backbone.View.extend({
   },
 
   filter: function (evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+
     var search = $(evt.target).val();
+
     this.search = search && search.toLowerCase() || '';
     this.execFilter();
   },
@@ -87,6 +85,7 @@ var ListView = Backbone.View.extend({
       el: this.$el.find('thead'),
       collection: this.collection
     });
+
     this.selectedColumn = this.listHeaderView.selectedColumn();
     this.listHeaderView.render();
 

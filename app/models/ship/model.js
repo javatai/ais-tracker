@@ -1,5 +1,7 @@
 'use strict';
 
+var socket = require('../../lib/socket');
+
 var _ = require('underscore');
 var Backbone = require('backbone');
 var MapUtil = require('../../lib/map-util');
@@ -47,6 +49,34 @@ var Ship = Backbone.RelationalModel.extend({
     collectionType: Track
   }],
 
+  initialize: function () {
+    this.socket = socket;
+    this.socket.on('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+  },
+
+  onSocketHelper: function (data, key, Model) {
+    var diff = false;
+
+    if (!this.has(key)) {
+      diff = true;
+      this.set(key, new Model(data[key]));
+    } else {
+      diff = this.get(key).diff(data[key]);
+      if (diff) {
+        this.set(key, Model.findOrCreate(data[key]));
+      }
+    }
+
+    return diff;
+  },
+
+  onSocket: function (data) {
+    if (this.onSocketHelper(data, 'shipdata', ShipDatum)
+      || this.onSocketHelper(data, 'position', Position)) {
+      this.set('datetime', data.datetime);
+    }
+  },
+
   getHelper: function () {
     if (!this.shipHelper) {
       this.shipHelper =  new ShipHelper(this);
@@ -71,7 +101,7 @@ var Ship = Backbone.RelationalModel.extend({
   fetchTrack: function () {
     var collection = this.get('track');
     collection.reset();
-    return collection.fetch(this.get('id'));
+    return collection.fetch(this);
   },
 
   distanceTo: function (LngLat) {
@@ -83,8 +113,22 @@ var Ship = Backbone.RelationalModel.extend({
     return this.getHelper().toTitel();
   },
 
+  affectedByFilter: function (filter) {
+    if (filter.length < 1) return false;
+
+    var name = this.has('shipdata') && this.get('shipdata').has('name') && this.get('shipdata').get('name').toLowerCase() || '';
+    var mmsi = this.get('userid');
+
+    if (name.indexOf(filter) > -1 || String(mmsi).indexOf(filter, 0) === 0) {
+      return false;
+    }
+    return true;
+  },
+
   beforeRemove: function () {
     this.trigger('onBeforeRemove', this);
+
+    this.socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
 
     if (this.shipHelper) {
       delete this.shipHelper;

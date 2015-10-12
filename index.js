@@ -7,6 +7,7 @@ var sequelize = require('./lib/init');
 
 var receiver = require('./receiver');
 var server = require('./server');
+var socket = require('./socket')(server);
 
 sequelize.sync({ force: false }).then(function() {
   receiver.start();

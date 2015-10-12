@@ -1,5 +1,7 @@
 "use strict";
 
+var events = require('../lib/events');
+
 var Sequelize = require('sequelize');
 var sequelize = require('../lib/init');
 
@@ -19,7 +21,16 @@ var Ship = sequelize.define("ship", {
 
   timestamps: true,
   createdAt: false,
-  updatedAt: 'datetime'
+  updatedAt: 'datetime',
+
+  hooks: {
+    afterUpdate: function(ship, options) {
+      events.emit('ship:update', ship.toJSON());
+    },
+    afterCreate: function(ship, options) {
+      events.emit('ship:create', ship.toJSON());
+    }
+  }
 });
 
 Ship.belongsTo(Position, { as: 'position', foreignKey: 'positionid' });

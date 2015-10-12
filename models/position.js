@@ -1,5 +1,7 @@
 "use strict";
 
+var events = require('../lib/events');
+
 var Sequelize = require('sequelize');
 var sequelize = require('../lib/init');
 
@@ -26,7 +28,13 @@ var Position = sequelize.define("position", {
 
   timestamps: true,
   createdAt: 'datetime',
-  updatedAt: false
+  updatedAt: false,
+
+  hooks: {
+    afterCreate: function(position, options) {
+      events.emit('position:create', position.toJSON());
+    }
+  }
 });
 
 module.exports = Position;

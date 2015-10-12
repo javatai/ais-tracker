@@ -3,6 +3,8 @@
 var MapUtil = require('../../lib/map-util');
 var moment = require('moment');
 var _ = require('underscore');
+_.str = require('underscore.string');
+
 var AisMessage = require('../../lib/ais-message');
 
 var json = require('ais-receiver/ais-messages/json/ais_msg_1.json');
@@ -45,11 +47,11 @@ _.extend(PositionHelper.prototype, {
 
   toTitel: function () {
     var title = [
-      'Lat: ' + this.format('Latitude'),
-      'Lon: ' + this.format('Longitude'),
+      'Lat: ' + this.format('Latitude').value,
+      'Lon: ' + this.format('Longitude').value,
       'Course/speed: ' + this.getNav(),
       '',
-      this.format('Timestamp')
+      this.format('Timestamp').value
     ];
 
     return title.join('<br>');
@@ -57,7 +59,10 @@ _.extend(PositionHelper.prototype, {
 
   fieldList: {
     'Navigation status': function (data) {
-      return this.aismessage.lookup('navigationstatus', data.get('navigationstatus'));
+      return {
+        cls: 'navigationstatus',
+        value: this.aismessage.lookup('navigationstatus', data.get('navigationstatus'))
+      }
     },
     'Rate of turning': function (data) {
       if (!data.has('rot')) {
@@ -65,36 +70,66 @@ _.extend(PositionHelper.prototype, {
       }
       var rot = data.get('rot');
       if (rot > 126 || rot < -126) {
-        return this.aismessage.lookup('rot', rot);
+        return {
+          cls: 'rot',
+          value: this.aismessage.lookup('rot', rot)
+        }
       }
-      return rot + '&deg;/min' || false;
+      return {
+        cls: 'rot',
+        value: rot + '&deg;/min' || false
+      }
     },
     'Speed over ground': function (data) {
-      return this.getSOG();
+      return {
+        cls: 'sog',
+        value: this.getSOG()
+      }
     },
     'Course over ground': function (data) {
-      return this.getCOG();
+      return {
+        cls: 'cog',
+        value: this.getCOG()
+      }
     },
     'True Heading': function (data) {
-      return data.has('trueheading') && data.get('trueheading') + '&deg;' || false;
+      return {
+        cls: 'trueheading',
+        value: data.has('trueheading') && data.get('trueheading') + '&deg;' || false
+      }
     },
     Longitude: function (data) {
-      return MapUtil.decimalLatToDms(data.get('longitude'));
+      return {
+        cls: 'longitude',
+        value: MapUtil.decimalLatToDms(data.get('longitude'))
+      }
     },
     Latitude: function (data) {
-      return MapUtil.decimalLatToDms(data.get('latitude'));
+      return {
+        cls: 'latitude',
+        value: MapUtil.decimalLatToDms(data.get('latitude'))
+      }
     },
     Timestamp: function (data) {
       if (data.get('timestamp') > 59) {
-        return this.aismessage.lookup('timestamp', data.get('timestamp'));
+        return {
+          cls: 'timestamp',
+          value: this.aismessage.lookup('timestamp', data.get('timestamp'))
+        }
       } else {
         var timestamp = moment.utc(data.get('datetime'));
         timestamp.seconds(data.get('timestamp'));
-        return timestamp.format("YYYY-MM-DD HH:mm:ss UTC");
+        return {
+          cls: 'timestamp',
+          value: timestamp.format("YYYY-MM-DD HH:mm:ss UTC")
+        }
       }
     },
     'Position accuracy': function (data) {
-      return this.aismessage.lookup('positionaccuracy', data.get('positionaccuracy'));
+      return {
+        cls: 'positionaccuracy',
+        value: this.aismessage.lookup('positionaccuracy', data.get('positionaccuracy'))
+      }
     }
   },
 
@@ -105,14 +140,17 @@ _.extend(PositionHelper.prototype, {
   toPropertyList: function () {
     var items = [];
     _.each(this.fieldList, function (formatter, name) {
-      var value = formatter.call(this, this.position);
-      if (value) {
-        items.push({
-          name: name,
-          value: value
-        });
-      }
+      var res = formatter.call(this, this.position);
+      if (!res || !res.value) return;
+
+      items.push({
+        cls: res.cls,
+        name: name,
+        value: res.value
+      });
+
     }, this);
+
     return items;
   }
 });

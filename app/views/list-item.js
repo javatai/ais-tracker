@@ -1,6 +1,9 @@
+'use strict';
+
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
+var bganimate = require('../lib/background-animate');
 
 var template = require('./list-item.hbs');
 
@@ -15,7 +18,7 @@ var ListItem = Backbone.View.extend({
 
   attributes: function () {
     return {
-      id: 'ship-item-' + this.model.get('id')
+      id: 'ship-item-' + this.model.get('id'),
     }
   },
 
@@ -24,13 +27,12 @@ var ListItem = Backbone.View.extend({
   },
 
   initialize: function (options) {
-    this.index = 0;
-
-    this.listview = options.listview;
     this.updateIndex();
 
+    this.listview = options.listview;
+
     this.listenTo(this.collection, 'sort', function () {
-      this.index = this.collection.indexOf(this.model);
+      this.updateIndex();
       this.insert();
     }, this);
   },
@@ -76,21 +78,29 @@ var ListItem = Backbone.View.extend({
       value: s.format && s.format(this.model.get(s.getter)) || this.model.get(s.getter)
     }));
 
-    this.updateClass();
+    if (this.model.affectedByFilter(this.listview.search)) {
+      this.hide();
+    }
   },
 
-  updateClass: function () {
-    if (this.model.get('selected')) {
-      this.$el.addClass('success');
+  updateFlash: function () {
+    this.update();
+
+    if (this.collection.currentSort.strategy === 'datetime') {
+      this.collection.sort();
     } else {
-      this.$el.removeClass('success');
+      this.insert();
+    }
+
+    if (!this.model.affectedByFilter(this.listview.search)) {
+      bganimate(this.$el);
     }
   },
 
   render: function () {
     this.update();
     this.insert();
-    this.listenTo(this.model, 'change:selected', this.updateClass);
+    this.listenTo(this.model, 'change:datetime', this.updateFlash);
   }
 });
 

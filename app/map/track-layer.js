@@ -26,14 +26,10 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.ship = ship;
       this.track = ship.get('track');
 
+      window.track = this.track;
+
       this.listenToOnce(ship, 'onBeforeRemove', this.removeFromMap);
-
       this.listenToOnce(this.track, 'sync', this.addToMap);
-      this.listenToOnce(this.track, 'sync', function () {
-        this.listenTo(this.track, 'add', this.onAddPosition);
-        this.listenTo(this.track, 'remove', this.onRemovePosition);
-      }, this);
-
       ship.fetchTrack();
     }
 
@@ -138,6 +134,10 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.addPositionSource();
       this.addPositionLayer();
     }
+
+    this.listenTo(this.ship, 'change:position', this.onAddPosition);
+    this.listenTo(this.track, 'add', this.onAddPosition);
+    this.listenTo(this.track, 'remove', this.onRemovePosition);
   },
 
   addTrackSource: function () {
@@ -151,7 +151,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   updateTrackSource: function () {
-    if (!this.mapgl.getSource('track')) return;
+    if (!this.mapgl.getSource('track')) return this.addTrackSource();
 
     var coordinates = this.track.map(function (position) {
       return position.getCoordinate();
@@ -178,11 +178,12 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   updatePositionSource: function () {
-    if (!this.mapgl.getSource('positions')) return;
+    if (!this.mapgl.getSource('positions')) return this.addPositionSource();
 
     var features = this.track.map(function (position) {
       return position.getMarker().toMarker();
     });
+
     features.pop();
     features.push(this.ship.get('position').getMarker().toMarker());
 
@@ -227,8 +228,9 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   removeFromMap: function () {
-    this.stopListening(this.track, 'add', this.addToMap);
-    this.stopListening(this.track, 'remove', this.addToMap);
+    this.stopListening(this.ship, 'change:position', this.onAddPosition);
+    this.stopListening(this.track, 'add', this.onAddPosition);
+    this.stopListening(this.track, 'remove', this.onRemovePosition);
 
     if (this.mapgl.getSource('track')) {
       this.mapgl.removeSource('track');

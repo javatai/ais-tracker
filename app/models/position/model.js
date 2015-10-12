@@ -1,7 +1,9 @@
 'use strict';
 
 var _ = require('underscore');
-_.str = require("underscore.string");
+_.str = require('underscore.string');
+_.diff = require('../../lib/diff');
+
 var Backbone = require('backbone');
 var moment = require('moment');
 var MapUtil = require('../../lib/map-util');
@@ -61,6 +63,32 @@ var Position = Backbone.RelationalModel.extend({
   distanceTo: function (LngLat) {
     var coords = this.getLngLat();
     return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
+  },
+
+  diff: function (data) {
+    if (data instanceof Backbone.RelationalModel) {
+      data = data.toJSON();
+    }
+
+    var A = _.clone(this.attributes);
+    delete A.id;
+    delete A.timestamp;
+    delete A.datetime;
+    delete A.raw;
+    delete A.selected;
+    delete A.mouseover;
+
+    var B = _.clone(data);
+    if (B) {
+      delete B.id;
+      delete B.timestamp;
+      delete B.datetime;
+      delete B.raw;
+    }
+
+    var diff = _.diff(A, B);
+
+    return !_.isEmpty(diff) ? diff : false;
   }
 });
 

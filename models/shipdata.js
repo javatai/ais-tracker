@@ -1,5 +1,7 @@
 "use strict";
 
+var events = require('../lib/events');
+
 var Sequelize = require('sequelize');
 var sequelize = require('../lib/init');
 
@@ -34,7 +36,13 @@ var ShipData = sequelize.define("shipdata", {
 
   timestamps: true,
   createdAt: 'datetime',
-  updatedAt: false
+  updatedAt: false,
+
+  hooks: {
+    afterCreate: function(shipdata, options) {
+      events.emit('shipdata:create', shipdata.toJSON());
+    }
+  }
 });
 
 module.exports = ShipData;

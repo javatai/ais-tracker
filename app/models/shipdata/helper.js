@@ -2,6 +2,8 @@
 
 var moment = require('moment');
 var _ = require('underscore');
+_.str = require('underscore.string');
+
 var AisMessage = require('../../lib/ais-message');
 
 var json = require('ais-receiver/ais-messages/json/ais_msg_5.json');
@@ -15,34 +17,58 @@ var ShipdataHelper = function (shipdata) {
 _.extend(ShipdataHelper.prototype, {
   fieldList: {
     MMSI: function (data) {
-      return data.get('userid');
+      return {
+        cls: 'userid',
+        value: data.get('userid')
+      }
     },
     'IMO number': function (data) {
-      return data.get('imonumber');
+      return {
+        cls: 'imonumber',
+        value: data.get('imonumber')
+      }
     },
     'Callsign': function (data) {
-      return data.get('callsign');
+      return {
+        cls: 'callsign',
+        value: data.get('callsign')
+      }
     },
     'Ship type': function (data) {
-      return this.aismessage.lookup('shiptype', data.get('shiptype'));
+      return {
+        cls: 'shiptype',
+        value: this.aismessage.lookup('shiptype', data.get('shiptype'))
+      }
     },
     Width: function (data) {
       if (data.has('dimc') || data.has('dimd')) {
-        return data.get('dimc') + data.get('dimd') + ' m';
+        return {
+          cls: 'dima dimc',
+          value: data.get('dimc') + data.get('dimd') + ' m'
+        }
       }
       return;
     },
     Lenght: function (data) {
       if (data.has('dima') || data.has('dimb')) {
-        return data.get('dima') + data.get('dimb') + ' m';
+        return {
+          cls: 'dima dimb',
+          value: data.get('dima') + data.get('dimb') + ' m'
+        }
       }
       return;
     },
     Draught: function (data) {
-      return data.has('draught') && data.get('draught') + ' m' || false;
+      return {
+        cls: 'draught',
+        value: data.has('draught') && data.get('draught') + ' m' || false
+      }
     },
     Destination: function (data) {
-      return data.get('destination');
+      return {
+        cls: 'destination',
+        value: data.get('destination')
+      }
     },
     ETA: function (data) {
       var M = data.get('etamonth');
@@ -61,17 +87,29 @@ _.extend(ShipdataHelper.prototype, {
       if (h) timestamp.hour(h);
       if (m) timestamp.minute(m);
 
-      return timestamp.format('YYYY-MM-DD HH:mm:ss UTC');
+      return {
+        cls: 'etamonth etaday etahour etaminute',
+        value: timestamp.format('YYYY-MM-DD HH:mm:ss UTC')
+      }
     },
     'AIS version': function (data) {
-      return this.aismessage.lookup('aisversion', data.get('aisversion'));
+      return {
+        cls: 'aisversion',
+        value: this.aismessage.lookup('aisversion', data.get('aisversion'))
+      }
     },
     'Position type': function (data) {
-      return this.aismessage.lookup('positiontype', data.get('positiontype'));
+      return {
+        cls: 'positiontype',
+        value: this.aismessage.lookup('positiontype', data.get('positiontype'))
+      }
     },
     Datetime: function (data) {
       var timestamp = moment.utc(data.get('datetime'));
-      return timestamp.format('YYYY-MM-DD HH:mm:ss UTC');
+      return {
+        cls: 'datetime',
+        value: timestamp.format('YYYY-MM-DD HH:mm:ss UTC')
+      }
     }
   },
 
@@ -82,13 +120,14 @@ _.extend(ShipdataHelper.prototype, {
   toPropertyList: function () {
     var items = [];
     _.each(this.fieldList, function (formatter, name) {
-      var value = formatter.call(this, this.shipdata);
-      if (value) {
-        items.push({
-          name: name,
-          value: value
-        });
-      }
+      var res = formatter.call(this, this.shipdata);
+      if (!res || !res.value) return;
+
+      items.push({
+        cls: res.cls,
+        name: name,
+        value: res.value
+      });
     }, this);
     return items;
   }

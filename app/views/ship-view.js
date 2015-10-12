@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('underscore');
 var Backbone = require('backbone');
 
@@ -46,8 +48,7 @@ var ShipView = Backbone.View.extend({
 
   addTrack: function () {
     this.track = new ShipTrackView({
-      collection: this.model.get('track'),
-      model: this.model.get('position')
+      model: this.model
     });
     this.track.render();
     this.$el.find('#track').append(this.track.$el);
@@ -60,7 +61,7 @@ var ShipView = Backbone.View.extend({
   },
 
   shipdataTab: function () {
-    if (this.model.has('shipdata')) {
+    if (this.chkShipdata()) {
       this.$el.find('.nav-tabs .shipdetails').removeClass('disabled');
     } else {
       this.$el.find('.nav-tabs .shipdetails').addClass('disabled');
@@ -77,7 +78,7 @@ var ShipView = Backbone.View.extend({
   },
 
   updateShipdata: function () {
-    this.shipdata.render();
+    this.shipdata.render(this.model);
     this.shipdataTab();
   },
 
@@ -91,7 +92,7 @@ var ShipView = Backbone.View.extend({
 
   addPosition: function () {
     this.position = new ShipPositionView({
-      model: this.model.get('position')
+      model: this.model
     });
     this.position.render();
     this.$el.find('#lastposition').append(this.position.$el);
@@ -99,16 +100,24 @@ var ShipView = Backbone.View.extend({
   },
 
   updatePosition: function () {
-    this.position.render();
+    this.position.render(this.model);
     this.positionTab();
+  },
+
+  chkShipdata: function () {
+    if (!this.model.has('shipdata') || _.isEmpty(this.model.get('shipdata').attributes)) {
+      return false;
+    }
+
+    return true;
   },
 
   render: function () {
     this.$el.html(this.template({
       title: this.model.getHelper().toTitel(),
       active: {
-        ship: this.model.has('shipdata'),
-        position: !this.model.has('shipdata')
+        ship: this.chkShipdata(),
+        position: !this.chkShipdata()
       }
     }));
 
@@ -116,12 +125,13 @@ var ShipView = Backbone.View.extend({
     this.addPosition();
     this.addTrack();
 
-    this.listenTo(this.model.get('shipdata'), 'change', this.updateShipdata);
-    this.listenTo(this.model.get('position'), 'change', this.updatePosition);
+    this.listenTo(this.model, 'change:shipdata', this.updateShipdata);
+    this.listenTo(this.model, 'change:position', this.updatePosition);
     this.listenToOnce(this.model.get('track'), "sync", function () {
       this.updateTrack();
       this.listenTo(this.model.get('track'), "remove", this.updateTrack);
       this.listenTo(this.model.get('track'), "add", this.updateTrack);
+      this.listenTo(this.model, 'change:position', this.updateTrack);
     }, this);
   }
 });

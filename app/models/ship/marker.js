@@ -14,17 +14,54 @@ var ShipMarker = function (ship, mapgl) {
   this.mapgl = mapgl;
 
   this.listenTo(this.ship, 'change', this.process);
+  this.listenTo(this.ship, 'change:selected', this.onSelected);
   this.process();
 };
 
 _.extend(ShipMarker.prototype, Backbone.Events, {
+
+  onSelected: function (model, selected) {
+    if (selected) {
+      this.listenTo(this.ship, 'change:position', this.onPositionChange);
+    } else {
+      this.stopListening(this.ship, 'change:position', this.onPositionChange);
+    }
+  },
+
+  onPositionChange: function () {
+    var lnglat = this.ship.get('position').getLngLat();
+    var bounds = this.mapgl.getBounds();
+
+    if (bounds.getNorth() < lnglat.lat) {
+      // console.log('N', bounds.getNorth(), lnglat.lat, bounds.getNorth() < lnglat.lat);
+      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
+    }
+
+    if (bounds.getEast() < lnglat.lng) {
+      // console.log('E', bounds.getEast(), lnglat.lng, bounds.getEast() < lnglat.lng);
+      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
+    }
+
+    if (bounds.getSouth() > lnglat.lat) {
+      // console.log('S', bounds.getSouth(), lnglat.lat, bounds.getSouth() > lnglat.lat);
+      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
+    }
+
+    if (bounds.getWest() > lnglat.lng) {
+      // console.log('W', bounds.getWest(), lnglat.lng, bounds.getWest() > lnglat.lng);
+      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
+    }
+  },
+
   calculateOffsetBounds: function (lnglat) {
     var geod = GeographicLib.Geodesic.WGS84;
 
-    var N = geod.Direct(lnglat.lat, lnglat.lng, 0, 250);
-    var E = geod.Direct(lnglat.lat, lnglat.lng, 90, 250);
-    var S = geod.Direct(lnglat.lat, lnglat.lng, 180, 250);
-    var W = geod.Direct(lnglat.lat, lnglat.lng, 270, 250);
+    var padding = 500;
+
+    var N = geod.Direct(lnglat.lat, lnglat.lng, 0, padding);
+    var E = geod.Direct(lnglat.lat, lnglat.lng, 90, padding);
+    var S = geod.Direct(lnglat.lat, lnglat.lng, 180, padding);
+    var W = geod.Direct(lnglat.lat, lnglat.lng, 270, padding);
 
     var wpx = $(this.mapgl.getContainer).width();
     var wm = geod.Inverse(N.lat2, E.lon2, S.lat2, W.lon2).s12;
