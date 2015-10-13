@@ -23,6 +23,7 @@ var ListItem = Backbone.View.extend({
   },
 
   select: function () {
+    console.log('click', this.model.toTitel());
     this.collection.selectShip(this.model);
   },
 
@@ -42,8 +43,6 @@ var ListItem = Backbone.View.extend({
   },
 
   render: function () {
-    this.undelegateEvents();
-
     var s = this.listview.selectedColumn;
     this.$el.html(this.template({
       name: this.model.getHelper().toTitel(),
@@ -51,7 +50,14 @@ var ListItem = Backbone.View.extend({
     }));
 
     this.isRendered = true;
-    this.delegateEvents();
+  },
+
+  filter: function () {
+    if (!this.model.affectedByFilter(this.listview.search)) {
+      this.$el.hide();
+    } else {
+      this.$el.show();
+    }
   },
 
   prepend: function () {

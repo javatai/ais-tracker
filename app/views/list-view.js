@@ -31,8 +31,7 @@ var ListView = Backbone.View.extend({
     var search = $(evt.target).val();
     this.search = search && search.toLowerCase() || '';
 
-    this.container.empty();
-    this.renderItems();
+    _.invoke(this.listItems, 'filter');
   },
 
   getContainer: function () {

@@ -6,6 +6,7 @@ var Backbone = require('backbone');
 
 var ListView = require('./list-view');
 var ShipView = require('./ship-view');
+var AboutView = require('./about-view');
 
 var template = require('./master-view.hbs');
 
@@ -15,7 +16,8 @@ var MasterView = Backbone.View.extend({
   events: {
     "keyup input": "filter",
     "focus input": "tolistview",
-    "click .footer .tolist a": "tolistview"
+    "click .footer .tolist a": "tolistview",
+    "click .footer .toabout a": "openaboutview"
   },
 
   initialize: function (options) {
@@ -41,11 +43,24 @@ var MasterView = Backbone.View.extend({
     }, this);
   },
 
-  tolistview: function () {
-    _.each(this.shipviews, function (view) {
-      view.model.set('selected', false);
+  findCarouselIndexByClass: function (name) {
+    var number = 0;
+    this.$el.find('.item').each(function(index) {
+      if ($(this).hasClass(name)) {
+        number = index;
+      }
     });
-    this.openlistview();
+    return number;
+  },
+
+  updateFooter: function (name) {
+    this.$el.find('.footer li').each(function () {
+      if (name && $(this).hasClass(name)) {
+        $(this).addClass('active');
+      } else {
+        $(this).removeClass('active');
+      }
+    });
   },
 
   closeview: function () {
@@ -62,20 +77,37 @@ var MasterView = Backbone.View.extend({
     this.isOpen = true;
   },
 
+  tolistview: function () {
+    _.each(this.shipviews, function (view) {
+      view.model.set('selected', false);
+    });
+    this.openlistview();
+  },
+
   openlistview: function () {
     if (!this.$el.find('.item.active').length) {
-      this.$el.find('.item.listview').first().addClass('active');
+      this.$el.find('.item.listview').addClass('active');
     }
-    this.$el.find('.carousel').carousel(0);
+    var number = this.findCarouselIndexByClass('listview');
+    this.$el.find('.carousel').carousel(number);
     this.openview();
 
-    var btn = this.$el.find('.footer li.tolist');
-    $(btn).addClass('active');
+    this.updateFooter('tolist');
+  },
+
+  openaboutview: function () {
+    if (!this.$el.find('.item.active').length) {
+      this.$el.find('.item.aboutview').addClass('active');
+    }
+    var number = this.findCarouselIndexByClass('aboutview');
+    this.$el.find('.carousel').carousel(number);
+    this.openview();
+
+    this.updateFooter('toabout');
   },
 
   closelistview: function () {
-    var btn = this.$el.find('.footer li.tolist');
-    $(btn).removeClass('active');
+    this.updateFooter();
   },
 
   filter: function (evt) {
@@ -99,7 +131,8 @@ var MasterView = Backbone.View.extend({
       if (!this.$el.find('.item.active').length) {
         this.$el.find('.item.shipview').addClass('active');
       } else {
-        this.$el.find('.carousel').carousel(this.shipviews.length);
+        var number = this.findCarouselIndexByClass('shipview');
+        this.$el.find('.carousel').carousel(number);
       }
 
       this.closelistview();
@@ -121,10 +154,12 @@ var MasterView = Backbone.View.extend({
     });
     this.$el.find('.carousel').on('slid.bs.carousel', _.bind(this.cleanup, this));
 
+    this.aboutView = new AboutView();
+    this.$el.find('.carousel-inner').append(this.aboutView.$el);
+
     this.listView = new ListView({
       collection: this.collection,
     });
-
     this.$el.find('.carousel-inner').append(this.listView.$el);
 
     this.listenTo(this.collection, 'change:selected', this.selectShip);
