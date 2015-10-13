@@ -4,22 +4,26 @@
       "dialect": "mysql",
       "database": "ais",
       "host": "localhost",
-      "username": "ais",
-      "password": "myAIS!123",
+      "username": "",
+      "password": "",
       "logging": false
     },
     "server": {
       "port": 3000,
-      "hostname": "127.0.0.1"
+      "hostname": "127.0.0.1",
+      "public": {
+        "route": "/html",
+        "dir": "html"
+      }
     },
     "receiver": {
-      "port": 29421,
+      "port": ,
       "address": "0.0.0.0"
     },
     "setup": {
       "movemin": 50,
       "ship": {
-        "limit": 1000,
+        "limit": 10,
         "order": "datetime DESC"
       }
     },
@@ -37,22 +41,26 @@
       "dialect": "mysql",
       "database": "ais",
       "host": "localhost",
-      "username": "ais",
-      "password": "myAIS!123",
+      "username": "",
+      "password": "",
       "logging": false
     },
     "server": {
       "port": 3000,
-      "hostname": "127.0.0.1"
+      "hostname": "127.0.0.1",
+      "public": {
+        "route": "/html",
+        "dir": "html"
+      }
     },
     "receiver": {
-      "port": 29421,
+      "port": ,
       "address": "0.0.0.0"
     },
     "setup": {
       "movemin": 50,
       "ship": {
-        "limit": 1000,
+        "limit": 500,
         "order": "datetime DESC"
       }
     },
@@ -68,24 +76,28 @@
   "production": {
     "sequelize": {
       "dialect": "mysql",
-      "database": "mb_ais",
+      "database": "ais",
       "host": "localhost",
-      "username": "mb",
-      "password": "ilhonlyijryamsoddEs",
+      "username": "",
+      "password": "",
       "logging": false
     },
     "server": {
-      "port": "63838",
-      "hostname": "127.0.0.1"
+      "port": ,
+      "hostname": "",
+      "public": {
+        "route": "/app",
+        "dir": ""
+      }
     },
     "receiver": {
-      "port": 63837,
-      "address": "95.143.172.114"
+      "port": ,
+      "address": ""
     },
     "setup": {
       "movemin": 50,
       "ship": {
-        "limit": 1000,
+        "limit": 500,
         "order": "datetime DESC"
       }
     },

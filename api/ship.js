@@ -27,7 +27,7 @@ module.exports = function (server) {
       }
     } else {
       var d = new Date();
-      d.setHours(d.getHours() - 2);
+      d.setDate(d.getDate() - 3);
       where.datetime = {
         $gte: d.toISOString()
       }
