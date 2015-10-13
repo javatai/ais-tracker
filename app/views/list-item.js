@@ -23,7 +23,6 @@ var ListItem = Backbone.View.extend({
   },
 
   select: function () {
-    console.log('click', this.model.toTitel());
     this.collection.selectShip(this.model);
   },
 
