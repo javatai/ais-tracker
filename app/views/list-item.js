@@ -32,7 +32,7 @@ var ListItem = Backbone.View.extend({
     this.listview = options.listview;
     this.container = this.listview.container;
 
-    this.listenTo(this.model, 'change:datetime', this.updateFlash);
+//    this.listenTo(this.model, 'change:datetime', this.updateFlash);
   },
 
   updateFlash: function () {
@@ -62,6 +62,12 @@ var ListItem = Backbone.View.extend({
   prepend: function () {
     if (this.model.affectedByFilter(this.listview.search)) {
       this.container.prepend(this.$el);
+    }
+  },
+
+  after: function ($el) {
+    if (this.model.affectedByFilter(this.listview.search)) {
+      $el.after(this.$el);
     }
   }
 });

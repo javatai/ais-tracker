@@ -1,5 +1,7 @@
 'use strict';
 
+var socket = require('../../lib/socket');
+
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -13,15 +15,21 @@ var ShipMarker = function (ship, mapgl) {
   this.ship = ship;
   this.mapgl = mapgl;
 
-  this.listenTo(this.ship, 'change', this.process);
+  if (this.ship.has('position')) {
+    this.addToMap();
+  }
+
   this.listenTo(this.ship, 'change:selected', this.onSelected);
-  this.process();
+  socket.on('track:add:' + this.ship.get('userid'), this.updateMap.bind(this));
 };
 
 _.extend(ShipMarker.prototype, Backbone.Events, {
 
   onSelected: function (model, selected) {
     if (selected) {
+      if (this.ship.has('position')) {
+        _.delay(_.bind(this.moveIntoView, this), 1000);
+      }
       this.listenTo(this.ship, 'change:position', this.onPositionChange);
     } else {
       this.stopListening(this.ship, 'change:position', this.onPositionChange);
@@ -78,16 +86,6 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
   moveIntoView: function () {
     var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
     this.mapgl.fitBounds(bounds);
-  },
-
-  process: function () {
-    if (this.ship.has('position')) {
-      this.addToMap();
-
-      if (this.ship.changed.selected) {
-        _.delay(_.bind(this.moveIntoView, this), 1000);
-      }
-    }
   },
 
   hasShape: function () {
@@ -260,8 +258,16 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     this.addMarkerLayer();
   },
 
+  updateMap: function () {
+    this.addToMap();
+    this.ship.trigger('moved', this.ship.get('position'));
+  },
+
   removeFromMap: function () {
-    this.stopListening(this.ship, 'change', this.process);
+    this.stopListening(this.ship, 'change:selected', this.onSelected);
+    this.stopListening(this.ship, 'change:position', this.onPositionChange);
+
+    socket.removeListener('track:add:' + this.ship.get('userid'), this.update.bind(this));
 
     if (this.layer[this.getMapId('marker')]) {
       this.mapgl.removeLayer(this.getMapId('marker'));

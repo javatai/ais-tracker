@@ -26,7 +26,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.listenTo(this.ships, 'add', this.onAddShip);
     this.listenTo(this.ships, 'remove', this.onRemoveShip);
     this.listenTo(this.ships, 'sync', this.addToMap);
-    this.listenTo(this.ships, 'change:position', this.addSource);
+    this.listenTo(this.ships, 'moved', this.addSource);
 
     this.ships.fetch();
 
@@ -201,7 +201,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.stopListening(this.ships, 'sync', this.addToMap);
     this.stopListening(this.ships, 'add', this.addShipMarker);
     this.stopListening(this.ships, 'remove', this.removeShipMarker);
-    this.stopListening(this.ships, 'change:position', this.addSource);
+    this.stopListening(this.ships, 'moved', this.addSource);
 
     this.mapgl.off('click', _.bind(this.onClick, this));
     this.mapgl.off('mousemove', _.bind(this.onMousemove, this));

@@ -17,7 +17,8 @@ var MasterView = Backbone.View.extend({
     "keyup input": "filter",
     "focus input": "tolistview",
     "click .footer .tolist a": "tolistview",
-    "click .footer .toabout a": "openaboutview"
+    "click .footer .toabout a": "openaboutview",
+    "click .footer .toclose a": "closeview"
   },
 
   initialize: function (options) {
@@ -66,6 +67,8 @@ var MasterView = Backbone.View.extend({
   closeview: function () {
     if (this.isOpen === true) {
       this.$el.find('.collapse').collapse('hide');
+      this.$el.find('.toclose').hide();
+      this.$el.find('.footer li').removeClass('active');
     }
     this.isOpen = false;
   },
@@ -73,6 +76,7 @@ var MasterView = Backbone.View.extend({
   openview: function () {
     if (this.isOpen === false) {
       this.$el.find('.collapse').collapse('show');
+      this.$el.find('.toclose').show();
     }
     this.isOpen = true;
   },

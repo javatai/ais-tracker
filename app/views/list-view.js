@@ -48,6 +48,8 @@ var ListView = Backbone.View.extend({
     listItem.render();
 
     this.listItems[ship.get('id')] = listItem;
+
+    this.renderItem(ship);
   },
 
   removeItemView: function (ship) {
@@ -75,10 +77,19 @@ var ListView = Backbone.View.extend({
   },
 
   initItems: function () {
-    this.renderItems();
     this.listenTo(this.collection, 'sort', this.renderItems);
-    this.listenTo(this.collection, 'add', this.renderItems);
-    this.listenTo(this.collection, 'remove', this.renderItems);
+    this.collection.sort();
+  },
+
+  renderItem: function (ship) {
+    var index = this.collection.indexOf(ship);
+    var id = ship.get('id');
+    var before = this.container.children().eq(index-1);
+    if (before.length > 0) {
+      this.listItems[id].after(before);
+    } else {
+      this.listItems[id].prepend();
+    }
   },
 
   renderItems: function () {
