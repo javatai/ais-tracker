@@ -11,7 +11,7 @@ var ShipTrackView = require('./ship-track');
 
 var ShipView = Backbone.View.extend({
   tagName: 'div',
-  className: 'item',
+  className: 'item shipview',
   template: template,
 
   events: {

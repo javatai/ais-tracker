@@ -10,34 +10,18 @@ var ListItemView = require('./list-item');
 
 var ListView = Backbone.View.extend({
   tagName: 'div',
-  className: 'item',
+  className: 'item listview',
   listItems: {},
   container: null,
   template: template,
 
   initialize: function () {
     this.search = '';
-  },
+    this.render();
 
-  execFilter: function () {
-    var hide = [];
-    if (this.search.length > 0) {
-      var found = this.collection.filter(function (ship) {
-        return ship.affectedByFilter(this.search);
-      }, this);
-
-      hide = _.map(found, function (ship) {
-        return ship.get('id');
-      });
-    }
-
-    _.each(this.listItems, function (item, id) {
-      if (hide.indexOf(parseInt(id)) > -1) {
-        item.hide();
-      } else {
-        item.show();
-      }
-    });
+    this.listenTo(this.collection, 'add', this.addItemView);
+    this.listenTo(this.collection, 'remove', this.removeItemView);
+    this.listenToOnce(this.collection, 'sync', this.initItems);
   },
 
   filter: function (evt) {
@@ -45,9 +29,10 @@ var ListView = Backbone.View.extend({
     evt.stopPropagation();
 
     var search = $(evt.target).val();
-
     this.search = search && search.toLowerCase() || '';
-    this.execFilter();
+
+    this.container.empty();
+    this.renderItems();
   },
 
   getContainer: function () {
@@ -61,20 +46,13 @@ var ListView = Backbone.View.extend({
       listview: this
     });
 
-    _.invoke(this.listItems, 'updateIndex');
-
     listItem.render();
 
     this.listItems[ship.get('id')] = listItem;
-
-//    console.log('add', this.listItems[ship.get('id')].index, ship.toTitel());
   },
 
   removeItemView: function (ship) {
     this.listItems[ship.get('id')].remove();
-
-//    console.log('remove', this.listItems[ship.get('id')].index, ship.toTitel());
-
     delete this.listItems[ship.get('id')];
   },
 
@@ -91,17 +69,25 @@ var ListView = Backbone.View.extend({
 
     this.listenTo(this.listHeaderView, 'column:change', function (selectedColumn) {
       this.selectedColumn = selectedColumn;
-      _.invoke(this.listItems, 'update');
+      _.invoke(this.listItems, 'render');
     });
 
     this.container = this.$el.find('tbody');
+  },
 
-    this.listenTo(this.collection, 'add', this.addItemView);
-    this.listenTo(this.collection, 'remove', this.removeItemView);
+  initItems: function () {
+    this.renderItems();
+    this.listenTo(this.collection, 'sort', this.renderItems);
+    this.listenTo(this.collection, 'add', this.renderItems);
+    this.listenTo(this.collection, 'remove', this.renderItems);
+  },
 
-    this.execFilter();
-
-    window.listItems = this.listItems;
+  renderItems: function () {
+    var ids = this.collection.pluck('id');
+    ids.reverse();
+    _.each(ids, function (id) {
+      this.listItems[id].prepend();
+    }, this);
   }
 });
 

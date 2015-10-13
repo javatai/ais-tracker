@@ -114,15 +114,15 @@ var Ship = Backbone.RelationalModel.extend({
   },
 
   affectedByFilter: function (filter) {
-    if (filter.length < 1) return false;
+    if (filter.length < 1) return true;
 
     var name = this.has('shipdata') && this.get('shipdata').has('name') && this.get('shipdata').get('name').toLowerCase() || '';
     var mmsi = this.get('userid');
 
     if (name.indexOf(filter) > -1 || String(mmsi).indexOf(filter, 0) === 0) {
-      return false;
+      return true;
     }
-    return true;
+    return false;
   },
 
   beforeRemove: function () {

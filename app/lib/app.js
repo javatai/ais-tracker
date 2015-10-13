@@ -46,8 +46,6 @@ _.extend(App.prototype, Backbone.Events, {
       collection: ships,
       app: this
     });
-
-    masterView.render();
   }
 });
 

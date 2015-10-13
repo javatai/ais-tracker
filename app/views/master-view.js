@@ -23,6 +23,8 @@ var MasterView = Backbone.View.extend({
     this.isOpen = false;
     this.shipviews = [];
 
+    this.render();
+
     this.listenTo(this.app, 'clickout', this.closeview);
     this.listenTo(this.collection, 'remove', this.chkShipviews);
   },
@@ -62,7 +64,7 @@ var MasterView = Backbone.View.extend({
 
   openlistview: function () {
     if (!this.$el.find('.item.active').length) {
-      this.$el.find('.item').first().addClass('active');
+      this.$el.find('.item.listview').first().addClass('active');
     }
     this.$el.find('.carousel').carousel(0);
     this.openview();
@@ -95,7 +97,7 @@ var MasterView = Backbone.View.extend({
       this.openview();
 
       if (!this.$el.find('.item.active').length) {
-        this.$el.find('.item').last().addClass('active');
+        this.$el.find('.item.shipview').addClass('active');
       } else {
         this.$el.find('.carousel').carousel(this.shipviews.length);
       }
@@ -122,8 +124,6 @@ var MasterView = Backbone.View.extend({
     this.listView = new ListView({
       collection: this.collection,
     });
-
-    this.listView.render();
 
     this.$el.find('.carousel-inner').append(this.listView.$el);
 

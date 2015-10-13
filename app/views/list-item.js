@@ -27,80 +27,37 @@ var ListItem = Backbone.View.extend({
   },
 
   initialize: function (options) {
-    this.updateIndex();
+    this.isRendered = false;
 
     this.listview = options.listview;
+    this.container = this.listview.container;
 
-    this.listenTo(this.collection, 'sort', function () {
-      this.updateIndex();
-      this.insert();
-    }, this);
-  },
-
-  updateIndex: function () {
-    this.index = this.collection.indexOf(this.model);
-  },
-
-  insert: function () {
-    var before = null, after = null;
-    _.each(this.listview.listItems, function (item) {
-      if (item.index < this.index && (!before || before.index < item.index)) {
-        before = item;
-      }
-      if (item.index > this.index && (!after || after.index > item.index)) {
-        after = item;
-      }
-    }, this);
-
-    if (before) {
-      this.$el.insertAfter(before.$el);
-    } else if (after) {
-      this.$el.insertBefore(after.$el);
-    } else {
-      this.listview.getContainer().append(this.$el);
-    }
-  },
-
-  show: function () {
-    this.$el.show();
-  },
-
-  hide: function () {
-    this.$el.hide();
-  },
-
-  update: function () {
-    var s = this.listview.selectedColumn;
-
-    this.$el.html(this.template({
-      index: (this.index + 1),
-      name: this.model.getHelper().toTitel(),
-      value: s.format && s.format(this.model.get(s.getter)) || this.model.get(s.getter)
-    }));
-
-    if (this.model.affectedByFilter(this.listview.search)) {
-      this.hide();
-    }
+    this.listenTo(this.model, 'change:datetime', this.updateFlash);
   },
 
   updateFlash: function () {
-    this.update();
-
-    if (this.collection.currentSort.strategy === 'datetime') {
-      this.collection.sort();
-    } else {
-      this.insert();
-    }
-
-    if (!this.model.affectedByFilter(this.listview.search)) {
+    if (this.isRendered && this.model.affectedByFilter(this.listview.search)) {
       bganimate(this.$el);
     }
   },
 
   render: function () {
-    this.update();
-    this.insert();
-    this.listenTo(this.model, 'change:datetime', this.updateFlash);
+    this.undelegateEvents();
+
+    var s = this.listview.selectedColumn;
+    this.$el.html(this.template({
+      name: this.model.getHelper().toTitel(),
+      value: s.format && s.format(this.model.get(s.getter)) || this.model.get(s.getter)
+    }));
+
+    this.isRendered = true;
+    this.delegateEvents();
+  },
+
+  prepend: function () {
+    if (this.model.affectedByFilter(this.listview.search)) {
+      this.container.prepend(this.$el);
+    }
   }
 });
 
