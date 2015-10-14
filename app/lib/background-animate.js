@@ -3,7 +3,6 @@
 var _ = require('underscore');
 
 module.exports = function ($el) {
-  console.log($el);
   $el.animate({
     backgroundColor: "#d9edf7"
   }, {

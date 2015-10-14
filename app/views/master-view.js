@@ -71,6 +71,8 @@ var MasterView = Backbone.View.extend({
       this.$el.find('.footer li').removeClass('active');
     }
     this.isOpen = false;
+
+    this.listView.isShown = false;
   },
 
   openview: function () {
@@ -96,6 +98,8 @@ var MasterView = Backbone.View.extend({
     this.$el.find('.carousel').carousel(number);
     this.openview();
 
+    this.listView.isShown = true;
+
     this.updateFooter('tolist');
   },
 
@@ -107,10 +111,14 @@ var MasterView = Backbone.View.extend({
     this.$el.find('.carousel').carousel(number);
     this.openview();
 
+    this.listView.isShown = false;
+
     this.updateFooter('toabout');
   },
 
   closelistview: function () {
+    this.listView.isShown = false;
+
     this.updateFooter();
   },
 

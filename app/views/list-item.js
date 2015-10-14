@@ -32,11 +32,11 @@ var ListItem = Backbone.View.extend({
     this.listview = options.listview;
     this.container = this.listview.container;
 
-//    this.listenTo(this.model, 'change:datetime', this.updateFlash);
+    this.listenTo(this.model, 'change:datetime', this.updateFlash);
   },
 
   updateFlash: function () {
-    if (this.isRendered && this.model.affectedByFilter(this.listview.search)) {
+    if (this.listview.isShown && this.isRendered && this.model.affectedByFilter(this.listview.search)) {
       bganimate(this.$el);
     }
   },

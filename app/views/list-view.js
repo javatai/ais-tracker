@@ -16,6 +16,7 @@ var ListView = Backbone.View.extend({
   template: template,
 
   initialize: function () {
+    this.isShown = false;
     this.search = '';
     this.render();
 
