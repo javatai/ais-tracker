@@ -102,8 +102,8 @@ var MasterView = Backbone.View.extend({
       this.logView.isShown = false;
       this.listView.isShown = true;
     } else if (cls === 'logview') {
-      this.logView.isShown = false;
-      this.listView.isShown = true;
+      this.logView.isShown = true;
+      this.listView.isShown = false;
     } else {
       this.logView.isShown = false;
       this.listView.isShown = false;

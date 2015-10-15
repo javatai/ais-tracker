@@ -109,6 +109,8 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
       "source": "markers",
       "interactive": true,
       "layout": {
+        "symbol-spacing": 0,
+        "symbol-placement": "point",
         "icon-image": "{marker-symbol}",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
