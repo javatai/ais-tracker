@@ -41,7 +41,7 @@
     "watchify": "^3.4.0"
   },
   "scripts": {
-    "generate-sprite": "node sprites/generate.js && node_modules/spritezero-cli/bin/spritezero html/ship-marker sprites/input",
+    "generate-sprite": "node sprites/generate.js && node_modules/spritezero-cli/bin/spritezero html/ship-marker@2x --retina sprites/input && node_modules/spritezero-cli/bin/spritezero html/ship-marker sprites/input",
     "build-js": "node_modules/browserify/bin/cmd.js -t envify app/main.js > html/main.js",
     "watch-js": "node_modules/watchify/bin/cmd.js app/main.js -o html/main.js -dv",
     "minify-js": "node_modules/uglify-js/bin/uglifyjs -o html/main.min.js --compress --mangle -- html/main.js",

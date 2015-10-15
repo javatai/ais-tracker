@@ -21,7 +21,7 @@ var ShipView = Backbone.View.extend({
   },
 
   chkShipdata: function (e) {
-    if (!this.model.has('shipdata')) {
+    if (!this.hasShipdata()) {
       e.stopPropagation();
     }
   },
@@ -104,11 +104,10 @@ var ShipView = Backbone.View.extend({
     this.positionTab();
   },
 
-  chkShipdata: function () {
+  hasShipdata: function () {
     if (!this.model.has('shipdata') || _.isEmpty(this.model.get('shipdata').attributes)) {
       return false;
     }
-
     return true;
   },
 
@@ -116,8 +115,8 @@ var ShipView = Backbone.View.extend({
     this.$el.html(this.template({
       title: this.model.getHelper().toTitle(),
       active: {
-        ship: this.chkShipdata(),
-        position: !this.chkShipdata()
+        ship: this.hasShipdata(),
+        position: !this.hasShipdata()
       }
     }));
 

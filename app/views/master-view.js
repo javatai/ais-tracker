@@ -86,70 +86,42 @@ var MasterView = Backbone.View.extend({
     this.isOpen = true;
   },
 
-  openlistview: function () {
+  openviewhelper: function (cls, cntr) {
     _.each(this.shipviews, function (view) {
       view.model.set('selected', false);
     });
 
     if (!this.$el.find('.item.active').length) {
-      this.$el.find('.item.listview').addClass('active');
+      this.$el.find('.item.'+cls).addClass('active');
     }
-    var number = this.findCarouselIndexByClass('listview');
+    var number = this.findCarouselIndexByClass(cls);
     this.$el.find('.carousel').carousel(number);
     this.openview();
 
-    this.logView.isShown = false;
-    this.listView.isShown = true;
+    if (cls === 'listview') {
+      this.logView.isShown = false;
+      this.listView.isShown = true;
+    } else if (cls === 'logview') {
+      this.logView.isShown = false;
+      this.listView.isShown = true;
+    } else {
+      this.logView.isShown = false;
+      this.listView.isShown = false;
+    }
 
-    this.updateFooter('tolist');
+    this.updateFooter(cntr);
   },
 
-  closelistview: function () {
-    this.listView.isShown = false;
-
-    this.updateFooter();
+  openlistview: function () {
+    this.openviewhelper('listview', 'tolist');
   },
 
   openaboutview: function () {
-    _.each(this.shipviews, function (view) {
-      view.model.set('selected', false);
-    });
-
-    if (!this.$el.find('.item.active').length) {
-      this.$el.find('.item.aboutview').addClass('active');
-    }
-    var number = this.findCarouselIndexByClass('aboutview');
-    this.$el.find('.carousel').carousel(number);
-    this.openview();
-
-    this.listView.isShown = false;
-    this.logView.isShown = false;
-
-    this.updateFooter('toabout');
+    this.openviewhelper('aboutview', 'toabout');
   },
 
   openlogview: function () {
-    _.each(this.shipviews, function (view) {
-      view.model.set('selected', false);
-    });
-
-    if (!this.$el.find('.item.active').length) {
-      this.$el.find('.item.logview').addClass('active');
-    }
-    var number = this.findCarouselIndexByClass('logview');
-    this.$el.find('.carousel').carousel(number);
-    this.openview();
-
-    this.logView.isShown = true;
-    this.listView.isShown = false;
-
-    this.updateFooter('tolog');
-  },
-
-  closelogview: function () {
-    this.logView.isShown = false;
-
-    this.updateFooter();
+    this.openviewhelper('logview', 'tolog');
   },
 
   filter: function (evt) {
@@ -176,8 +148,9 @@ var MasterView = Backbone.View.extend({
         this.$el.find('.carousel').carousel(number);
       }
 
-      this.closelistview();
-      this.closelogview();
+      this.logView.isShown = false;
+      this.listView.isShown = false;
+      this.updateFooter();
     }
   },
 
