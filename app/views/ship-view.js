@@ -61,7 +61,7 @@ var ShipView = Backbone.View.extend({
   },
 
   shipdataTab: function () {
-    if (this.chkShipdata()) {
+    if (this.hasShipdata()) {
       this.$el.find('.nav-tabs .shipdetails').removeClass('disabled');
     } else {
       this.$el.find('.nav-tabs .shipdetails').addClass('disabled');

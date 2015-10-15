@@ -100,6 +100,8 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
       this.mapgl.getSource('markers').setData(geojson);
     }
 
+    this.app.trigger('shipslayer:update');
+
     if (this.hasLayer) return;
     this.hasLayer = true;
 
