@@ -131,20 +131,22 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
 
     var polyX = [], polyY = [];
     _.each(this.shapeCoordinates, function (coord) {
-      polyX.push(coord[1]);
-      polyY.push(coord[0]);
+      polyX.push(coord[0]);
+      polyY.push(coord[1]);
     });
 
-    var x = latlng.lat;
-    var y = latlng.lng;
+    var x = latlng.lng;
+    var y = latlng.lat;
 
-    var polyCorners = 5;
+    var polyCorners = 6;
     var j=polyCorners-1;
     var oddNodes=false;
 
     for (var i=0; i<polyCorners; i++) {
-      if ((polyY[i]< y && polyY[j]>=y || polyY[j]< y && polyY[i]>=y) && (polyX[i]<=x || polyX[j]<=x)) {
-        oddNodes = oddNodes || (polyX[i]+(y-polyY[i])/(polyY[j]-polyY[i])*(polyX[j]-polyX[i])<x);
+      if (polyY[i]<y && polyY[j]>=y ||  polyY[j]<y && polyY[i]>=y) {
+        if (polyX[i]+(y-polyY[i])/(polyY[j]-polyY[i])*(polyX[j]-polyX[i])<x) {
+          oddNodes =! oddNodes;
+        }
       }
       j=i;
     }
