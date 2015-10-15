@@ -80,10 +80,26 @@ var Ships = Backbone.Collection.extend({
       }
     });
 
-    this.listenToOnce(this, 'sync', function () {
-      socket.on('ship:create', this.onShipCreated.bind(this));
-      socket.on('ship:update', this.onShipUpdated.bind(this));
-    });
+    socket.on('ship:create', this.onShipCreated.bind(this));
+    socket.on('ship:update', this.onShipUpdated.bind(this));
+  },
+
+  reset: function(models, options) {
+    models  || (models = []);
+    options || (options = {});
+
+    for (var i = 0, l = this.models.length; i < l; i++) {
+      this._removeReference(this.models[i]);
+
+      this.trigger('remove', this.models[i], this);
+      this.models[i].trigger('remove', this.models[i], this);
+    }
+
+    this._reset();
+    this.add(models, _.extend({silent: true}, options));
+
+    if (!options.silent) this.trigger('reset', this, options);
+    return this;
   },
 
   onShipCreated: function (message) {
@@ -140,16 +156,25 @@ var Ships = Backbone.Collection.extend({
 
   getShipsForLngLat: function (LngLat, min) {
     return this.filter(function (ship) {
-      if (ship.has('position')) {
-        return ship.distanceTo(LngLat) < min;
-      }
-      return false;
+      return ship.affectedByLngLat(LngLat, min);
     });
   },
 
-  _removeModels: function (toRemove) {
-    _.invoke(toRemove, 'beforeRemove');
-    Backbone.Collection.prototype._removeModels.apply(this, arguments);
+  toGeoJSON: function () {
+    var geojson = {
+      "type": "FeatureCollection",
+      "features": []
+    };
+
+    if (this.length < 1) return geojson;
+
+    this.each(function (ship) {
+      var marker = ship.getMarker().toMarker();
+      if (!marker) return;
+      geojson.features.push(marker);
+    })
+
+    return geojson;
   }
 });
 

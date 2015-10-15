@@ -45,7 +45,7 @@ _.extend(PositionHelper.prototype, {
     }
   },
 
-  toTitel: function () {
+  toTitle: function () {
     var title = [
       'Lat: ' + this.format('Latitude').value,
       'Lon: ' + this.format('Longitude').value,

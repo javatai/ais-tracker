@@ -8,33 +8,32 @@ var MapGL = require('./map');
 var TrackLayer = require('./track-layer');
 
 var ShipsLayer = function (options) {
+  this.hasLayer = false;
+
   this.ships = options.ships;
   this.app = options.app;
   this.mapgl = MapGL;
 
-  this.layer = {};
+  this.perimeter = -1;
   this.mouseoverid = 0;
-  this.first = null;
+  this.clickid = 0;
 
   this.trackLayer = new TrackLayer(options);
 
-  this.mapgl.on('style.load', _.bind(this.process, this));
+  this.mapgl.on('zoom', _.bind(this.onZoom, this));
+
+  this.mapgl.on('mousemove', _.bind(this.onMousemove, this));
+  this.mapgl.on('click', _.bind(this.onClick, this));
+
+  this.mapgl.on('load', _.bind(this.onReady, this));
 };
 
 _.extend(ShipsLayer.prototype, Backbone.Events, {
-  process: function () {
-    this.listenTo(this.ships, 'add', this.onAddShip);
-    this.listenTo(this.ships, 'remove', this.onRemoveShip);
-    this.listenTo(this.ships, 'sync', this.addToMap);
-    this.listenTo(this.ships, 'moved', this.addSource);
-
-    this.ships.fetch();
-
-    this.mapgl.on('mousemove', _.bind(this.onMousemove, this));
-    this.mapgl.on('click', _.bind(this.onClick, this));
-  },
-
   calculatePerimeter: function () {
+    if (this.perimeter > 0) {
+      return this.perimeter;
+    }
+
     var bounds = this.mapgl.getBounds();
     var nw = bounds.getNorthWest();
     var ne = bounds.getNorthEast();
@@ -42,20 +41,30 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     var dist = Math.round(MapUtil.distance(nw.lat, nw.lng, ne.lat, ne.lng));
     var width = $(this.mapgl.getContainer).width();
 
-    return 10 * (dist/width);
+    this.perimeter = 10 * (dist/width);
+
+    return this.perimeter;
+  },
+
+  onZoom: function () {
+    this.perimeter = -1;
   },
 
   onClick: function (e) {
-    this.mapgl.featuresAt(e.point, { layer: 'ships', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
-      var id = !_.isEmpty(features) ? _.first(features).properties.id : 0;
+    var perimeter = this.calculatePerimeter();
+    var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
 
-      this.trackLayer.onClick(e).done(_.bind(function () {
-        if (!this.ships.selectShip(id)) {
-          this.app.trigger('clickout');
-        }
-      }, this));
+    if (!ship || (ship && ship.get('id') !== this.clickid)) {
+      this.ships.invoke('set', 'selected', false);
+      this.clickid = 0;
+    }
 
-    }, this));
+    if (ship) {
+      ship.set('selected', true);
+      this.clickid = ship.get('id');
+    } else {
+      this.app.trigger('clickout');
+    }
   },
 
   onMousemove: function (e) {
@@ -64,11 +73,9 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     var perimeter = this.calculatePerimeter();
     var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
 
-    if (this.mouseoverid) {
-      if (!ship || (ship && ship.get('id') !== this.mouseoverid)) {
-        this.ships.get(this.mouseoverid).set('mouseover', false);
-        this.mouseoverid = 0;
-      }
+    if (!ship || (ship && ship.get('id') !== this.mouseoverid)) {
+      this.ships.invoke('set', 'mouseover', false);
+      this.mouseoverid = 0;
     }
 
     if (ship) {
@@ -81,11 +88,79 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     }
   },
 
-  onAddShip: function (ship) {
-    ship.getLabel(this.mapgl);
-    ship.getMarker(this.mapgl);
+  updateLayer: function () {
+    var geojson = this.ships.toGeoJSON();
 
-    this.updateSource();
+    if (!this.mapgl.getSource('markers')) {
+      this.mapgl.addSource('markers', {
+        "type": "geojson",
+        "data": geojson
+      });
+    } else {
+      this.mapgl.getSource('markers').setData(geojson);
+    }
+
+    if (this.hasLayer) return;
+    this.hasLayer = true;
+
+    var markers = {
+      "id": "markers",
+      "type": "symbol",
+      "source": "markers",
+      "interactive": true,
+      "layout": {
+        "icon-image": "{marker-symbol}",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "visibility": "visible"
+      }
+    }
+
+    this.mapgl.addLayer(markers);
+
+    var labels = {
+      "id": "labels",
+      "type": "symbol",
+      "source": "markers",
+      "layout": {
+        "text-field": "{title}",
+        "text-font": [
+          "DIN Offc Pro Medium",
+          "Arial Unicode MS Regular"
+        ],
+        "text-offset": [0, 1.5],
+        "text-anchor": "center",
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [ 13, 12 ],
+            [ 18, 16 ]
+          ],
+        },
+        "text-allow-overlap": true,
+        "visibility": "visible"
+      },
+      "maxzoom": 22,
+      "minzoom": 14,
+      "paint": {
+        "text-color": "#000000",
+        "text-halo-blur": 0.5,
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 0.5
+      }
+    }
+
+    this.mapgl.addLayer(labels);
+  },
+
+  onReady: function () {
+    this.updateLayer();
+
+    this.listenTo(this.app,   'clickout', this.updateLayer);
+    this.listenTo(this.ships, 'add', this.updateLayer);
+    this.listenTo(this.ships, 'change:selected', this.updateLayer);
+    this.listenTo(this.ships, 'moved', this.updateLayer);
+    this.listenTo(this.ships, 'remove', this.onRemoveShip);
   },
 
   onRemoveShip: function (ship) {
@@ -98,125 +173,19 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
       this.clickid = 0;
     }
 
-    this.updateSource();
-  },
-
-  addSource: function () {
-    if (!this.mapgl.getSource('ships')) {
-      this.mapgl.addSource('ships', {
-        "type": "geojson",
-      });
-    }
-
-    this.updateSource();
-  },
-
-  updateSource: function () {
-    if (!this.mapgl.getSource('ships')) return;
-
-    var features = this.ships.map(function (ship) {
-      if (!ship.has('position')) return;
-
-      return {
-        "type": "Feature",
-        "geometry": {
-          "type": "Point",
-          "coordinates": ship.get('position').getCoordinate()
-        },
-        "properties": {
-          "title": ship.getHelper().toTitel(),
-          "id": ship.get('id')
-        }
-      }
-    });
-
-    this.mapgl.getSource('ships').setData({
-      "type": "FeatureCollection",
-      "features": _.filter(features, function(feature) { return feature; })
-    });
-  },
-
-  addShipsLayer: function () {
-    if (!this.layer['ships']) {
-      this.mapgl.addLayer({
-        "id": "ships",
-        "type": "circle",
-        "source": "ships",
-        "interactive": true,
-        "paint": {
-          "circle-radius": 10,
-          "circle-color": "rgba(255,255,255,0)",
-        }
-      });
-
-      this.layer['ships'] = true;
-    }
-  },
-
-  addLabelsLayer: function () {
-    if (!this.layer['labels']) {
-      this.mapgl.addLayer({
-        "id": "labels",
-        "type": "symbol",
-        "source": "ships",
-        "layout": {
-          "text-field": "{title}",
-          "text-font": [
-            "DIN Offc Pro Medium",
-            "Arial Unicode MS Regular"
-          ],
-          "text-offset": [0, 1.5],
-          "text-anchor": "center",
-          "text-size": {
-            "base": 1,
-            "stops": [
-              [ 13, 12 ],
-              [ 18, 16 ]
-            ],
-          },
-          "text-allow-overlap": true,
-          "visibility": "visible"
-        },
-        "maxzoom": 22,
-        "minzoom": 14,
-        "paint": {
-          "text-color": "#000000",
-          "text-halo-blur": 0.5,
-          "text-halo-color": "#ffffff",
-          "text-halo-width": 0.5
-        }
-      });
-
-      this.layer['labels'] = true;
-    }
-  },
-
-  addToMap: function () {
-    this.addSource();
-    this.addShipsLayer();
-    this.addLabelsLayer();
+    _.delay(_.bind(this.updateLayer, this), 1);
   },
 
   removeFromMap: function () {
-    this.stopListening(this.ships, 'sync', this.addToMap);
-    this.stopListening(this.ships, 'add', this.addShipMarker);
-    this.stopListening(this.ships, 'remove', this.removeShipMarker);
-    this.stopListening(this.ships, 'moved', this.addSource);
+    this.stopListening(this.app,   'clickout', this.updateLayer);
+    this.stopListening(this.ships, 'add', this.updateLayer);
+    this.stopListening(this.ships, 'change:selected', this.updateLayer);
+    this.stopListening(this.ships, 'moved', this.updateLayer);
+    this.stopListening(this.ships, 'remove', this.onRemoveShip);
 
-    this.mapgl.off('click', _.bind(this.onClick, this));
+    this.mapgl.off('zoom',      _.bind(this.onZoom, this));
+    this.mapgl.off('click',     _.bind(this.onClick, this));
     this.mapgl.off('mousemove', _.bind(this.onMousemove, this));
-
-    if (this.layer['labels']) {
-      this.mapgl.removeLayer('labels');
-    }
-
-    if (this.layer['ships']) {
-      this.mapgl.removeLayer('ships');
-    }
-
-    if (this.mapgl.getSource('ships')) {
-      this.mapgl.removeSource('ships');
-    }
   }
 })
 

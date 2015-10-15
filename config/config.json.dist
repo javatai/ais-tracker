@@ -30,7 +30,6 @@
     "frontend": {
       "map": {
         "accessToken": "",
-        "style": "mapbox://styles/mapbox/streets-v8",
         "center": [ 9.996006002132162, 53.50766131847098 ],
         "zoom": 12
       }
@@ -67,7 +66,6 @@
     "frontend": {
       "map": {
         "accessToken": "",
-        "style": "mapbox://styles/mapbox/streets-v8",
         "center": [ 9.996006002132162, 53.50766131847098 ],
         "zoom": 12
       }
@@ -104,7 +102,6 @@
     "frontend": {
       "map": {
         "accessToken": "",
-        "style": "mapbox://styles/mapbox/streets-v8",
         "center": [ 9.996006002132162, 53.50766131847098 ],
         "zoom": 12
       }

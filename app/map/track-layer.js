@@ -28,7 +28,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
 
       window.track = this.track;
 
-      this.listenToOnce(ship, 'onBeforeRemove', this.removeFromMap);
+      this.listenToOnce(ship, 'remove', this.removeFromMap);
       this.listenToOnce(this.track, 'sync', this.addToMap);
       ship.fetchTrack();
     }
@@ -46,11 +46,9 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     if (this.track && this.track.length > 2) {
       var position = _.first(this.track.getPositionsForLngLat(lngLat, perimeter));
 
-      if (this.mouseoverid) {
-        if (!position || (position && position.get('id') !== this.mouseoverid)) {
-          this.track.get(this.mouseoverid).set('mouseover', false);
-          this.mouseoverid = 0;
-        }
+      if (!position || (position && position.get('id') !== this.mouseoverid)) {
+        this.track.invoke('set', 'mouseover', false);
+        this.mouseoverid = 0;
       }
 
       if (position) {
@@ -78,11 +76,9 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     this.mapgl.featuresAt(e.point, { layer: 'positions', radius: 10, includeGeometry: true }, _.bind(function (err, features) {
       var id = !_.isEmpty(features) ? Number(_.first(features).properties.id.substr(1)) : 0;
 
-      if (this.clickid) {
-        if (!id || (id !== this.clickid)) {
-          this.track.get(this.clickid).set('selected', false);
-          this.clickid = 0;
-        }
+      if (!id || (id !== this.clickid)) {
+        this.track.invoke('set', 'selected', false);
+        this.clickid = 0;
       }
 
       if (id && this.track.get(id)) {
@@ -95,13 +91,15 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       }
     }, this));
 
-    return dfd;
+    return dfd.promise();
   },
 
   onClickout: function () {
     if (this.clickid) {
       this.track.get(this.clickid).set('selected', false);
       this.clickid = 0;
+
+      this.removeFromMap();
     }
   },
 
@@ -135,7 +133,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.addPositionLayer();
     }
 
-    this.listenTo(this.ship, 'change:position', this.onAddPosition);
+    this.listenTo(this.ship, 'moved', this.onAddPosition);
     this.listenTo(this.track, 'add', this.onAddPosition);
     this.listenTo(this.track, 'remove', this.onRemovePosition);
   },
@@ -205,7 +203,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
         "paint": {
           "circle-color": "#444",
         }
-      }, this.ship.getMarker().getMapId('marker'));
+      }, "markers");
 
       this.layer['positions'] = true;
     }
@@ -221,14 +219,14 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
           "line-color": "#888",
           "line-width": 3
         }
-      }, this.ship.getMarker().getMapId('marker'));
+      }, "markers");
 
       this.layer['track'] = true;
     }
   },
 
   removeFromMap: function () {
-    this.stopListening(this.ship, 'change:position', this.onAddPosition);
+    this.stopListening(this.ship,  'moved', this.onAddPosition);
     this.stopListening(this.track, 'add', this.onAddPosition);
     this.stopListening(this.track, 'remove', this.onRemovePosition);
 
@@ -249,6 +247,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     }
 
     if (this.track) {
+      this.track.invoke('set', 'mouseover', false);
       this.track.reset();
     }
 

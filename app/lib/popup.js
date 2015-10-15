@@ -9,7 +9,11 @@ var _onClickClose = mapboxgl.Popup.prototype._onClickClose;
 
 mapboxgl.Popup.prototype._onClickClose = function() {
   this.fire('remove', this);
-  _onClickClose.apply(this, arguments);
+  try {
+    _onClickClose.apply(this, arguments);
+  } catch (e) {
+
+  }
 }
 
 mapboxgl.Popup.prototype.addClass = function (className) {

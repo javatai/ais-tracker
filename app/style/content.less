@@ -75,6 +75,28 @@
     }
   }
 
+  .log {
+    table {
+      &.fixedhead {
+        >thead th {
+          width: 360px;
+        }
+
+        >tbody td {
+          width: 345px;
+        }
+      }
+    }
+  }
+
+  .logview.positions {
+    .socket,
+    .ship-updated,
+    .ship-created {
+      display: none;
+    }
+  }
+
   .ship {
     h3 {
       margin-top: 0px;

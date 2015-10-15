@@ -5,9 +5,8 @@ var Backbone = require('backbone');
 
 var Label = require('../../lib/label');
 
-var ShipLabel = function (ship, mapgl) {
+var ShipLabel = function (ship) {
   this.model = ship;
-  this.mapgl = mapgl;
 
   Label.apply(this);
 };
@@ -19,10 +18,10 @@ _.extend(ShipLabel.prototype, Label.prototype, {
     return this.model.get('position').getCoordinate();
   },
 
-  toTitel: function () {
-    var titel = this.model.getHelper().toTitel();
+  toTitle: function () {
+    var titel = this.model.getHelper().toTitle();
     titel += '<hr noshade size="1">';
-    titel += this.model.get('position').getHelper().toTitel();
+    titel += this.model.get('position').getHelper().toTitle();
 
     return titel;
   }

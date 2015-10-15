@@ -1,5 +1,6 @@
+'use strict';
+
 var _ = require('underscore');
-window._ = _;
 var $ = require('jquery');
 var Backbone = require('backbone');
 

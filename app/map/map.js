@@ -8,7 +8,7 @@ mapboxgl.accessToken = config.accessToken;
 
 var map = new mapboxgl.Map({
   container: 'map',
-  style: config.style,
+  style: require('./style.json'),
   center: config.center,
   zoom: config.zoom
 });

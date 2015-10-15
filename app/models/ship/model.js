@@ -5,6 +5,7 @@ var socket = require('../../lib/socket');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var MapUtil = require('../../lib/map-util');
+var GeographicLib = require("geographiclib");
 
 var Positions = require('../position/collection');
 var Position = require('../position/model');
@@ -50,31 +51,9 @@ var Ship = Backbone.RelationalModel.extend({
   }],
 
   initialize: function () {
-    this.socket = socket;
-    this.socket.on('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
-  },
-
-  onSocketHelper: function (data, key, Model) {
-    var diff = false;
-
-    if (!this.has(key)) {
-      diff = true;
-      this.set(key, new Model(data[key]));
-    } else {
-      diff = this.get(key).diff(data[key]);
-      if (diff) {
-        this.set(key, Model.findOrCreate(data[key]));
-      }
-    }
-
-    return diff;
-  },
-
-  onSocket: function (data) {
-    if (this.onSocketHelper(data, 'shipdata', ShipDatum)
-      || this.onSocketHelper(data, 'position', Position)) {
-      this.set('datetime', data.datetime);
-    }
+    this.listenTo(this, 'add', this.onAdd);
+    this.listenTo(this, 'remove', this.onRemove);
+    this.listenTo(this, 'change:position', this.onPositionChange);
   },
 
   getHelper: function () {
@@ -109,8 +88,8 @@ var Ship = Backbone.RelationalModel.extend({
     return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
   },
 
-  toTitel: function () {
-    return this.getHelper().toTitel();
+  toTitle: function () {
+    return this.getHelper().toTitle();
   },
 
   affectedByFilter: function (filter) {
@@ -125,10 +104,70 @@ var Ship = Backbone.RelationalModel.extend({
     return false;
   },
 
-  beforeRemove: function () {
-    this.trigger('onBeforeRemove', this);
+  affectedByLngLat: function (LngLat, min) {
+    if (!this.has('position')) return false;
 
-    this.socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+    var distanceTo = this.distanceTo(LngLat);
+    var inPolygon = this.getMarker().latLngInPolygon(LngLat);
+    return distanceTo < min || inPolygon;
+  },
+
+  onSocketHelper: function (data, key, Model) {
+    var diff = false;
+
+    if (!this.has(key)) {
+      diff = true;
+      this.set(key, new Model(data[key]));
+    } else {
+      diff = this.get(key).diff(data[key]);
+      if (diff) {
+        this.set(key, Model.findOrCreate(data[key]));
+      }
+    }
+
+    return diff;
+  },
+
+  onSocket: function (data) {
+    if (this.onSocketHelper(data, 'shipdata', ShipDatum)
+      || this.onSocketHelper(data, 'position', Position)) {
+      this.set('datetime', data.datetime);
+    }
+  },
+
+  onPositionChange: function (ship, position) {
+    var coordinate = position && position.getLngLat() || null;
+
+    if (coordinate && !this.coordinate) {
+      this.coordinate = coordinate;
+      this.trigger('moved', position);
+    } else if (this.get('selected')) {
+      this.coordinate = coordinate;
+      this.trigger('moved', position);
+    } else {
+      var geod = GeographicLib.Geodesic.WGS84;
+      var distanceMoved = geod.Inverse(this.coordinate.lat, this.coordinate.lng, coordinate.lat, coordinate.lng).s12;
+      if (distanceMoved > 50) {
+        this.coordinate = coordinate;
+        this.trigger('moved', position);
+      }
+    }
+  },
+
+  onAdd: function () {
+    this.coordinate = this.has('position') && this.get('position').getLngLat() || null;
+
+    socket.on('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+
+    this.getMarker();
+    this.getLabel();
+  },
+
+  onRemove: function () {
+    socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+
+    this.set('selected', false);
+    this.set('mouseover', false);
 
     if (this.shipHelper) {
       delete this.shipHelper;
@@ -137,9 +176,9 @@ var Ship = Backbone.RelationalModel.extend({
       this.shipMarker.removeFromMap();
       delete this.shipMarker;
     }
-    if (this.shipMarker) {
-      this.shipMarker.removeFromMap();
-      delete this.shipMarker;
+    if (this.shipLabel) {
+      this.shipLabel.hideLabel();
+      delete this.shipLabel;
     }
   }
 });

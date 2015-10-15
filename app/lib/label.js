@@ -3,16 +3,21 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
+var MapGL = require('../map/map');
 var Popup = require('./popup');
 
 var Label = function () {
-  this.listenTo(this.model, 'change', this.process);
+  this.mapgl = MapGL;
+  this.listenTo(this.model, 'change:mouseover', this.process);
+  this.listenTo(this.model, 'remove', this.hideLabel);
 };
 
 _.extend(Label.prototype, Backbone.Events, {
   label: null,
 
   process: function () {
+    if (!this.mapgl._loaded) return;
+
     if (this.model.get('mouseover') === true) {
       this.showLabel();
     } else {
@@ -27,7 +32,7 @@ _.extend(Label.prototype, Backbone.Events, {
 
     this.label = new Popup()
       .setLngLat(this.getCoordinates())
-      .setHTML(this.toTitel())
+      .setHTML(this.toTitle())
       .addClass(this.classname)
       .addTo(this.mapgl);
 

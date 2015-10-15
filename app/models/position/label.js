@@ -5,9 +5,8 @@ var Backbone = require('backbone');
 
 var Label = require('../../lib/label');
 
-var PositionLabel = function (position, mapgl) {
+var PositionLabel = function (position) {
   this.model = position;
-  this.mapgl = mapgl;
 
   Label.apply(this);
 };
@@ -19,8 +18,8 @@ _.extend(PositionLabel.prototype, Label.prototype, {
     return this.model.getCoordinate();
   },
 
-  toTitel: function () {
-    return this.model.getHelper().toTitel();
+  toTitle: function () {
+    return this.model.getHelper().toTitle();
   }
 });
 

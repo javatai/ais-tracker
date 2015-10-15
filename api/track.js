@@ -1,5 +1,8 @@
 "use strict";
 
+var env = process.env.NODE_ENV || "development";
+var config = require(__dirname + '/../config/config.json')[env];
+
 var _ = require('underscore');
 
 var Position = require('../models/position');
@@ -33,8 +36,7 @@ module.exports = function (server) {
       datetime__greater_than = req.params.datetime__greater_than;
     } else {
       var d = new Date();
-      //d.setDate(d.getDate() - 3);
-      d.setHours(d.getHours() - 12);
+      d.setHours(d.getHours() + config.setup.track.hours);
       datetime__greater_than = d.toISOString();
     }
 
@@ -49,7 +51,7 @@ module.exports = function (server) {
             $gte: datetime__greater_than
           }
         },
-        limit: 100,
+        limit: config.setup.track.limit,
         order: 'datetime DESC'
       }).then(function (track) {
         res.send(_.map(track, function (position) {

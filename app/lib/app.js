@@ -28,7 +28,7 @@ _.extend(App.prototype, Backbone.Events, {
     notifications.start();
 
     var ships = new Ships();
-
+    ships.fetch()
     /* Debugging */
     window.ships = ships;
 

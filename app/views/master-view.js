@@ -7,6 +7,7 @@ var Backbone = require('backbone');
 var ListView = require('./list-view');
 var ShipView = require('./ship-view');
 var AboutView = require('./about-view');
+var LogView = require('./log-view');
 
 var template = require('./master-view.hbs');
 
@@ -14,10 +15,11 @@ var MasterView = Backbone.View.extend({
   template: template,
 
   events: {
-    "keyup input": "filter",
-    "focus input": "tolistview",
-    "click .footer .tolist a": "tolistview",
+    "keyup input[type='text']": "filter",
+    "focus input[type='text']": "openlistview",
+    "click .footer .tolist a":  "openlistview",
     "click .footer .toabout a": "openaboutview",
+    "click .footer .tolog a":   "openlogview",
     "click .footer .toclose a": "closeview"
   },
 
@@ -73,6 +75,7 @@ var MasterView = Backbone.View.extend({
     this.isOpen = false;
 
     this.listView.isShown = false;
+    this.logView.isShown = false;
   },
 
   openview: function () {
@@ -83,14 +86,11 @@ var MasterView = Backbone.View.extend({
     this.isOpen = true;
   },
 
-  tolistview: function () {
+  openlistview: function () {
     _.each(this.shipviews, function (view) {
       view.model.set('selected', false);
     });
-    this.openlistview();
-  },
 
-  openlistview: function () {
     if (!this.$el.find('.item.active').length) {
       this.$el.find('.item.listview').addClass('active');
     }
@@ -98,22 +98,10 @@ var MasterView = Backbone.View.extend({
     this.$el.find('.carousel').carousel(number);
     this.openview();
 
+    this.logView.isShown = false;
     this.listView.isShown = true;
 
     this.updateFooter('tolist');
-  },
-
-  openaboutview: function () {
-    if (!this.$el.find('.item.active').length) {
-      this.$el.find('.item.aboutview').addClass('active');
-    }
-    var number = this.findCarouselIndexByClass('aboutview');
-    this.$el.find('.carousel').carousel(number);
-    this.openview();
-
-    this.listView.isShown = false;
-
-    this.updateFooter('toabout');
   },
 
   closelistview: function () {
@@ -122,8 +110,49 @@ var MasterView = Backbone.View.extend({
     this.updateFooter();
   },
 
+  openaboutview: function () {
+    _.each(this.shipviews, function (view) {
+      view.model.set('selected', false);
+    });
+
+    if (!this.$el.find('.item.active').length) {
+      this.$el.find('.item.aboutview').addClass('active');
+    }
+    var number = this.findCarouselIndexByClass('aboutview');
+    this.$el.find('.carousel').carousel(number);
+    this.openview();
+
+    this.listView.isShown = false;
+    this.logView.isShown = false;
+
+    this.updateFooter('toabout');
+  },
+
+  openlogview: function () {
+    _.each(this.shipviews, function (view) {
+      view.model.set('selected', false);
+    });
+
+    if (!this.$el.find('.item.active').length) {
+      this.$el.find('.item.logview').addClass('active');
+    }
+    var number = this.findCarouselIndexByClass('logview');
+    this.$el.find('.carousel').carousel(number);
+    this.openview();
+
+    this.logView.isShown = true;
+    this.listView.isShown = false;
+
+    this.updateFooter('tolog');
+  },
+
+  closelogview: function () {
+    this.logView.isShown = false;
+
+    this.updateFooter();
+  },
+
   filter: function (evt) {
-    this.tolistview();
     this.listView.filter(evt);
   },
 
@@ -148,6 +177,7 @@ var MasterView = Backbone.View.extend({
       }
 
       this.closelistview();
+      this.closelogview();
     }
   },
 
@@ -166,13 +196,16 @@ var MasterView = Backbone.View.extend({
     });
     this.$el.find('.carousel').on('slid.bs.carousel', _.bind(this.cleanup, this));
 
-    this.aboutView = new AboutView();
-    this.$el.find('.carousel-inner').append(this.aboutView.$el);
-
     this.listView = new ListView({
       collection: this.collection,
     });
     this.$el.find('.carousel-inner').append(this.listView.$el);
+
+    this.logView = new LogView();
+    this.$el.find('.carousel-inner').append(this.logView.$el);
+
+    this.aboutView = new AboutView();
+    this.$el.find('.carousel-inner').append(this.aboutView.$el);
 
     this.listenTo(this.collection, 'change:selected', this.selectShip);
   }

@@ -7,7 +7,7 @@ var ShipHelper = function (ship) {
 };
 
 _.extend(ShipHelper.prototype, {
-  toTitel: function () {
+  toTitle: function () {
     return this.ship.has('shipdata') && this.ship.get('shipdata').get('name') || this.ship.get('userid');
   }
 });

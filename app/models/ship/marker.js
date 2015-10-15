@@ -5,34 +5,63 @@ var socket = require('../../lib/socket');
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
+var Position = require('../position/model');
 var MapUtil = require('../../lib/map-util');
 var GeographicLib = require("geographiclib");
 var mapboxgl = require('mapbox-gl');
+var MapGL = require('../../map/map');
 
 var ShipMarker = function (ship, mapgl) {
-  this.layer = {};
+  this.haslayer = false;
 
   this.ship = ship;
-  this.mapgl = mapgl;
+  this.mapgl = MapGL;
+  this.shapeCoordinates = [];
 
-  if (this.ship.has('position')) {
-    this.addToMap();
-  }
-
+  this.listenTo(this.ship, 'moved', this.updateMap);
   this.listenTo(this.ship, 'change:selected', this.onSelected);
-  socket.on('track:add:' + this.ship.get('userid'), this.updateMap.bind(this));
+  this.listenTo(this.ship, 'change:shipdata', this.chkShipdata);
+  this.updateMap();
 };
 
 _.extend(ShipMarker.prototype, Backbone.Events, {
-
-  onSelected: function (model, selected) {
-    if (selected) {
-      if (this.ship.has('position')) {
-        _.delay(_.bind(this.moveIntoView, this), 1000);
-      }
-      this.listenTo(this.ship, 'change:position', this.onPositionChange);
+  updateMap: function () {
+    if (!this.mapgl._loaded) {
+      this.mapgl.on('load', _.bind(this.updateShapeLayer, this));
     } else {
-      this.stopListening(this.ship, 'change:position', this.onPositionChange);
+      this.updateShapeLayer();
+    }
+  },
+
+  chkShipdata: function () {
+    if (!this.mapgl.getSource(this.getMapId('shape')) && this.ship.has('shipdata')) {
+      this.updateMap();
+    }
+  },
+
+  onSelected: function (ship, selected) {
+    if (selected) {
+      var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
+      this.mapgl.fitBounds(bounds);
+
+      this.listenTo(this.ship, 'moved', this.onPositionChange);
+    } else {
+      this.stopListening(this.ship, 'moved', this.onPositionChange);
+    }
+  },
+
+  removeFromMap: function () {
+    this.stopListening(this.ship, 'moved', this.updateMap);
+    this.stopListening(this.ship, 'change:shipdata', this.chkShipdata);
+    this.stopListening(this.ship, 'change:selected', this.onSelected);
+
+    if (this.hasLayer) {
+      this.mapgl.removeLayer(this.getMapId('shape'));
+      this.hasLayer = false;
+    }
+
+    if (this.mapgl.getSource(this.getMapId('shape'))) {
+      this.mapgl.removeSource(this.getMapId('shape'));
     }
   },
 
@@ -83,11 +112,6 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     return new mapboxgl.LngLatBounds(SW, NE);
   },
 
-  moveIntoView: function () {
-    var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
-    this.mapgl.fitBounds(bounds);
-  },
-
   hasShape: function () {
     if (this.ship.has('shipdata')) {
       var data = this.ship.get('shipdata');
@@ -100,6 +124,36 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
         return { a: a, b: b, c: c, d: d };
       }
     }
+  },
+
+  latLngInPolygon: function (latlng) {
+    if (_.isEmpty(this.shapeCoordinates)) return;
+
+    var polyX = [], polyY = [];
+    _.each(this.shapeCoordinates, function (coord) {
+      polyX.push(coord[1]);
+      polyY.push(coord[0]);
+    });
+
+    var x = latlng.lat;
+    var y = latlng.lng;
+
+    var polyCorners = 5;
+    var j=polyCorners-1;
+    var oddNodes=false;
+
+    for (var i=0; i<polyCorners; i++) {
+      if ((polyY[i]< y && polyY[j]>=y || polyY[j]< y && polyY[i]>=y) && (polyX[i]<=x || polyX[j]<=x)) {
+        oddNodes = oddNodes || (polyX[i]+(y-polyY[i])/(polyY[j]-polyY[i])*(polyX[j]-polyX[i])<x);
+      }
+      j=i;
+    }
+
+    return oddNodes;
+  },
+
+  getMapId: function (prefix) {
+    return prefix + '-' + this.ship.get('id');
   },
 
   toShape: function () {
@@ -150,18 +204,20 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
 
       var b2 = geod.Direct(a3.lat2, a3.lon2, azi+180, b);
 
+      this.shapeCoordinates = [
+        [a1.lon2, a1.lat2],
+        [c1.lon2, c1.lat2],
+        [b1.lon2, b1.lat2],
+        [b2.lon2, b2.lat2],
+        [d1.lon2, d1.lat2],
+        [a1.lon2, a1.lat2]
+      ];
+
       return {
         "type": "Feature",
         "geometry": {
           "type": "Polygon",
-          "coordinates": [[
-            [a1.lon2, a1.lat2],
-            [c1.lon2, c1.lat2],
-            [b1.lon2, b1.lat2],
-            [b2.lon2, b2.lat2],
-            [d1.lon2, d1.lat2],
-            [a1.lon2, a1.lat2]
-          ]]
+          "coordinates": [ this.shapeCoordinates ]
         },
         "properties": {
           "id": this.getMapId('shape')
@@ -174,6 +230,16 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     var ship = this.ship;
     var position = ship.get('position');
 
+    if (!position) return;
+
+    var angle = position.has('trueheading') && position.get('trueheading')
+      || position.has('cog') && position.get('cog')
+      || 0;
+
+    angle = Math.round(angle);
+
+    var icon = ship.get('selected') && 'triangle-' + angle || 'triangle-' + angle + '-stroked';
+
     return {
       "type": "Feature",
       "geometry": {
@@ -181,109 +247,40 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
         "coordinates": position.getCoordinate()
       },
       "properties": {
-        "title": ship.getHelper().toTitel(),
-        "marker-symbol": ship.get('selected') && "triangle" || "triangle-stroked",
+        "title": ship.getHelper().toTitle(),
+        "marker-symbol": icon,
         "id": this.getMapId('marker')
       }
     }
   },
 
-  getMapId: function (prefix) {
-    return prefix + '-' + this.ship.get('id');
-  },
+  updateShapeLayer: function () {
+    if (!this.ship.has('position') || !this.hasShape()) return;
 
-  addShapeSource: function () {
     if (!this.mapgl.getSource(this.getMapId('shape'))) {
       this.mapgl.addSource(this.getMapId('shape'), {
         "type": "geojson",
+        "data": this.toShape()
       });
+    } else {
+      this.mapgl.getSource(this.getMapId('shape')).setData(this.toShape());
     }
 
-    this.mapgl.getSource(this.getMapId('shape')).setData(this.toShape());
-  },
+    if (this.hasLayer) return;
+    this.hasLayer = true;
 
-  addShapeLayer: function () {
-    if (!this.layer[this.getMapId('shape')]) {
-      this.mapgl.addLayer({
-        "id": this.getMapId('shape'),
-        "type": "fill",
-        "source": this.getMapId('shape'),
-        "paint": {
-          "fill-color": "rgba(63,63,191,0.5)",
-          "fill-outline-color": "rgba(0,0,0,0)"
-        }
-      }, 'track');
-      this.layer[this.getMapId('shape')] = true;
-    }
-  },
-
-  addMarkerSource: function () {
-    if (!this.mapgl.getSource(this.getMapId('marker'))) {
-      this.mapgl.addSource(this.getMapId('marker'), {
-        "type": "geojson",
-      });
+    var layer = {
+      "id": this.getMapId('shape'),
+      "type": "fill",
+      "source": this.getMapId('shape'),
+      "minzoom": 14,
+      "paint": {
+        "fill-color": "rgba(63,63,191,0.5)",
+        "fill-outline-color": "rgba(0,0,0,0)"
+      }
     }
 
-    this.mapgl.getSource(this.getMapId('marker')).setData(this.toMarker());
-  },
-
-  addMarkerLayer: function () {
-    if (!this.layer[this.getMapId('marker')]) {
-      this.mapgl.addLayer({
-        "id": this.getMapId('marker'),
-        "type": "symbol",
-        "source": this.getMapId('marker'),
-        "interactive": true,
-        "layout": {
-          "icon-image": "{marker-symbol}-11",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          "visibility": "visible"
-        }
-      });
-
-      this.layer[this.getMapId('marker')] = true;
-    }
-
-    var position = this.ship.get('position');
-    this.mapgl.setLayoutProperty(this.getMapId('marker'), "icon-rotate", position.has('cog') && position.get('cog') || 0);
-  },
-
-  addToMap: function () {
-    if (this.hasShape()) {
-      this.addShapeSource();
-      this.addShapeLayer();
-    }
-    this.addMarkerSource();
-    this.addMarkerLayer();
-  },
-
-  updateMap: function () {
-    this.addToMap();
-    this.ship.trigger('moved', this.ship.get('position'));
-  },
-
-  removeFromMap: function () {
-    this.stopListening(this.ship, 'change:selected', this.onSelected);
-    this.stopListening(this.ship, 'change:position', this.onPositionChange);
-
-    socket.removeListener('track:add:' + this.ship.get('userid'), this.update.bind(this));
-
-    if (this.layer[this.getMapId('marker')]) {
-      this.mapgl.removeLayer(this.getMapId('marker'));
-    }
-
-    if (this.mapgl.getSource(this.getMapId('marker'))) {
-      this.mapgl.removeSource(this.getMapId('marker'));
-    }
-
-    if (this.layer[this.getMapId('shape')]) {
-      this.mapgl.removeLayer(this.getMapId('shape'));
-    }
-
-    if (this.mapgl.getSource(this.getMapId('shape'))) {
-      this.mapgl.removeSource(this.getMapId('shape'));
-    }
+    this.mapgl.addLayer(layer, 'markers');
   }
 });
 

@@ -114,7 +114,7 @@ var ShipView = Backbone.View.extend({
 
   render: function () {
     this.$el.html(this.template({
-      title: this.model.getHelper().toTitel(),
+      title: this.model.getHelper().toTitle(),
       active: {
         ship: this.chkShipdata(),
         position: !this.chkShipdata()

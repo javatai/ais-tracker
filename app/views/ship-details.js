@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var bganimate = require('../lib/background-animate');
 
@@ -12,7 +13,7 @@ var ShipDetails = Backbone.View.extend({
     var shipdata = this.model.get('shipdata');
 
     var diff = [];
-    if (model) {
+    if (model && model.has('shipdata')) {
       diff = shipdata.diff(model.get('shipdata'));
       this.model = model;
       shipdata = model.get('shipdata');
