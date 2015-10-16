@@ -1,7 +1,10 @@
 'use strict';
 
+var config = require('../../config').setup.ship;
+
 var _ = require('underscore');
 var Backbone = require('backbone');
+var moment = require('moment');
 
 var socket = require('../../lib/socket');
 
@@ -82,6 +85,23 @@ var Ships = Backbone.Collection.extend({
 
     socket.on('ship:create', this.onShipCreated.bind(this));
     socket.on('ship:update', this.onShipUpdated.bind(this));
+
+    this.timer = setInterval(_.bind(function () {
+      this.removeExpiredModels();
+    }, this), 15 * 6000)
+  },
+
+  removeExpiredModels: function () {
+    var expired = this.filter(function (ship) {
+      var now = moment.utc();
+      var d = moment.utc(ship.get('datetime'));
+      var diff = now.diff(d, 'minutes');
+      return diff > (config * 60);
+    });
+
+    _.each(expired, function (ship) {
+      ship.remove();
+    });
   },
 
   reset: function(models, options) {

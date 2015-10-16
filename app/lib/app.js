@@ -34,7 +34,7 @@ $('body').on('touchmove', selScrollable, function(e) {
 var Ships = require('../models/ship/collection');
 var Router = require('./router');
 var ShipsLayer = require('../map/ships-layer');
-var MasterView = require('../views/master-view');
+var DesktopView = require('../views/desktop-view');
 var Notifications = require('./notifications');
 
 var App = function () {
@@ -72,7 +72,7 @@ _.extend(App.prototype, Backbone.Events, {
       app: this
     });
 
-    var masterView = new MasterView({
+    var desktopView = new DesktopView({
       el: $('#content'),
       collection: ships,
       app: this

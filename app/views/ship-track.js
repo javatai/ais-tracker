@@ -14,6 +14,7 @@ var ShipTrack = Backbone.View.extend({
 
   initialize: function () {
     this.start = 1;
+    this.lastPositionId = 0;
   },
 
   updateSlider: function () {
@@ -50,7 +51,9 @@ var ShipTrack = Backbone.View.extend({
     this.$el.find('> table > tbody').empty();
 
     this.model.get('track').each(this.addPosition, this);
-    this.addPosition(this.model.get('position'));
+
+    this.lastPosition = this.model.get('position');
+    this.addPosition(this.lastPosition);
 
     this.updateSlider();
   },
@@ -70,9 +73,17 @@ var ShipTrack = Backbone.View.extend({
   },
 
   addNewPosition: function (position) {
-    this.removePosition(this.model.get('position'));
+    this.removePosition(this.lastPosition.get('id'));
     this.addPosition(position);
-    this.addPosition(this.model.get('position'));
+
+    this.lastPosition = this.model.get('position');
+    this.addPosition(this.lastPosition);
+  },
+
+  changeLastPosition: function () {
+    this.removePosition(this.lastPosition);
+    this.lastPosition = this.model.get('position');
+    this.addPosition(this.lastPosition);
   },
 
   removePosition: function (remove) {
@@ -90,6 +101,7 @@ var ShipTrack = Backbone.View.extend({
     this.listenToOnce(this.model.get('track'), "sync", function () {
       this.updateView();
       this.listenTo(this.model.get('track'), "add", this.addNewPosition);
+      this.listenTo(this.model, "change:position", this.changeLastPosition);
       this.listenTo(this.model.get('track'), "remove", this.removePosition);
     }, this);
   }

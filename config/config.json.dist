@@ -1,81 +1,9 @@
 {
   "development": {
     "sequelize": {
-      "dialect": "mysql",
-      "database": "ais",
-      "host": "localhost",
-      "username": "",
-      "password": "",
-      "logging": false
-    },
-    "server": {
-      "port": 3000,
-      "hostname": "127.0.0.1",
-      "public": {
-        "route": "/html",
-        "dir": "html"
-      }
-    },
-    "receiver": {
-      "port": ,
-      "address": "0.0.0.0"
-    },
-    "setup": {
-      "movemin": 50,
-      "ship": {
-        "limit": 10,
-        "order": "datetime DESC"
-      }
-    },
-    "frontend": {
-      "map": {
-        "accessToken": "",
-        "center": [ 9.996006002132162, 53.50766131847098 ],
-        "zoom": 12
-      }
-    }
-  },
-  "test": {
-    "sequelize": {
-      "dialect": "mysql",
-      "database": "ais",
-      "host": "localhost",
-      "username": "",
-      "password": "",
-      "logging": false
-    },
-    "server": {
-      "port": 3000,
-      "hostname": "127.0.0.1",
-      "public": {
-        "route": "/html",
-        "dir": "html"
-      }
-    },
-    "receiver": {
-      "port": ,
-      "address": "0.0.0.0"
-    },
-    "setup": {
-      "movemin": 50,
-      "ship": {
-        "limit": 500,
-        "order": "datetime DESC"
-      }
-    },
-    "frontend": {
-      "map": {
-        "accessToken": "",
-        "center": [ 9.996006002132162, 53.50766131847098 ],
-        "zoom": 12
-      }
-    }
-  },
-  "production": {
-    "sequelize": {
-      "dialect": "mysql",
-      "database": "ais",
-      "host": "localhost",
+      "dialect": "",
+      "database": "",
+      "host": "",
       "username": "",
       "password": "",
       "logging": false
@@ -95,8 +23,95 @@
     "setup": {
       "movemin": 50,
       "ship": {
-        "limit": 500,
+        "hours": 2,
+        "limit": 100,
         "order": "datetime DESC"
+      },
+      "track": {
+        "limit": 100,
+        "hours": 72
+      }
+    },
+    "frontend": {
+      "map": {
+        "accessToken": "",
+        "center": [ 9.996006002132162, 53.50766131847098 ],
+        "zoom": 12
+      }
+    }
+  },
+  "test": {
+    "sequelize": {
+      "dialect": "",
+      "database": "",
+      "host": "",
+      "username": "",
+      "password": "",
+      "logging": false
+    },
+    "server": {
+      "port": ,
+      "hostname": "",
+      "public": {
+        "route": "/app",
+        "dir": ""
+      }
+    },
+    "receiver": {
+      "port": ,
+      "address": ""
+    },
+    "setup": {
+      "movemin": 50,
+      "ship": {
+        "hours": 2,
+        "limit": 100,
+        "order": "datetime DESC"
+      },
+      "track": {
+        "limit": 100,
+        "hours": 72
+      }
+    },
+    "frontend": {
+      "map": {
+        "accessToken": "",
+        "center": [ 9.996006002132162, 53.50766131847098 ],
+        "zoom": 12
+      }
+    }
+  },
+  "production": {
+    "sequelize": {
+      "dialect": "",
+      "database": "",
+      "host": "",
+      "username": "",
+      "password": "",
+      "logging": false
+    },
+    "server": {
+      "port": ,
+      "hostname": "",
+      "public": {
+        "route": "/app",
+        "dir": ""
+      }
+    },
+    "receiver": {
+      "port": ,
+      "address": ""
+    },
+    "setup": {
+      "movemin": 50,
+      "ship": {
+        "hours": 2,
+        "limit": 100,
+        "order": "datetime DESC"
+      },
+      "track": {
+        "limit": 100,
+        "hours": 72
       }
     },
     "frontend": {

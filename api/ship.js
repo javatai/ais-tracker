@@ -27,7 +27,7 @@ module.exports = function (server) {
       }
     } else {
       var d = new Date();
-     d.setHours(d.getHours() + config.setup.ship.hours);
+      d.setHours(d.getHours() - config.setup.ship.hours);
       where.datetime = {
         $gte: d.toISOString()
       }
@@ -61,7 +61,7 @@ module.exports = function (server) {
       q.offset = req.query.offset;
     }
 
-    // console.log(req.params, req.query, q);
+    // console.log(q);
 
     Ship.findAll(q).then(function (ships) {
       res.send(_.map(ships, function (ship) {

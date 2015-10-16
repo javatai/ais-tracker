@@ -9,7 +9,7 @@ var ShipView = require('./ship-view');
 var AboutView = require('./about-view');
 var LogView = require('./log-view');
 
-var template = require('./master-view.hbs');
+var template = require('./desktop-view.hbs');
 
 var MasterView = Backbone.View.extend({
   template: template,
