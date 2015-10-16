@@ -171,6 +171,9 @@ var Ships = Backbone.Collection.extend({
     this.each(function (ship) {
       var marker = ship.getMarker().toMarker();
       if (!marker) return;
+
+      ship.getMarker().chkUpdate();
+
       geojson.features.push(marker);
     })
 

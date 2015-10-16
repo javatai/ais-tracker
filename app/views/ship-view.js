@@ -56,7 +56,6 @@ var ShipView = Backbone.View.extend({
   },
 
   updateTrack: function () {
-    this.track.render();
     this.trackTab();
   },
 
@@ -130,7 +129,6 @@ var ShipView = Backbone.View.extend({
       this.updateTrack();
       this.listenTo(this.model.get('track'), "remove", this.updateTrack);
       this.listenTo(this.model.get('track'), "add", this.updateTrack);
-      this.listenTo(this.model, 'change:position', this.updateTrack);
     }, this);
   }
 });

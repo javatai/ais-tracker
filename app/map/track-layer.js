@@ -104,8 +104,8 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   onAddPosition: function (position) {
-    this.updateTrackSource();
-    this.updatePositionSource();
+    position.getLabel();
+    this.updateSource();
   },
 
   onRemovePosition: function (position) {
@@ -118,43 +118,51 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.clickid = 0;
     }
 
-    this.updateTrackSource();
-    this.updatePositionSource();
+    this.updateSource();
   },
 
   addToMap: function () {
     if (this.track.length > 2) {
       this.track.invoke('getLabel', this.mapgl);
 
-      this.addTrackSource();
+      this.addSource();
       this.addTrackLayer();
-
-      this.addPositionSource();
       this.addPositionLayer();
     }
 
     this.listenTo(this.ship, 'moved', this.onAddPosition);
     this.listenTo(this.track, 'add', this.onAddPosition);
     this.listenTo(this.track, 'remove', this.onRemovePosition);
+    this.listenTo(this.track, 'setrange', this.updateSource);
   },
 
-  addTrackSource: function () {
+  addSource: function () {
     if (!this.mapgl.getSource('track')) {
       this.mapgl.addSource('track', {
+        "type": "geojson"
+      });
+    }
+
+    if (!this.mapgl.getSource('positions')) {
+      this.mapgl.addSource('positions', {
         "type": "geojson",
       });
     }
 
-    this.updateTrackSource();
+    this.updateSource();
   },
 
-  updateTrackSource: function () {
-    if (!this.mapgl.getSource('track')) return this.addTrackSource();
+  updateSource: function () {
+    if (!this.mapgl.getSource('track') || !this.mapgl.getSource('positions')) return this.addSource();
 
-    var coordinates = this.track.map(function (position) {
-      return position.getCoordinate();
+    var range = _(this.track.slice(this.track.from, this.track.length-1)).map(function (position, index) {
+      return {
+        coordinate: position.getCoordinate(),
+        marker: position.getMarker().toMarker()
+      }
     });
-    coordinates.pop();
+
+    var coordinates = _.pluck(range, 'coordinate');
     coordinates.push(this.ship.get('position').getCoordinate());
 
     var track = {
@@ -163,26 +171,8 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     }
 
     this.mapgl.getSource('track').setData(track);
-  },
 
-  addPositionSource: function () {
-    if (!this.mapgl.getSource('positions')) {
-      this.mapgl.addSource('positions', {
-        "type": "geojson",
-      });
-    }
-
-    this.updatePositionSource();
-  },
-
-  updatePositionSource: function () {
-    if (!this.mapgl.getSource('positions')) return this.addPositionSource();
-
-    var features = this.track.map(function (position) {
-      return position.getMarker().toMarker();
-    });
-
-    features.pop();
+    var features = _.pluck(range, 'marker');
     features.push(this.ship.get('position').getMarker().toMarker());
 
     var positions = {
@@ -203,7 +193,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
         "paint": {
           "circle-color": "#444",
         }
-      }, "markers");
+      }, this.ship.getMarker().getMapId('shape'));
 
       this.layer['positions'] = true;
     }
@@ -219,7 +209,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
           "line-color": "#888",
           "line-width": 3
         }
-      }, "markers");
+      }, this.ship.getMarker().getMapId('shape'));
 
       this.layer['track'] = true;
     }
@@ -229,6 +219,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     this.stopListening(this.ship,  'moved', this.onAddPosition);
     this.stopListening(this.track, 'add', this.onAddPosition);
     this.stopListening(this.track, 'remove', this.onRemovePosition);
+    this.stopListening(this.track, 'setrange', this.updateSource);
 
     if (this.mapgl.getSource('track')) {
       this.mapgl.removeSource('track');

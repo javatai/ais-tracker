@@ -17,14 +17,23 @@ var ShipMarker = function (ship, mapgl) {
   this.ship = ship;
   this.mapgl = MapGL;
   this.shapeCoordinates = [];
+  this.positionCoordinate = [];
 
-  this.listenTo(this.ship, 'moved', this.updateMap);
+  this.listenTo(this.ship, 'moved', this.chkUpdate);
+  this.listenTo(this.ship, 'change:mouseover', this.highlite);
   this.listenTo(this.ship, 'change:selected', this.onSelected);
   this.listenTo(this.ship, 'change:shipdata', this.chkShipdata);
   this.updateMap();
 };
 
 _.extend(ShipMarker.prototype, Backbone.Events, {
+  chkUpdate: function () {
+    var position = this.ship.has('position') && this.ship.get('position').getCoordinate() || [];
+    if (!_.isEmpty(_.difference(this.positionCoordinate, position))) {
+      this.updateMap();
+    }
+  },
+
   updateMap: function () {
     if (!this.mapgl._loaded) {
       this.mapgl.on('load', _.bind(this.updateShapeLayer, this));
@@ -51,7 +60,8 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
   },
 
   removeFromMap: function () {
-    this.stopListening(this.ship, 'moved', this.updateMap);
+    this.stopListening(this.ship, 'moved', this.chkUpdate);
+    this.stopListening(this.ship, 'change:mouseover', this.highlite);
     this.stopListening(this.ship, 'change:shipdata', this.chkShipdata);
     this.stopListening(this.ship, 'change:selected', this.onSelected);
 
@@ -163,6 +173,8 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     if (dim) {
       var ship = this.ship;
       var position = ship.get('position');
+
+      this.positionCoordinate = position.getCoordinate();
 
       var a = dim.a;
       var b = dim.b;
@@ -283,6 +295,15 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     }
 
     this.mapgl.addLayer(layer, 'markers');
+  },
+
+  highlite: function (ship, highlited) {
+    if (!this.hasShape()) return;
+    if (highlited) {
+      this.mapgl.setPaintProperty(this.getMapId('shape'), 'fill-color', 'rgba(63,191,63,0.5)');
+    } else {
+      this.mapgl.setPaintProperty(this.getMapId('shape'), 'fill-color', 'rgba(63,63,191,0.5)');
+    }
   }
 });
 

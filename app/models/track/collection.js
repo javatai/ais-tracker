@@ -39,6 +39,12 @@ var Track = Positions.extend({
 
   initialize: function () {
     this.ship = null;
+    this.from = 0;
+  },
+
+  setRange: function (value) {
+    this.from = value;
+    this.trigger('setrange', this, value);
   },
 
   onPositionAdded: function (message) {

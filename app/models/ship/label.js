@@ -18,6 +18,10 @@ _.extend(ShipLabel.prototype, Label.prototype, {
     return this.model.get('position').getCoordinate();
   },
 
+  onClick: function () {
+    this.model.set('selected', true);
+  },
+
   toTitle: function () {
     var titel = this.model.getHelper().toTitle();
     titel += '<hr noshade size="1">';

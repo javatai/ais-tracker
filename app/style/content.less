@@ -89,17 +89,29 @@
     }
   }
 
-  .logview.positions {
-    .socket,
-    .ship-updated,
-    .ship-created {
-      display: none;
+  .logview {
+    &.positions {
+      .socket,
+      .ship-updated,
+      .ship-created {
+        display: none;
+      }
+    }
+    .checkbox {
+      margin: 0 !important;
     }
   }
 
   .ship {
     h3 {
       margin-top: 0px;
+    }
+
+    .range {
+      margin: 20px 15px;
+      .noUi-connect {
+        background-color: rgba(63, 63, 191, 0.5);
+      }
     }
 
     table {
@@ -138,6 +150,10 @@
       }
 
       &.track {
+        >tbody {
+          height: 225px;
+        }
+
         >thead th:nth-child(1),
         >tbody th:nth-child(1) {
           width: 40px;
