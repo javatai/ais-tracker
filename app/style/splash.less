@@ -4,11 +4,11 @@
   height: 100%;
   top: 0;
   left: 0;
-  background-color: #FDFDFD;
+  background-color: #ECECEC;
 }
 
 #splash .loading-progress {
-  width: 300px;
+  width: 320px;
   height: 150px;
   position: absolute;
   top: 50%;
@@ -17,26 +17,30 @@
   margin-left: -150px;
 }
 
-#splash .loading-progress .carousel-control.left {
-  width: 20px;
-
-  background: -moz-linear-gradient(left,  rgba(253,253,253,1) 0%, rgba(253,253,253,1) 50%, rgba(253,253,253,0) 100%);
-  background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(253,253,253,1)), color-stop(50%,rgba(253,253,253,1)), color-stop(100%,rgba(253,253,253,0)));
-  background: -webkit-linear-gradient(left,  rgba(253,253,253,1) 0%,rgba(253,253,253,1) 50%,rgba(253,253,253,0) 100%);
-  background: -o-linear-gradient(left,  rgba(253,253,253,1) 0%,rgba(253,253,253,1) 50%,rgba(253,253,253,0) 100%);
-  background: -ms-linear-gradient(left,  rgba(253,253,253,1) 0%,rgba(253,253,253,1) 50%,rgba(253,253,253,0) 100%);
-  background: linear-gradient(to right,  rgba(253,253,253,1) 0%,rgba(253,253,253,1) 50%,rgba(253,253,253,0) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#00fdfdfd',GradientType=1 );
+#splash .loading-progress .item img {
+  margin: 0 auto;
 }
 
-#splash .loading-progress .carousel-control.right {
-  width: 20px;
+#splash .loading-progress .carousel-mask-left {
+  width: 320px;
+  height: 150px;
+  position: absolute;
+  top: 0;
+  left: 0;
 
-  background: -moz-linear-gradient(left,  rgba(253,253,253,0) 0%, rgba(253,253,253,0) 50%, rgba(253,253,253,1) 100%);
-  background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(253,253,253,0)), color-stop(50%,rgba(253,253,253,0)), color-stop(100%,rgba(253,253,253,1)));
-  background: -webkit-linear-gradient(left,  rgba(253,253,253,0) 0%,rgba(253,253,253,0) 50%,rgba(253,253,253,1) 100%);
-  background: -o-linear-gradient(left,  rgba(253,253,253,0) 0%,rgba(253,253,253,0) 50%,rgba(253,253,253,1) 100%);
-  background: -ms-linear-gradient(left,  rgba(253,253,253,0) 0%,rgba(253,253,253,0) 50%,rgba(253,253,253,1) 100%);
-  background: linear-gradient(to right,  rgba(253,253,253,0) 0%,rgba(253,253,253,0) 50%,rgba(253,253,253,1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00fdfdfd', endColorstr='#fffdfdfd',GradientType=1 );
+  -webkit-box-shadow: inset 20px 0px 30px 0px #ECECEC;
+  -moz-box-shadow: inset 20px 0px 30px 0px #ECECEC;
+  box-shadow: inset 20px 0px 30px 0px #ECECEC;
+}
+
+#splash .loading-progress .carousel-mask-right {
+  width: 320px;
+  height: 150px;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  -webkit-box-shadow: inset 20px 0px 30px 0px #ECECEC;
+  -moz-box-shadow: inset 20px 0px 30px 0px #ECECEC;
+  box-shadow: inset -20px 0px 30px 0px #ECECEC;
 }

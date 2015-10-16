@@ -45,7 +45,7 @@ _.extend(App.prototype, Backbone.Events, {
   showSplash: function () {
     $('#splash').show();
     $('.loading-progress').carousel({
-      interval: 2000
+      interval: 500
     });
   },
 

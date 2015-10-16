@@ -188,6 +188,9 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       this.mapgl.removeLayer('track');
     }
 
+    var marker = this.ship.getMarker();
+    var behind = marker.hasShape() && marker.getMapId('shape') || 'markers';
+
     this.mapgl.addLayer({
       "id": "positions",
       "type": "circle",
@@ -196,7 +199,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
       "paint": {
         "circle-color": "#444",
       }
-    }, this.ship.getMarker().getMapId('shape'));
+    }, behind);
 
     this.mapgl.addLayer({
       "id": "track",
@@ -206,7 +209,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
         "line-color": "#888",
         "line-width": 2
       }
-    }, this.ship.getMarker().getMapId('shape'));
+    }, behind);
 
     this.hasLayer = true;
   },
