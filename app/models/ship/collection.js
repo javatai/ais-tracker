@@ -88,7 +88,7 @@ var Ships = Backbone.Collection.extend({
 
     this.timer = setInterval(_.bind(function () {
       this.removeExpiredModels();
-    }, this), 15 * 6000)
+    }, this), 15 * 6000);
   },
 
   removeExpiredModels: function () {
@@ -96,12 +96,11 @@ var Ships = Backbone.Collection.extend({
       var now = moment.utc();
       var d = moment.utc(ship.get('datetime'));
       var diff = now.diff(d, 'minutes');
-      return diff > (config * 60);
+      return diff > config.minutes;
     });
 
-    _.each(expired, function (ship) {
-      ship.remove();
-    });
+    this.trigger('expired', expired, this);
+    this.remove(expired);
   },
 
   reset: function(models, options) {

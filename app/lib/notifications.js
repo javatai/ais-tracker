@@ -2,6 +2,9 @@
 
 var moment = require('moment');
 
+var _ = require('underscore');
+var Backbone = require('backbone');
+
 var socket = require('./socket');
 var log = require('../models/log/collection');
 
@@ -12,13 +15,12 @@ var template = require('./notification-template.hbs');
 
 var Notifications = function () { };
 
-Notifications.prototype = {
+_.extend(Notifications.prototype, Backbone.Events, {
   notify: function (message, type, delay) {
     $.notify(message, {
       type: type || 'info',
-      delay: delay || 2000,
+      delay: delay  === undefined ? 2000 : delay,
       newest_on_top: true,
-      allow_dismiss: false,
       spacing: 5,
       url_target: '_self',
       template: template(),
@@ -102,6 +104,13 @@ Notifications.prototype = {
     });
   },
 
+  onShipExpire: function (ship) {
+    this.notify({
+      title: 'Expired',
+      message: ship.getHelper().toTitle(),
+    }, 'alert', 0);
+  },
+
   start: function () {
     socket.on('connected', this.onConnected.bind(this));
     socket.on('disconnect', this.onDisonnected.bind(this));
@@ -121,7 +130,6 @@ Notifications.prototype = {
     socket.removeListener('ship:update', this.onShipUpdated.bind(this));
     socket.removeListener('track:add', this.onTrackAdded.bind(this));
   }
-}
+});
 
 module.exports = Notifications;
-

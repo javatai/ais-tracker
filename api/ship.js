@@ -27,7 +27,7 @@ module.exports = function (server) {
       }
     } else {
       var d = new Date();
-      d.setHours(d.getHours() - config.setup.ship.hours);
+      d.setMinutes(d.getMinutes() - config.setup.ship.minutes);
       where.datetime = {
         $gte: d.toISOString()
       }

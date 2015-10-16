@@ -23,7 +23,7 @@
     "setup": {
       "movemin": 50,
       "ship": {
-        "hours": 2,
+        "minutes": 15,
         "limit": 100,
         "order": "datetime DESC"
       },
@@ -64,7 +64,7 @@
     "setup": {
       "movemin": 50,
       "ship": {
-        "hours": 2,
+        "minutes": 15,
         "limit": 100,
         "order": "datetime DESC"
       },
@@ -105,7 +105,7 @@
     "setup": {
       "movemin": 50,
       "ship": {
-        "hours": 2,
+        "minutes": 15,
         "limit": 100,
         "order": "datetime DESC"
       },

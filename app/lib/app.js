@@ -59,7 +59,14 @@ _.extend(App.prototype, Backbone.Events, {
     notifications.start();
 
     var ships = new Ships();
-    ships.fetch()
+    ships.fetch();
+
+    this.listenTo(ships, 'expired', function (ships) {
+      _.each(ships, function (ship) {
+        notifications.onShipExpire(ship);
+      });
+    });
+
     /* Debugging */
     window.ships = ships;
 
