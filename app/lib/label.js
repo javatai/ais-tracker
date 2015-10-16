@@ -38,7 +38,7 @@ _.extend(Label.prototype, Backbone.Events, {
       .addClass(this.classname)
       .addTo(this.mapgl);
 
-      $(this.label._container).on('click', _.bind(this.onClick, this));
+      $(this.label._container).find('.mapboxgl-popup-content').on('click', _.bind(this.onClick, this));
 
     this.label.once('remove', _.bind(function (label) {
       delete this.label;
@@ -47,7 +47,7 @@ _.extend(Label.prototype, Backbone.Events, {
 
   hideLabel: function () {
     if (this.label) {
-      $(this.label._container).off('click', _.bind(this.onClick, this));
+      $(this.label._container).find('.mapboxgl-popup-content').off('click', _.bind(this.onClick, this));
       this.label.remove();
       delete this.label;
     }

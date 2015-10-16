@@ -12,6 +12,10 @@ var ShipTrack = Backbone.View.extend({
   template: template,
   tagName: 'div',
 
+  initialize: function () {
+    this.start = 1;
+  },
+
   updateSlider: function () {
     var slider = _.first(this.$el.find('.range'));
     if (slider.noUiSlider) {
@@ -19,21 +23,23 @@ var ShipTrack = Backbone.View.extend({
     }
 
     noUiSlider.create(slider, {
-      start: 1,
+      start: this.start,
       connect: "upper",
-      step: 10,
+      step: 1,
       range: {
         'min': [ 1 ],
         'max': [ this.model.get('track').length ]
       },
       pips: {
         mode: 'range',
-        density: 10
+        density: 5
       }
     });
 
     slider.noUiSlider.on('change', _.bind(function (value) {
-      this.model.get('track').setRange(Number(value) - 1);
+      value = Number(value);
+      this.start = value;
+      this.model.get('track').setRange(value - 1);
     }, this));
   },
 

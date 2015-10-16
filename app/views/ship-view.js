@@ -15,9 +15,14 @@ var ShipView = Backbone.View.extend({
   template: template,
 
   events: {
+    "click h3": "center",
     "click a[href='#shipdetails']": "chkShipdata",
     "click a[href='#lastposition']": "chkPosition",
     "click a[href='#track']": "chkTrack"
+  },
+
+  center: function () {
+    this.model.getMarker().center();
   },
 
   chkShipdata: function (e) {

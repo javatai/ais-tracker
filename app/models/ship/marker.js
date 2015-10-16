@@ -48,11 +48,16 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     }
   },
 
-  onSelected: function (ship, selected) {
-    if (selected) {
+  center: function () {
+    if (this.ship.has('position')) {
       var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
       this.mapgl.fitBounds(bounds);
+    }
+  },
 
+  onSelected: function (ship, selected) {
+    if (selected) {
+      this.center();
       this.listenTo(this.ship, 'moved', this.onPositionChange);
     } else {
       this.stopListening(this.ship, 'moved', this.onPositionChange);
