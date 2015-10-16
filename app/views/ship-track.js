@@ -14,7 +14,7 @@ var ShipTrack = Backbone.View.extend({
 
   initialize: function () {
     this.start = 1;
-    this.lastPositionId = 0;
+    this.lastPosition = null;
   },
 
   updateSlider: function () {
@@ -73,7 +73,7 @@ var ShipTrack = Backbone.View.extend({
   },
 
   addNewPosition: function (position) {
-    this.removePosition(this.lastPosition.get('id'));
+    this.removePosition(this.lastPosition);
     this.addPosition(position);
 
     this.lastPosition = this.model.get('position');
@@ -82,12 +82,13 @@ var ShipTrack = Backbone.View.extend({
 
   changeLastPosition: function () {
     this.removePosition(this.lastPosition);
+
     this.lastPosition = this.model.get('position');
     this.addPosition(this.lastPosition);
   },
 
   removePosition: function (remove) {
-    if (this.items[remove.get('id')]) {
+    if (remove && this.items[remove.get('id')]) {
       this.items[remove.get('id')].remove();
       delete this.items[remove.get('id')];
     }

@@ -109,6 +109,14 @@ _.extend(Notifications.prototype, Backbone.Events, {
       title: 'Expired',
       message: ship.getHelper().toTitle(),
     }, 'alert', 0);
+
+    log.add({
+      type: 'ship-expired',
+      title: 'Ship expired',
+      userid: ship.get('userid'),
+      message: ship.getHelper().toTitle(),
+      datetime: moment().format('YYYY-MM-DD HH:mm:ss')
+    });
   },
 
   start: function () {
