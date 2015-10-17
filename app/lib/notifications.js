@@ -108,7 +108,7 @@ _.extend(Notifications.prototype, Backbone.Events, {
     this.notify({
       title: 'Expired',
       message: ship.getHelper().toTitle(),
-    }, 'alert', 0);
+    }, 'alert', 5000);
 
     log.add({
       type: 'ship-expired',
