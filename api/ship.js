@@ -13,8 +13,10 @@ var findoneShip = require('../lib/findone-ship');
 
 module.exports = function (server) {
   server.get('/api/ship/:shipid', function (req, res, next) {
-    findoneShip(req.params.shipid).done(function (json) {
+    findoneShip(req.params.shipid).then(function (json) {
       res.send(json);
+    }, function (error) {
+      res.status(404).send('Sorry cant find that!');
     });
   });
 
