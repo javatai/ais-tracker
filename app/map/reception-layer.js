@@ -26,8 +26,8 @@ _.extend(ReceptionLayer.prototype, Backbone.Events, {
   process: function (options) {
     this.removeFromMap(options.name);
 
-    if (this.requests[name]) {
-      this.requests[name].abort()
+    if (this.requests[options.name]) {
+      this.requests[options.name].abort()
     }
 
     if (options.state === false) return;
@@ -53,7 +53,7 @@ _.extend(ReceptionLayer.prototype, Backbone.Events, {
       data.datetime__lesser_than = today.utc().format();
     }
 
-    this.requests[name] = $.getJSON('/api/reception', data, _.bind(function (geojson, success) {
+    this.requests[options.name] = $.getJSON('/api/reception', data, _.bind(function (geojson, success) {
       if (!success) {
         this.app.trigger('reception:failed', { name: name });
         return;
