@@ -9,6 +9,7 @@ Backbone.$ = $;
 
 require('bootstrap');
 require('bootstrap-notify');
+require('bootstrap-switch');
 require('jquery-color');
 
 window.$ = $;
@@ -33,12 +34,15 @@ $('body').on('touchmove', selScrollable, function(e) {
 
 var Ships = require('../models/ship/collection');
 var Router = require('./router');
+var ReceptionLayer = require('../map/reception-layer');
 var ShipsLayer = require('../map/ships-layer');
 var DesktopView = require('../views/desktop-view');
 var Notifications = require('./notifications');
 
 var App = function () {
   this.showSplash();
+  this.loading = null;
+  this.counter = 0;
 };
 
 _.extend(App.prototype, Backbone.Events, {
@@ -54,7 +58,36 @@ _.extend(App.prototype, Backbone.Events, {
     $('#splash').hide();
   },
 
+  showLoading: function () {
+    this.counter++;
+    if (this.loading) return;
+
+    this.loading = $.notify('loading', {
+      spacing: 5,
+      allow_dismiss: false,
+      delay: 0,
+      template: '<div class="loading"></div>',
+      placement: {
+        from: "top",
+        align: "center"
+      }
+    });
+  },
+
+  hideLoading: function () {
+    this.counter--;
+    if (this.counter > 0) return;
+
+    this.loading.close();
+    this.loading = null;
+  },
+
   run: function () {
+    $.ajaxSetup({
+      beforeSend: _.bind(this.showLoading, this),
+      complete: _.bind(this.hideLoading, this)
+    });
+
     var notifications = new Notifications();
     notifications.start();
 
@@ -72,6 +105,10 @@ _.extend(App.prototype, Backbone.Events, {
 
     var router = new Router({
       ships: ships
+    });
+
+    var receptionLayer = new ReceptionLayer({
+      app: this
     });
 
     var shipsLayer = new ShipsLayer({

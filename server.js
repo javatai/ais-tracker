@@ -32,6 +32,7 @@ app.use(morgan('combined', { stream: accessLogStream }))
 // Create REST resource
 require('./api/ship')(app);
 require('./api/track')(app);
+require('./api/reception')(app);
 
 // Service static files
 app.use(config.server.public.route,

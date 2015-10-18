@@ -177,7 +177,9 @@ var MasterView = Backbone.View.extend({
     this.logView = new LogView();
     this.$el.find('.carousel-inner').append(this.logView.$el);
 
-    this.aboutView = new AboutView();
+    this.aboutView = new AboutView({
+      app: this.app
+    });
     this.$el.find('.carousel-inner').append(this.aboutView.$el);
 
     this.listenTo(this.collection, 'change:selected', this.selectShip);

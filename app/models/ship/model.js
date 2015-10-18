@@ -4,7 +4,6 @@ var socket = require('../../lib/socket');
 
 var _ = require('underscore');
 var Backbone = require('backbone');
-var MapUtil = require('../../lib/map-util');
 var GeographicLib = require("geographiclib");
 
 var Positions = require('../position/collection');
@@ -85,7 +84,9 @@ var Ship = Backbone.RelationalModel.extend({
 
   distanceTo: function (LngLat) {
     var coords = this.get('position').getLngLat();
-    return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
+
+    var geod = GeographicLib.Geodesic.WGS84;
+    return geod.Inverse(LngLat.lat, LngLat.lng, coords.lat, coords.lng).s12;
   },
 
   toTitle: function () {

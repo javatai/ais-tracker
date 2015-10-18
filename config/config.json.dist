@@ -30,6 +30,12 @@
       "track": {
         "limit": 100,
         "hours": 72
+      },
+      "reception": {
+        "distancefrom": {
+          "lat": ,
+          "lng":
+        }
       }
     },
     "frontend": {
@@ -71,6 +77,12 @@
       "track": {
         "limit": 100,
         "hours": 72
+      },
+      "reception": {
+        "distancefrom": {
+          "lat": ,
+          "lng":
+        }
       }
     },
     "frontend": {
@@ -112,6 +124,12 @@
       "track": {
         "limit": 100,
         "hours": 72
+       },
+      "reception": {
+        "distancefrom": {
+          "lat": ,
+          "lng":
+        }
       }
     },
     "frontend": {

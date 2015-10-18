@@ -17,6 +17,7 @@
     "ais-receiver": "git://github.com/3epnm/ais-receiver.git",
     "backbone": "^1.2.3",
     "backbone-relational": "^0.10.0",
+    "bootstrap-switch": "^3.3.2",
     "express": "^4.13.3",
     "file-stream-rotator": "0.0.6",
     "geographiclib": "^1.45.0",
@@ -74,6 +75,11 @@
       ]
     },
     "bootstrap-notify": {
+      "depends": [
+        "jquery:jQuery"
+      ]
+    },
+    "bootstrap-switch": {
       "depends": [
         "jquery:jQuery"
       ]

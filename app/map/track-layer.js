@@ -3,7 +3,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var MapUtil = require('../lib/map-util');
 var MapGL = require('./map');
 
 var TrackLayer = function (options) {
