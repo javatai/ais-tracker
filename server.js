@@ -35,8 +35,8 @@ require('./api/track')(app);
 require('./api/reception')(app);
 
 // Service static files
-app.use(config.server.public.route,
-  express.static(config.server.public.dir));
+app.use(config.server.public.route, express.static(config.server.public.dir));
+app.use(config.server.fonts.route, express.static(config.server.fonts.dir));
 
 var server = require('http').Server(app);
 

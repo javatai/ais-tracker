@@ -2,6 +2,8 @@
 
 var config = require('../config').frontend.map;
 
+var MapNav = require('./map-nav');
+
 var mapboxgl = require('mapbox-gl');
 
 mapboxgl.accessToken = config.accessToken;
@@ -13,8 +15,11 @@ var map = new mapboxgl.Map({
   zoom: config.zoom
 });
 
-window.mapgl = map;
+var mapNav = new MapNav({
+  mapgl: map,
+  selector: '.mapboxgl-ctrl-top-right'
+})
 
-map.addControl(new mapboxgl.Navigation());
+window.mapgl = map;
 
 module.exports = map;
