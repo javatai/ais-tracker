@@ -44,6 +44,19 @@ var ShipTrack = Backbone.View.extend({
     }, this));
   },
 
+  checkShipPosition: function () {
+    var lastTrackCoordinate = this.model.get('track').last().getCoordinate();
+    var lastCoordinate = this.model.get('position').getCoordinate();
+    var diff = _.diff(lastCoordinate, lastTrackCoordinate);
+
+    if (!_.isEmpty(diff)) {
+      this.lastPosition = this.model.get('position');
+      this.addPosition(this.lastPosition);
+    } else {
+      this.lastPosition = null;
+    }
+  },
+
   updateView: function () {
     _.invoke(this.items, 'remove');
     this.items = {};
@@ -52,32 +65,30 @@ var ShipTrack = Backbone.View.extend({
 
     this.model.get('track').each(this.addPosition, this);
 
-    this.lastPosition = this.model.get('position');
-    this.addPosition(this.lastPosition);
+    this.checkShipPosition();
 
     this.updateSlider();
   },
 
   addPosition: function (position) {
     var shipTrackItem = new ShipTrackItemView({
-      index: _.size(this.items)+1,
       model: position
     });
-
-    shipTrackItem.render();
     this.items[position.get('id')] = shipTrackItem;
 
+    shipTrackItem.render();
     this.$el.find('> table > tbody').prepend(shipTrackItem.$el);
 
     this.updateSlider();
   },
 
   addNewPosition: function (position) {
-    this.removePosition(this.lastPosition);
+    if (this.lastPosition) {
+      this.removePosition(this.lastPosition);
+    }
     this.addPosition(position);
 
-    this.lastPosition = this.model.get('position');
-    this.addPosition(this.lastPosition);
+    this.checkShipPosition();
   },
 
   changeLastPosition: function () {

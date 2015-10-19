@@ -12,7 +12,6 @@ var ShipTrackItem = Backbone.View.extend({
 
   render: function () {
     this.$el.html(this.template({
-      index: this.options.index,
       latitude: this.model.getHelper().format('Latitude').value,
       longitude: this.model.getHelper().format('Longitude').value,
       nav: this.model.getHelper().getNav(),
