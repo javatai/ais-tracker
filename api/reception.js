@@ -86,14 +86,19 @@ var iterate = function (req, res, options) {
         var d;
         if (options.distances[i]) {
           geometry.properties.distances[i] = options.distances[i];
-          d = geod.Direct(LngLat.lat, LngLat.lng, i, options.distances[i]);
+
+          d = geod.Direct(LngLat.lat, LngLat.lng, i-0.5, options.distances[i]);
+          geometry.coordinates[0].push([ d.lon2, d.lat2 ]);
+
+          d = geod.Direct(LngLat.lat, LngLat.lng, i+0.5, options.distances[i]);
+          geometry.coordinates[0].push([ d.lon2, d.lat2 ]);
         } else {
           d = {
             lat2: LngLat.lat,
             lon2: LngLat.lng
           }
+          geometry.coordinates[0].push([ d.lon2, d.lat2 ]);
         }
-        geometry.coordinates[0].push([ d.lon2, d.lat2 ]);
       }
 
       res.send(geometry);

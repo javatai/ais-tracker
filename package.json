@@ -47,15 +47,23 @@
   },
   "scripts": {
     "generate-sprite": "node sprites/generate.js && node_modules/spritezero-cli/bin/spritezero html/ship-marker@2x --retina sprites/input && node_modules/spritezero-cli/bin/spritezero html/ship-marker sprites/input",
-    "build-js": "node_modules/browserify/bin/cmd.js -t envify app/main.js > html/main.js",
-    "watch-js": "node_modules/watchify/bin/cmd.js app/main.js -o html/main.js -dv",
-    "minify-js": "node_modules/uglify-js/bin/uglifyjs -o html/main.min.js --compress --mangle -- html/main.js",
+    "build-js": "node_modules/browserify/bin/cmd.js -t envify app/desktop.js > html/desktop.js",
+    "watch-js": "node_modules/watchify/bin/cmd.js app/desktop.js -o html/desktop.js -dv",
+    "minify-js": "node_modules/uglify-js/bin/uglifyjs -o html/desktop.min.js --compress --mangle -- html/desktop.js",
     "build-css": "node_modules/less/bin/lessc app/style/style.less html/style.css",
     "watch-css": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less html/style.css",
     "minify-css": "node node_modules/minifier/index.js -o html/style.min.css html/style.css",
     "build": "npm run build-js && npm run build-css",
     "watch": "npm run watch-js & npm run watch-css",
-    "minify": "npm run build && npm run minify-js && npm run minify-css"
+    "minify": "npm run build && npm run minify-js && npm run minify-css",
+
+    "build-mobile-js": "NODE_ENV=production node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
+    "minify-mobile-js": "node_modules/uglify-js/bin/uglifyjs --compress --mangle -- cordova/www/mobile.js",
+    "build-mobile-css": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
+    "minify-mobile-css": "node node_modules/minifier/index.js cordova/www/style.css",
+
+    "build-mobile-debug": "npm run build-mobile-js && npm run build-mobile-css",
+    "build-mobile": "npm run build-mobile-debug && npm run minify-mobile-js && npm run minify-mobile-css"
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",

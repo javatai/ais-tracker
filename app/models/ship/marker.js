@@ -187,7 +187,7 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
       var d = dim.d;
 
       var geod = GeographicLib.Geodesic.WGS84;
-      var azi = position.get('trueheading') || position.get('cog');
+      var azi = position.has('trueheading') && position.get('trueheading') || position.get('cog');
 
       var w = c + d;
       var h = w/2;

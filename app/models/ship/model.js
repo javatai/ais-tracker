@@ -18,6 +18,8 @@ var ShipHelper = require('./helper');
 var ShipMarker = require('./marker');
 var ShipLabel = require('./label');
 
+var MapGL = require('../../map/map');
+
 var Ship = Backbone.RelationalModel.extend({
   shipHelper: null,
   shipLabel: null,
@@ -136,6 +138,23 @@ var Ship = Backbone.RelationalModel.extend({
     }
   },
 
+  inView: function () {
+    if (!this.has('position')) return false;
+
+    var lnglat = this.get('position').getLngLat();
+    var bounds = MapGL.getBounds();
+
+    if (MapGL.getZoom() >= 14
+      && (bounds.getNorth() > lnglat.lat
+        || bounds.getEast() > lnglat.lng
+        || bounds.getSouth() < lnglat.lat
+        || bounds.getWest() < lnglat.lng)) {
+      return true;
+    }
+
+    return false;
+  },
+
   onPositionChange: function (ship, position) {
     var coordinate = position && position.getLngLat() || null;
 
@@ -143,6 +162,9 @@ var Ship = Backbone.RelationalModel.extend({
       this.coordinate = coordinate;
       this.trigger('moved', position);
     } else if (this.get('selected')) {
+      this.coordinate = coordinate;
+      this.trigger('moved', position);
+    } else if (this.inView()) {
       this.coordinate = coordinate;
       this.trigger('moved', position);
     } else {
