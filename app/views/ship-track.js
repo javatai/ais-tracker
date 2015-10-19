@@ -87,15 +87,14 @@ var ShipTrack = Backbone.View.extend({
       this.removePosition(this.lastPosition);
     }
     this.addPosition(position);
-
     this.checkShipPosition();
   },
 
   changeLastPosition: function () {
-    this.removePosition(this.lastPosition);
-
-    this.lastPosition = this.model.get('position');
-    this.addPosition(this.lastPosition);
+    if (this.lastPosition) {
+      this.removePosition(this.lastPosition);
+    }
+    this.checkShipPosition();
   },
 
   removePosition: function (remove) {
