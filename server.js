@@ -6,7 +6,14 @@ var config = require(__dirname + '/config/config.json')[env];
 var FileStreamRotator = require('file-stream-rotator');
 var fs = require('fs');
 
+var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
+var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+
 var express = require('express');
+
+var http = require('http');
+var https = require('https');
+
 var morgan = require('morgan');
 
 var app = express();
@@ -38,6 +45,14 @@ require('./api/reception')(app);
 app.use(config.server.public.route, express.static(config.server.public.dir));
 app.use(config.server.fonts.route, express.static(config.server.fonts.dir));
 
-var server = require('http').Server(app);
 
-module.exports = server;
+
+var credentials = {key: privateKey, cert: certificate};
+
+var server = http.createServer(app);
+var secure = https.createServer(credentials, app);
+
+module.exports = {
+  'http': server,
+  'https': secure
+}
