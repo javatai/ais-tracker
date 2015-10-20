@@ -3,7 +3,7 @@
 var Socket = require('socket.io');
 var Listener = require('./socket/listener');
 
-module.exports = function (server, receiver) {
+var startSocket = function (server, receiver) {
   var io = Socket(server);
   var listeners = { };
   io.on('connection', function (socket) {
@@ -21,4 +21,9 @@ module.exports = function (server, receiver) {
       // console.log('connected', Object.keys(this.listeners));
     });
   });
+}
+
+module.exports = function (server, receiver) {
+  startSocket(server.http, receiver);
+  startSocket(server.https, receiver);
 };

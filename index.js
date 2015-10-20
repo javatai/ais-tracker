@@ -7,7 +7,7 @@ var sequelize = require('./lib/init');
 
 var receiver = require('./receiver');
 var server = require('./server');
-var socket = require('./socket')(server.https);
+var socket = require('./socket')(server);
 
 sequelize.sync({ force: false }).then(function() {
   receiver.start();
@@ -23,6 +23,6 @@ sequelize.sync({ force: false }).then(function() {
     var host = server.https.address().address,
         port = server.https.address().port;
 
-    console.log('listening at http://%s:%s', host, port);
+    console.log('listening at https://%s:%s', host, port);
   });
 });

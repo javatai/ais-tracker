@@ -45,14 +45,9 @@ require('./api/reception')(app);
 app.use(config.server.public.route, express.static(config.server.public.dir));
 app.use(config.server.fonts.route, express.static(config.server.fonts.dir));
 
-
-
-var credentials = {key: privateKey, cert: certificate};
-
-var server = http.createServer(app);
-var secure = https.createServer(credentials, app);
+var credentials = { key: privateKey, cert: certificate };
 
 module.exports = {
-  'http': server,
-  'https': secure
+  'http': http.createServer(app),
+  'https': https.createServer(credentials, app)
 }
