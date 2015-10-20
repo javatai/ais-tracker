@@ -89,9 +89,12 @@ var Ships = Backbone.Collection.extend({
         this.selectedId = 0;
       }
     });
+  },
 
-    this.socket = null;
-    Socket().done(_.bind(function (socket) {
+  startListening: function () {
+    if (this.socket) return;
+
+    Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
 
       this.socket.on('ship:create', this.onShipCreated.bind(this));
@@ -101,6 +104,21 @@ var Ships = Backbone.Collection.extend({
     this.timer = setInterval(_.bind(function () {
       this.removeExpiredModels();
     }, this), 15 * 6000);
+  },
+
+  stopListening: function () {
+    clearInterval(this.timer);
+
+    this.invoke('stopListening');
+
+    if (this.socket) {
+      this.socket.removeListener('ship:create', this.onShipCreated.bind(this));
+      this.socket.removeListener('ship:update', this.onShipUpdated.bind(this));
+
+      this.socket = null;
+    }
+
+    this.reset();
   },
 
   removeExpiredModels: function () {

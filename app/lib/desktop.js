@@ -39,6 +39,8 @@ var ShipsLayer = require('../map/ships-layer');
 var DesktopView = require('../views/desktop-view');
 var Notifications = require('./notifications');
 
+var Socket = require('../lib/socket');
+
 var App = function () {
   this.showSplash();
   this.loading = null;
@@ -46,6 +48,19 @@ var App = function () {
 };
 
 _.extend(App.prototype, Backbone.Events, {
+  start: function () {
+    Socket.reconnect();
+    this.notifications.startListening();
+    this.ships.startListening();
+    this.ships.fetch();
+  },
+
+  stop: function () {
+    this.notifications.stopListening();
+    this.ships.stopListening();
+    Socket.disconnect();
+  },
+
   showSplash: function () {
     $('#splash').show();
     $('.loading-progress').carousel({
@@ -82,29 +97,69 @@ _.extend(App.prototype, Backbone.Events, {
     this.loading = null;
   },
 
+  chkIsActive: function () {
+    var self = this;
+
+    (function() {
+      var hidden = "hidden";
+
+      // Standards:
+      if (hidden in document)
+        document.addEventListener("visibilitychange", onchange);
+      else if ((hidden = "mozHidden") in document)
+        document.addEventListener("mozvisibilitychange", onchange);
+      else if ((hidden = "webkitHidden") in document)
+        document.addEventListener("webkitvisibilitychange", onchange);
+      else if ((hidden = "msHidden") in document)
+        document.addEventListener("msvisibilitychange", onchange);
+      // IE 9 and lower:
+      else if ("onfocusin" in document)
+        document.onfocusin = document.onfocusout = onchange;
+      // All others:
+      else
+        window.onpageshow = window.onpagehide
+        = window.onfocus = window.onblur = onchange;
+
+      function onchange (evt) {
+        var v = "visible", h = "hidden",
+          evtMap = {
+            focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h
+          };
+
+        evt = evt || window.event;
+        if (evt.type in evtMap) {
+          self.trigger(evtMap[evt.type]);
+        }
+        else
+          self.trigger(this[hidden] ? "hidden" : "visible");
+      }
+
+      // set the initial state (but only if browser supports the Page Visibility API)
+      if( document[hidden] !== undefined )
+        onchange({type: document[hidden] ? "blur" : "focus"});
+    })();
+  },
+
   run: function () {
     $.ajaxSetup({
       beforeSend: _.bind(this.showLoading, this),
       complete: _.bind(this.hideLoading, this)
     });
 
-    var notifications = new Notifications();
-    notifications.start();
+    this.notifications = new Notifications();
 
-    var ships = new Ships();
-    ships.fetch();
+    this.ships = new Ships();
+    /* Debugging */
+    window.ships = this.ships;
 
-    this.listenTo(ships, 'expired', function (ships) {
-      _.each(ships, function (ship) {
-        notifications.onShipExpire(ship);
-      });
+    this.listenTo(this.ships, 'expired', function (ships) {
+      _.each(this.ships, function (ship) {
+        this.notifications.onShipExpire(ship);
+      }, this);
     });
 
-    /* Debugging */
-    window.ships = ships;
-
     var router = new Router({
-      ships: ships
+      ships: this.ships
     });
 
     var receptionLayer = new ReceptionLayer({
@@ -112,13 +167,13 @@ _.extend(App.prototype, Backbone.Events, {
     });
 
     var shipsLayer = new ShipsLayer({
-      ships: ships,
+      ships: this.ships,
       app: this
     });
 
     var desktopView = new DesktopView({
       el: $('#content'),
-      collection: ships,
+      collection: this.ships,
       app: this
     });
 
@@ -130,6 +185,11 @@ _.extend(App.prototype, Backbone.Events, {
     this.listenTo(this, 'splash:hide', this.hideSplash);
     this.listenTo(this, 'splash:show', this.showSplash);
     this.listenTo(this, 'shipslayer:update', onLoadedLazy);
+
+    this.listenTo(this, 'hidden', this.stop);
+    this.listenTo(this, 'visible', this.start);
+
+    this.chkIsActive();
   }
 });
 

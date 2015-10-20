@@ -23,3 +23,5 @@ var Desktop = require('./lib/desktop');
 
 var desktop = new Desktop();
 desktop.run();
+
+window.desktop = desktop;

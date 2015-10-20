@@ -180,21 +180,14 @@ var Ship = Backbone.RelationalModel.extend({
   onAdd: function () {
     this.coordinate = this.has('position') && this.get('position').getLngLat() || null;
 
-    this.socket = null;
-    Socket().done(_.bind(function (socket) {
-      this.socket = socket;
-      this.socket.on('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
-    }, this));
+    this.startListening();
 
     this.getMarker();
     this.getLabel();
   },
 
   onRemove: function () {
-    if (this.socket) {
-      this.socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
-      this.socket = null;
-    }
+    this.stopListening();
 
     this.set('selected', false);
     this.set('mouseover', false);
@@ -210,7 +203,26 @@ var Ship = Backbone.RelationalModel.extend({
       this.shipLabel.hideLabel();
       delete this.shipLabel;
     }
-  }
+  },
+
+  startListening: function () {
+    if (this.socket) return;
+
+    Socket.connect().done(_.bind(function (socket) {
+      this.socket = socket;
+      this.socket.on('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+    }, this));
+  },
+
+  stopListening: function () {
+    this.set('selected', false);
+
+    if (this.socket) {
+      this.socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+
+      this.socket = null;
+    }
+  },
 });
 
 module.exports = Ship;

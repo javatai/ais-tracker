@@ -62,7 +62,6 @@ var LogView = Backbone.View.extend({
     this.container = this.$el.find('tbody');
 
     this.listenTo(this.collection, 'add', this.addItemView);
-    this.listenTo(this.collection, 'remove', this.removeItemView);
   }
 });
 

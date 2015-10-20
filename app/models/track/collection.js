@@ -36,10 +36,17 @@ var Track = Positions.extend({
 
   startListening: function () {
     this.socket = null;
-    Socket().done(_.bind(function (socket) {
+    Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
       this.socket.on('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
     }, this));
+  },
+
+  stopListening: function () {
+    if (this.socket) {
+      this.socket.removeListener('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
+      this.socket = null;
+    }
   },
 
   getPositionsForLngLat: function (LngLat, min) {
@@ -63,10 +70,8 @@ var Track = Positions.extend({
   },
 
   reset: function () {
-    if (this.socket) {
-      this.socket.removeListener('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
-      this.socket = null;
-    }
+    this.stopListening();
+    Positions.prototype.reset.call(this);
   }
 });
 

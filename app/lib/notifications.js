@@ -119,9 +119,10 @@ _.extend(Notifications.prototype, Backbone.Events, {
     });
   },
 
-  start: function () {
-    this.socket = null;
-    Socket().done(_.bind(function (socket) {
+  startListening: function () {
+    if (this.socket) return;
+
+    Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
 
       this.socket.on('connected', this.onConnected.bind(this));
@@ -134,7 +135,9 @@ _.extend(Notifications.prototype, Backbone.Events, {
     }, this));
   },
 
-  stop: function () {
+  stopListening: function () {
+    log.reset();
+
     if (!this.socket) return;
 
     this.socket.removeListener('connected', this.onConnected.bind(this));
