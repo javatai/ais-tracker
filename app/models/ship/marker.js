@@ -1,7 +1,5 @@
 'use strict';
 
-var socket = require('../../lib/socket');
-
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');

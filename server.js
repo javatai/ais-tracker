@@ -36,6 +36,16 @@ var accessLogStream = FileStreamRotator.getStream({
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }))
 
+var allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  next();
+}
+
+app.use(allowCrossDomain);
+
 // Create REST resource
 require('./api/ship')(app);
 require('./api/track')(app);
@@ -44,6 +54,8 @@ require('./api/reception')(app);
 // Service static files
 app.use(config.server.public.route, express.static(config.server.public.dir));
 app.use(config.server.fonts.route, express.static(config.server.fonts.dir));
+
+app.use('/cordova', express.static('cordova/www'));
 
 var credentials = { key: privateKey, cert: certificate };
 

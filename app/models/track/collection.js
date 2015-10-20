@@ -1,6 +1,8 @@
 'use strict';
 
-var socket = require('../../lib/socket');
+var config = require('../../config').server;
+
+var Socket = require('../../lib/socket');
 
 var _ = require('underscore');
 var MapUtil = require('../../lib/map-util');
@@ -17,7 +19,12 @@ var Track = Positions.extend({
     if (!this.ship) {
       throw 'Track: No Id specified';
     }
-    return '/api/track/' + this.ship.get('id');
+
+    if (typeof(cordova) !== 'undefined' || location.protocol === 'https:') {
+      return 'https://' + config.hostname + ':' + config.https + '/api/track/' + this.ship.get('id');
+    } else {
+      return 'http://' + config.hostname + ':' + config.http + '/api/track/' + this.ship.get('id');
+    }
   },
 
   fetch: function (ship) {
@@ -28,7 +35,11 @@ var Track = Positions.extend({
   },
 
   startListening: function () {
-    socket.on('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
+    this.socket = null;
+    Socket().done(_.bind(function (socket) {
+      this.socket = socket;
+      this.socket.on('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
+    }, this));
   },
 
   getPositionsForLngLat: function (LngLat, min) {
@@ -52,8 +63,9 @@ var Track = Positions.extend({
   },
 
   reset: function () {
-    if (this.ship) {
-      socket.removeListener('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
+    if (this.socket) {
+      this.socket.removeListener('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
+      this.socket = null;
     }
   }
 });

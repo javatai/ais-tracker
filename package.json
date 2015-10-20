@@ -57,12 +57,17 @@
     "watch": "npm run watch-js & npm run watch-css",
     "minify": "npm run build && npm run minify-js && npm run minify-css",
 
-    "build-mobile-js": "NODE_ENV=production node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
-    "minify-mobile-js": "node_modules/uglify-js/bin/uglifyjs --compress --mangle -- cordova/www/mobile.js",
+    "build-mobile-js": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
+    "minify-mobile-js": "node_modules/uglify-js/bin/uglifyjs -o cordova/www/mobile.js --compress --mangle -- cordova/www/mobile.js",
     "build-mobile-css": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
-    "minify-mobile-css": "node node_modules/minifier/index.js cordova/www/style.css",
+    "minify-mobile-css": "node node_modules/minifier/index.js -o cordova/www/style.css cordova/www/style.css",
 
     "build-mobile-debug": "npm run build-mobile-js && npm run build-mobile-css",
+
+    "watch-mobile-js": "node_modules/watchify/bin/cmd.js app/mobile.js -o cordova/www/mobile.js -dv",
+    "watch-mobile-css": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
+
+    "watch-mobile": "npm run watch-mobile-js && npm run watch-mobile-css",
     "build-mobile": "npm run build-mobile-debug && npm run minify-mobile-js && npm run minify-mobile-css"
   },
   "browser": {

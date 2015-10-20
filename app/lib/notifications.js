@@ -5,7 +5,7 @@ var moment = require('moment');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var socket = require('./socket');
+var Socket = require('./socket');
 var log = require('../models/log/collection');
 
 var Ship = require('../models/ship/model');
@@ -120,23 +120,32 @@ _.extend(Notifications.prototype, Backbone.Events, {
   },
 
   start: function () {
-    socket.on('connected', this.onConnected.bind(this));
-    socket.on('disconnect', this.onDisonnected.bind(this));
-    socket.on('connect_failed', this.onFailed.bind(this));
+    this.socket = null;
+    Socket().done(_.bind(function (socket) {
+      this.socket = socket;
 
-    socket.on('ship:create', this.onShipCreated.bind(this));
-    socket.on('ship:update', this.onShipUpdated.bind(this));
-    socket.on('track:add', this.onTrackAdded.bind(this));
+      this.socket.on('connected', this.onConnected.bind(this));
+      this.socket.on('disconnect', this.onDisonnected.bind(this));
+      this.socket.on('connect_failed', this.onFailed.bind(this));
+
+      this.socket.on('ship:create', this.onShipCreated.bind(this));
+      this.socket.on('ship:update', this.onShipUpdated.bind(this));
+      this.socket.on('track:add', this.onTrackAdded.bind(this));
+    }, this));
   },
 
   stop: function () {
-    socket.removeListener('connected', this.onConnected.bind(this));
-    socket.removeListener('disconnect', this.onDisonnected.bind(this));
-    socket.removeListener('connect_failed', this.onFailed.bind(this));
+    if (!this.socket) return;
 
-    socket.removeListener('ship:create', this.onShipCreated.bind(this));
-    socket.removeListener('ship:update', this.onShipUpdated.bind(this));
-    socket.removeListener('track:add', this.onTrackAdded.bind(this));
+    this.socket.removeListener('connected', this.onConnected.bind(this));
+    this.socket.removeListener('disconnect', this.onDisonnected.bind(this));
+    this.socket.removeListener('connect_failed', this.onFailed.bind(this));
+
+    this.socket.removeListener('ship:create', this.onShipCreated.bind(this));
+    this.socket.removeListener('ship:update', this.onShipUpdated.bind(this));
+    this.socket.removeListener('track:add', this.onTrackAdded.bind(this));
+
+    this.socket = null;
   }
 });
 

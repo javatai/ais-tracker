@@ -1,18 +1,25 @@
 'use strict';
 
-var config = require('../../config').setup.ship;
+var setup = require('../../config').setup.ship;
+var config = require('../../config').server;
 
 var _ = require('underscore');
 var Backbone = require('backbone');
 var moment = require('moment');
 
-var socket = require('../../lib/socket');
+var Socket = require('../../lib/socket');
 
 var Ship = require('./model');
 var ShipData = require('../shipdata/model');
 
 var Ships = Backbone.Collection.extend({
-  url: '/api/ships',
+  url: function () {
+    if (typeof(cordova) !== 'undefined' || location.protocol === 'https:') {
+      return 'https://' + config.hostname + ':' + config.https + '/api/ships';
+    } else {
+      return 'http://' + config.hostname + ':' + config.http + '/api/ships';
+    }
+  },
   model: Ship,
 
   currentSort: { strategy: "name", direction: "asc" },
@@ -83,8 +90,13 @@ var Ships = Backbone.Collection.extend({
       }
     });
 
-    socket.on('ship:create', this.onShipCreated.bind(this));
-    socket.on('ship:update', this.onShipUpdated.bind(this));
+    this.socket = null;
+    Socket().done(_.bind(function (socket) {
+      this.socket = socket;
+
+      this.socket.on('ship:create', this.onShipCreated.bind(this));
+      this.socket.on('ship:update', this.onShipUpdated.bind(this));
+    }, this));
 
     this.timer = setInterval(_.bind(function () {
       this.removeExpiredModels();
@@ -96,7 +108,7 @@ var Ships = Backbone.Collection.extend({
       var now = moment.utc();
       var d = moment.utc(ship.get('datetime'));
       var diff = now.diff(d, 'minutes');
-      return diff > config.minutes;
+      return diff > setup.minutes;
     });
 
     this.trigger('expired', expired, this);

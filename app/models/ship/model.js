@@ -1,6 +1,6 @@
 'use strict';
 
-var socket = require('../../lib/socket');
+var Socket = require('../../lib/socket');
 
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -180,14 +180,21 @@ var Ship = Backbone.RelationalModel.extend({
   onAdd: function () {
     this.coordinate = this.has('position') && this.get('position').getLngLat() || null;
 
-    socket.on('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+    this.socket = null;
+    Socket().done(_.bind(function (socket) {
+      this.socket = socket;
+      this.socket.on('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+    }, this));
 
     this.getMarker();
     this.getLabel();
   },
 
   onRemove: function () {
-    socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+    if (this.socket) {
+      this.socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));
+      this.socket = null;
+    }
 
     this.set('selected', false);
     this.set('mouseover', false);
