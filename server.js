@@ -6,8 +6,8 @@ var config = require(__dirname + '/config/config.json')[env];
 var FileStreamRotator = require('file-stream-rotator');
 var fs = require('fs');
 
-var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
-var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+var privateKey  = fs.readFileSync(__dirname + '/sslcert/server.key', 'utf8');
+var certificate = fs.readFileSync(__dirname + '/sslcert/server.crt', 'utf8');
 
 var express = require('express');
 
