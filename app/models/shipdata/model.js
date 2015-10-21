@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('underscore');
-_.diff = require('../../lib/diff');
+_.diff = require('../../lib/helper/diff');
 var Backbone = require('backbone');
 var ShipdataHelper = require('./helper');
 

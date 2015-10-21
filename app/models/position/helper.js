@@ -1,11 +1,11 @@
 'use strict';
 
-var MapUtil = require('../../lib/map-util');
+var MapUtil = require('../../lib/helper/map-util');
 var moment = require('moment');
 var _ = require('underscore');
 _.str = require('underscore.string');
 
-var AisMessage = require('../../lib/ais-message');
+var AisMessage = require('../../lib/helper/ais-message');
 
 var json = require('ais-receiver/ais-messages/json/ais_msg_1.json');
 

@@ -2,6 +2,7 @@
 
 var moment = require('moment');
 
+var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
@@ -11,9 +12,11 @@ var log = require('../models/log/collection');
 var Ship = require('../models/ship/model');
 var Position = require('../models/position/model');
 
-var template = require('./notification-template.hbs');
+var template = require('./notifications/notification-template.hbs');
 
-var Notifications = function () { };
+var Notifications = function (options) {
+  this.ships = options.ships;
+};
 
 _.extend(Notifications.prototype, Backbone.Events, {
   notify: function (message, type, delay) {
@@ -119,7 +122,15 @@ _.extend(Notifications.prototype, Backbone.Events, {
     });
   },
 
-  startListening: function () {
+  expireShips: function (ships) {
+    _.each(ships, function (ship) {
+      this.onShipExpire(ship);
+    }, this);
+  },
+
+  start: function () {
+    this.listenTo(this.ships, 'expired', this.expireShips);
+
     if (this.socket) return;
 
     Socket.connect().done(_.bind(function (socket) {
@@ -135,7 +146,8 @@ _.extend(Notifications.prototype, Backbone.Events, {
     }, this));
   },
 
-  stopListening: function () {
+  stop: function () {
+    this.stopListening(this.ships, 'expired', this.expireShips);
     log.reset();
 
     if (!this.socket) return;

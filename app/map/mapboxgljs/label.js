@@ -1,13 +1,13 @@
 'use strict';
 
+var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var MapGL = require('../map/map');
+var Map = require('./map');
 var Popup = require('./popup');
 
 var Label = function () {
-  this.mapgl = MapGL;
   this.listenTo(this.model, 'change:mouseover', this.process);
   this.listenTo(this.model, 'remove', this.hideLabel);
 };
@@ -16,13 +16,13 @@ _.extend(Label.prototype, Backbone.Events, {
   label: null,
 
   process: function () {
-    if (!this.mapgl._loaded) return;
-
-    if (this.model.get('mouseover') === true) {
-      this.showLabel();
-    } else {
-      this.hideLabel();
-    }
+    Map.onReady().done(_.bind(function () {
+      if (this.model.get('mouseover') === true) {
+        this.showLabel();
+      } else {
+        this.hideLabel();
+      }
+    }, this));
   },
 
   onClick: function () { },
@@ -36,7 +36,7 @@ _.extend(Label.prototype, Backbone.Events, {
       .setLngLat(this.getCoordinates())
       .setHTML(this.toTitle())
       .addClass(this.classname)
-      .addTo(this.mapgl);
+      .addTo(Map.getMap());
 
       $(this.label._container).find('.mapboxgl-popup-content').on('click', _.bind(this.onClick, this));
 

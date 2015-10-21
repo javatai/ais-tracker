@@ -1,10 +1,11 @@
 'use strict';
 
 var Socket = require('../../lib/socket');
+var Map = require('../../map/map');
 
 var _ = require('underscore');
 var Backbone = require('backbone');
-var GeographicLib = require("geographiclib");
+var GeographicLib = require('geographiclib');
 
 var Positions = require('../position/collection');
 var Position = require('../position/model');
@@ -17,8 +18,6 @@ var Track = require('../track/collection');
 var ShipHelper = require('./helper');
 var ShipMarker = require('./marker');
 var ShipLabel = require('./label');
-
-var MapGL = require('../../map/map');
 
 var Ship = Backbone.RelationalModel.extend({
   shipHelper: null,
@@ -55,6 +54,11 @@ var Ship = Backbone.RelationalModel.extend({
     this.listenTo(this, 'add', this.onAdd);
     this.listenTo(this, 'remove', this.onRemove);
     this.listenTo(this, 'change:position', this.onPositionChange);
+    this.listenTo(this, 'change:selected', this.chkTrackRequest);
+  },
+
+  toTitle: function () {
+    return this.getHelper().toTitle();
   },
 
   getHelper: function () {
@@ -64,16 +68,16 @@ var Ship = Backbone.RelationalModel.extend({
     return this.shipHelper;
   },
 
-  getMarker: function (mapgl) {
+  getMarker: function () {
     if (!this.shipMarker) {
-      this.shipMarker =  new ShipMarker(this, mapgl);
+      this.shipMarker =  new ShipMarker(this);
     }
     return this.shipMarker;
   },
 
-  getLabel: function (mapgl) {
+  getLabel: function () {
     if (!this.shipLabel) {
-      this.shipLabel = new ShipLabel(this, mapgl);
+      this.shipLabel = new ShipLabel(this);
     }
     return this.shipLabel;
   },
@@ -81,7 +85,11 @@ var Ship = Backbone.RelationalModel.extend({
   fetchTrack: function () {
     var collection = this.get('track');
     collection.reset();
-    return collection.fetch(this);
+
+    this.xhr = collection.fetch(this);
+    this.xhr.done(_.bind(collection.startListening, collection));
+
+    return this.xhr;
   },
 
   distanceTo: function (LngLat) {
@@ -89,10 +97,6 @@ var Ship = Backbone.RelationalModel.extend({
 
     var geod = GeographicLib.Geodesic.WGS84;
     return geod.Inverse(LngLat.lat, LngLat.lng, coords.lat, coords.lng).s12;
-  },
-
-  toTitle: function () {
-    return this.getHelper().toTitle();
   },
 
   affectedByFilter: function (filter) {
@@ -142,17 +146,7 @@ var Ship = Backbone.RelationalModel.extend({
     if (!this.has('position')) return false;
 
     var lnglat = this.get('position').getLngLat();
-    var bounds = MapGL.getBounds();
-
-    if (MapGL.getZoom() >= 14
-      && (bounds.getNorth() > lnglat.lat
-        || bounds.getEast() > lnglat.lng
-        || bounds.getSouth() < lnglat.lat
-        || bounds.getWest() < lnglat.lng)) {
-      return true;
-    }
-
-    return false;
+    return Map.inView(lnglat);
   },
 
   onPositionChange: function (ship, position) {
@@ -180,14 +174,14 @@ var Ship = Backbone.RelationalModel.extend({
   onAdd: function () {
     this.coordinate = this.has('position') && this.get('position').getLngLat() || null;
 
-    this.startListening();
+    this.start();
 
     this.getMarker();
     this.getLabel();
   },
 
   onRemove: function () {
-    this.stopListening();
+    this.stop();
 
     this.set('selected', false);
     this.set('mouseover', false);
@@ -205,7 +199,13 @@ var Ship = Backbone.RelationalModel.extend({
     }
   },
 
-  startListening: function () {
+  chkTrackRequest: function (ship, selected) {
+    if (!selected && this.xhr) {
+      this.xhr.abort();
+    }
+  },
+
+  start: function () {
     if (this.socket) return;
 
     Socket.connect().done(_.bind(function (socket) {
@@ -214,8 +214,13 @@ var Ship = Backbone.RelationalModel.extend({
     }, this));
   },
 
-  stopListening: function () {
+  stop: function () {
     this.set('selected', false);
+    this.getMarker().removeFromMap();
+
+    if (this.xhr) {
+      this.xhr.abort();
+    }
 
     if (this.socket) {
       this.socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));

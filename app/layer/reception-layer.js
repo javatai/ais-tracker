@@ -1,10 +1,12 @@
 'use strict';
 
+var config = require('../config').server;
+
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var moment = require('moment');
-var MapGL = require('./map');
+var Map = require('../map/map');
 
 var colors = {
   'today': "rgba(255,0,0,0.4)",
@@ -16,8 +18,6 @@ var ReceptionLayer = function (options) {
   this.app = options.app;
   this.layer = { };
   this.requests = { };
-
-  this.mapgl = MapGL;
 
   this.listenTo(this.app, 'reception:layer', this.process);
 };
@@ -53,7 +53,14 @@ _.extend(ReceptionLayer.prototype, Backbone.Events, {
       data.datetime__lesser_than = today.utc().format();
     }
 
-    this.requests[options.name] = $.getJSON('/api/reception', data, _.bind(function (geojson, success) {
+    var url = '';
+    if (typeof(cordova) !== 'undefined' || location.protocol === 'https:') {
+      url = 'https://' + config.hostname + ':' + config.https + '/api/reception';
+    } else {
+      url = 'http://' + config.hostname + ':' + config.http + '/api/reception';
+    }
+
+    this.requests[options.name] = $.getJSON(url, data, _.bind(function (geojson, success) {
       if (!success) {
         this.app.trigger('reception:failed', { name: name });
         return;
@@ -62,44 +69,29 @@ _.extend(ReceptionLayer.prototype, Backbone.Events, {
     }, { name: options.name, scope: this }));
   },
 
-  addSource: function (name, data) {
-    this.mapgl.addSource(name, {
-      "type": "geojson",
-      "data": data
+  addToMap: function (name, data) {
+    Map.addToMap({
+      name: name,
+      data: data,
+      layer: [{
+        name: name,
+        behind: 'markers',
+        json: {
+          "type": "fill",
+          "paint": {
+            "fill-color": colors[name],
+            "fill-outline-color": "rgba(0,0,0,0)"
+          }
+        }
+      }]
     });
   },
 
-  addLayer: function (name) {
-    var layer = {
-      "id": name,
-      "type": "fill",
-      "source": name,
-      "paint": {
-        "fill-color": colors[name],
-        "fill-outline-color": "rgba(0,0,0,0)"
-      }
-    }
-
-    this.mapgl.addLayer(layer, 'markers');
-
-    this.layer[name] = true;
-  },
-
-  addToMap: function (name, data) {
-    this.requests[name] = false;
-
-    this.addSource(name, data);
-    this.addLayer(name);
-  },
-
   removeFromMap: function (name) {
-    if (this.layer[name]) {
-      this.mapgl.removeLayer(name);
-      this.layer[name] = false;
-    }
-    if (this.mapgl.getSource(name)) {
-      this.mapgl.removeSource(name);
-    }
+    Map.removeFromMap({
+      name: name,
+      layer: [ name ]
+    });
   }
 });
 

@@ -2,12 +2,13 @@
 
 var _ = require('underscore');
 _.str = require('underscore.string');
-_.diff = require('../../lib/diff');
+_.diff = require('../../lib/helper/diff');
 
 var Backbone = require('backbone');
 var moment = require('moment');
-var MapUtil = require('../../lib/map-util');
-var mapboxgl = require('mapbox-gl');
+var GeographicLib = require('geographiclib');
+
+var Map = require('../../map/map');
 
 var PositionHelper = require('./helper');
 var PositionMarker = require('./marker');
@@ -30,16 +31,16 @@ var Position = Backbone.RelationalModel.extend({
     return this.positionHelper;
   },
 
-  getMarker: function (mapgl) {
+  getMarker: function () {
     if (!this.positionMarker) {
-      this.positionMarker =  new PositionMarker(this, mapgl);
+      this.positionMarker =  new PositionMarker(this);
     }
     return this.positionMarker;
   },
 
-  getLabel: function (mapgl) {
+  getLabel: function () {
     if (!this.positionLabel) {
-      this.positionLabel = new PositionLabel(this, mapgl);
+      this.positionLabel = new PositionLabel(this);
     }
     return this.positionLabel;
   },
@@ -57,12 +58,13 @@ var Position = Backbone.RelationalModel.extend({
   },
 
   getLngLat: function () {
-    return new mapboxgl.LngLat(this.get('longitude'), this.get('latitude'));
+    return Map.getLngLat(this)
   },
 
   distanceTo: function (LngLat) {
     var coords = this.getLngLat();
-    return MapUtil.distance(LngLat.lat, LngLat.lng, coords.lat, coords.lng);
+    var geod = GeographicLib.Geodesic.WGS84;
+    return Math.round(geod.Inverse(LngLat.lat, LngLat.lng, coords.lat, coords.lng).s12);
   },
 
   diff: function (data) {

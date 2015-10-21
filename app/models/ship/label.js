@@ -3,7 +3,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var Label = require('../../lib/label');
+var Label = require('../../map/label');
 
 var ShipLabel = function (ship) {
   this.model = ship;

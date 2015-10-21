@@ -7,20 +7,18 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var moment = require('moment');
 
+var Platform = require('../../lib/platform');
 var Socket = require('../../lib/socket');
 
 var Ship = require('./model');
 var ShipData = require('../shipdata/model');
 
 var Ships = Backbone.Collection.extend({
-  url: function () {
-    if (typeof(cordova) !== 'undefined' || location.protocol === 'https:') {
-      return 'https://' + config.hostname + ':' + config.https + '/api/ships';
-    } else {
-      return 'http://' + config.hostname + ':' + config.http + '/api/ships';
-    }
-  },
   model: Ship,
+
+  url: function () {
+    return Platform.setPrefix('/api/ships');
+  },
 
   currentSort: { strategy: "name", direction: "asc" },
   selectedStrategy: null,
@@ -74,7 +72,9 @@ var Ships = Backbone.Collection.extend({
     }
   },
 
-  initialize: function () {
+  initialize: function (options) {
+    this.options = options;
+
     this.selectedId = 0;
     this.initSort(this.currentSort.strategy, this.currentSort.direction);
 
@@ -84,14 +84,29 @@ var Ships = Backbone.Collection.extend({
       }
     }, this);
 
-    this.on('change:selected', function (ship) {
+    this.on('change:selected', function (ship, selected) {
+      if (selected) {
+        this.each(function (_ship) {
+          if (_ship.get('id') !== ship.get('id')) {
+            _ship.set('selected', false);
+          }
+        });
+      }
+
       if (ship.get('id') === this.selectedId) {
         this.selectedId = 0;
       }
     });
+
+    this.listenTo(this.options.app, 'shopListening', function () {
+      console.log('abort');
+      if (this.xhr.abort) this.xhr.abort();
+    });
   },
 
-  startListening: function () {
+  start: function () {
+    this.fetch();
+
     if (this.socket) return;
 
     Socket.connect().done(_.bind(function (socket) {
@@ -106,7 +121,7 @@ var Ships = Backbone.Collection.extend({
     }, this), 15 * 6000);
   },
 
-  stopListening: function () {
+  stop: function () {
     clearInterval(this.timer);
 
     this.invoke('stopListening');
@@ -145,7 +160,7 @@ var Ships = Backbone.Collection.extend({
     }
 
     this._reset();
-    this.add(models, _.extend({silent: true}, options));
+    this.add(models, _.extend({ silent: true }, options));
 
     if (!options.silent) this.trigger('reset', this, options);
     return this;
@@ -227,6 +242,11 @@ var Ships = Backbone.Collection.extend({
     })
 
     return geojson;
+  },
+
+  fetch: function () {
+    this.xhr = Backbone.Collection.prototype.fetch.apply(this, arguments);
+    return this.xhr;
   }
 });
 

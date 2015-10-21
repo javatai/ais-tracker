@@ -1,27 +1,33 @@
 "use strict";
 
+require('./plugins');
+
 var $ = require('jquery');
+var _ = require('underscore');
 
-var selScrollable = '.scrollable';
-$(document).on('touchmove',function(e){
-  e.preventDefault();
-});
+var Platform = require('./lib/platform');
 
-$('body').on('touchstart', selScrollable, function(e) {
-  if (e.currentTarget.scrollTop === 0) {
-    e.currentTarget.scrollTop = 1;
-  } else if (e.currentTarget.scrollHeight === e.currentTarget.scrollTop + e.currentTarget.offsetHeight) {
-    e.currentTarget.scrollTop -= 1;
+var DesktopView = require('./views/desktop-view');
+var App = require('./lib/app');
+
+var Desktop = function () {
+  App.call(this);
+};
+
+_.extend(Desktop.prototype, App.prototype, {
+  render: function () {
+    return new DesktopView({
+      el: $('#content'),
+      collection: this.ships,
+      app: this
+    });
   }
 });
 
-$('body').on('touchmove', selScrollable, function(e) {
-  e.stopPropagation();
+var desktop = new Desktop();
+
+Platform.onReady().done(function () {
+  desktop.run();
 });
 
-var Desktop = require('./lib/desktop');
-
-var desktop = new Desktop();
-desktop.run();
-
-window.desktop = desktop;
+window.app = desktop;

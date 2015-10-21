@@ -45,6 +45,8 @@ var ShipTrack = Backbone.View.extend({
   },
 
   checkShipPosition: function () {
+    if (this.model.get('track').length < 1) return;
+
     var lastTrackCoordinate = this.model.get('track').last().getCoordinate();
     var lastCoordinate = this.model.get('position').getCoordinate();
     var diff = _.diff(lastCoordinate, lastTrackCoordinate);
@@ -115,6 +117,12 @@ var ShipTrack = Backbone.View.extend({
       this.listenTo(this.model, "change:position", this.changeLastPosition);
       this.listenTo(this.model.get('track'), "remove", this.removePosition);
     }, this);
+  },
+
+  remove: function () {
+    _.invoke(this.items, 'remove');
+
+    Backbone.View.prototype.remove.call(this);
   }
 });
 

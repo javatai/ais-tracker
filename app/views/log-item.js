@@ -3,7 +3,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
-var bganimate = require('../lib/background-animate');
+var bganimate = require('../lib/helper/background-animate');
 
 var template = require('./log-item.hbs');
 

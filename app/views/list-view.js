@@ -55,6 +55,8 @@ var ListView = Backbone.View.extend({
   },
 
   removeItemView: function (ship) {
+    if (!this.listItems[ship.get('id')]) return;
+
     this.listItems[ship.get('id')].remove();
     delete this.listItems[ship.get('id')];
   },

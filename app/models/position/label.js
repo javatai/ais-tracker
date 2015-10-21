@@ -3,7 +3,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var Label = require('../../lib/label');
+var Label = require('../../map/label');
 
 var PositionLabel = function (position) {
   this.model = position;

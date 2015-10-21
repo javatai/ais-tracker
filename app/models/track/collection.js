@@ -2,10 +2,10 @@
 
 var config = require('../../config').server;
 
-var Socket = require('../../lib/socket');
-
 var _ = require('underscore');
-var MapUtil = require('../../lib/map-util');
+
+var Platform = require('../../lib/platform');
+var Socket = require('../../lib/socket');
 
 var Position = require('../position/model');
 var Positions = require('../position/collection');
@@ -20,17 +20,11 @@ var Track = Positions.extend({
       throw 'Track: No Id specified';
     }
 
-    if (typeof(cordova) !== 'undefined' || location.protocol === 'https:') {
-      return 'https://' + config.hostname + ':' + config.https + '/api/track/' + this.ship.get('id');
-    } else {
-      return 'http://' + config.hostname + ':' + config.http + '/api/track/' + this.ship.get('id');
-    }
+    return Platform.setPrefix('/api/track/' + this.ship.get('id'));
   },
 
   fetch: function (ship) {
     this.ship = ship;
-    this.listenToOnce(this, 'sync', this.startListening);
-
     return Positions.prototype.fetch.call(this);
   },
 

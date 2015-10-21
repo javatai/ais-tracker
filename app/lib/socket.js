@@ -1,9 +1,9 @@
 "use strict";
 
 var $ = require('jquery');
+var socket, io = require('socket.io-client');
 
-var socket, config = require('../config').server;
-var io = require('socket.io-client');
+var Platform = require('./platform');
 
 var create = function (location) {
   var url = location.protocol + '//' + location.hostname + ':' + location.port;
@@ -35,36 +35,10 @@ module.exports = {
     if (socket) {
       dfd.resolve(socket);
     } else {
-      if (typeof(cordova) !== 'undefined') {
-        cordova.plugins.certificates.trustUnsecureCerts(true);
-
-        document.addEventListener("deviceready", function () {
-          socket = create({
-            protocol: 'https:',
-            hostname: config.hostname,
-            port: config.https
-          });
-          dfd.resolve(socket);
-        });
-
-      } else {
-
-        if (location.protocol === 'https:') {
-          socket = create({
-            protocol: 'https:',
-            hostname: config.hostname,
-            port: config.https
-          });
-        } else {
-          socket = create({
-            protocol: 'http:',
-            hostname: config.hostname,
-            port: config.http
-          });
-        }
-
+      Platform.onReady().done(function (platform) {
+        socket = create(platform.socketConfig());
         dfd.resolve(socket);
-      }
+      });
     }
 
     return dfd.promise();

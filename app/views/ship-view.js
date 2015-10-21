@@ -130,11 +130,20 @@ var ShipView = Backbone.View.extend({
 
     this.listenTo(this.model, 'change:shipdata', this.updateShipdata);
     this.listenTo(this.model, 'change:position', this.updatePosition);
+
     this.listenToOnce(this.model.get('track'), "sync", function () {
       this.updateTrack();
       this.listenTo(this.model.get('track'), "remove", this.updateTrack);
       this.listenTo(this.model.get('track'), "add", this.updateTrack);
     }, this);
+  },
+
+  remove: function () {
+    this.shipdata.remove();
+    this.position.remove();
+    this.track.remove();
+
+    Backbone.View.prototype.remove.call(this);
   }
 });
 

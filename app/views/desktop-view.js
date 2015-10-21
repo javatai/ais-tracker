@@ -26,24 +26,30 @@ var MasterView = Backbone.View.extend({
   initialize: function (options) {
     this.app = options.app;
     this.isOpen = false;
-    this.shipviews = [];
 
     this.render();
 
     this.listenTo(this.app, 'clickout', this.closeview);
-    this.listenTo(this.collection, 'remove', this.chkShipviews);
+    this.listenTo(this.app, 'startListening', this.onStart);
+    this.listenTo(this.app, 'shopListening', this.onStop);
+  },
+
+  onStart: function () {
+    this.listenTo(this.collection, 'remove', this.chkShipview);
+  },
+
+  onStop: function () {
+    this.stopListening(this.collection, 'remove', this.chkShipview);
+    this.closeview();
   },
 
   chkShipviews: function (ship) {
-    _.each(this.shipviews, function (view, index) {
-      if (view.model.get('id') === ship.get('id')) {
+    if (this.shipview && this.shipview.model.get('id') === ship.get('id')) {
+      if (this.isOpen) {
         this.openlistview();
-        this.$el.find('.carousel').on('slid.bs.carousel', _.bind(function () {
-          this.shipviews.splice(index, 1);
-          view.remove();
-        }, this));
       }
-    }, this);
+      this.shipview.remove();
+    }
   },
 
   findCarouselIndexByClass: function (name) {
@@ -67,6 +73,10 @@ var MasterView = Backbone.View.extend({
   },
 
   closeview: function () {
+    if (this.shipview) {
+      this.shipview.remove();
+    }
+
     if (this.isOpen === true) {
       this.$el.find('.collapse').collapse('hide');
       this.$el.find('.toclose').hide();
@@ -87,13 +97,10 @@ var MasterView = Backbone.View.extend({
   },
 
   openviewhelper: function (cls, cntr) {
-    _.each(this.shipviews, function (view) {
-      view.model.set('selected', false);
-    });
-
     if (!this.$el.find('.item.active').length) {
       this.$el.find('.item.'+cls).addClass('active');
     }
+
     var number = this.findCarouselIndexByClass(cls);
     this.$el.find('.carousel').carousel(number);
     this.openview();
@@ -130,14 +137,17 @@ var MasterView = Backbone.View.extend({
 
   selectShip: function (ship, selected) {
     if (selected) {
-      var shipview = new ShipView({
+      if (this.shipview) {
+        this.shipview.remove();
+      }
+
+      this.shipview = new ShipView({
         model: ship
       });
 
-      shipview.render();
-      this.shipviews.push(shipview);
+      this.shipview.render();
 
-      this.$el.find('.carousel-inner').append(shipview.$el);
+      this.$el.find('.carousel-inner').append(this.shipview.$el);
 
       this.openview();
 
@@ -154,20 +164,12 @@ var MasterView = Backbone.View.extend({
     }
   },
 
-  cleanup: function () {
-    if (this.shipviews.length > 1) {
-      var shipview = this.shipviews.splice(0, 1);
-      shipview[0].remove();
-    }
-  },
-
   render: function () {
     this.$el.html(this.template());
     this.$el.find('.carousel').carousel({
       interval: false,
       pause: false
     });
-    this.$el.find('.carousel').on('slid.bs.carousel', _.bind(this.cleanup, this));
 
     this.listView = new ListView({
       collection: this.collection,

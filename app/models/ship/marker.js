@@ -3,54 +3,44 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
+var GeographicLib = require('geographiclib');
+
 var Position = require('../position/model');
-var MapUtil = require('../../lib/map-util');
-var GeographicLib = require("geographiclib");
-var mapboxgl = require('mapbox-gl');
-var MapGL = require('../../map/map');
+var Map = require('../../map/map');
 
-var ShipMarker = function (ship, mapgl) {
-  this.haslayer = false;
-
+var ShipMarker = function (ship) {
   this.ship = ship;
-  this.mapgl = MapGL;
+
   this.shapeCoordinates = [];
   this.positionCoordinate = [];
+  this.dimension = {};
 
-  this.listenTo(this.ship, 'moved', this.chkUpdate);
+  this.listenTo(this.ship, 'moved',            this.chkUpdate);
+  this.listenTo(this.ship, 'change:shipdata',  this.chkUpdate);
+
   this.listenTo(this.ship, 'change:mouseover', this.highlite);
-  this.listenTo(this.ship, 'change:selected', this.onSelected);
-  this.listenTo(this.ship, 'change:shipdata', this.chkShipdata);
-  this.updateMap();
+  this.listenTo(this.ship, 'change:selected',  this.onSelected);
+
+  this.addToMap();
 };
 
 _.extend(ShipMarker.prototype, Backbone.Events, {
   chkUpdate: function () {
     var position = this.ship.has('position') && this.ship.get('position').getCoordinate() || [];
-    if (!_.isEmpty(_.difference(this.positionCoordinate, position))) {
-      this.updateMap();
-    }
-  },
 
-  updateMap: function () {
-    if (!this.mapgl._loaded) {
-      this.mapgl.on('load', _.bind(this.updateShapeLayer, this));
-    } else {
-      this.updateShapeLayer();
-    }
-  },
-
-  chkShipdata: function () {
-    if (!this.mapgl.getSource(this.getMapId('shape')) && this.ship.has('shipdata')) {
-      this.updateMap();
+    if (_.isEmpty(this.dimension) || !_.isEmpty(_.difference(this.positionCoordinate, position))) {
+      this.addToMap();
     }
   },
 
   center: function () {
     if (this.ship.has('position')) {
-      var bounds = this.calculateOffsetBounds(this.ship.get('position').getLngLat());
-      this.mapgl.fitBounds(bounds);
+      Map.center(this.ship.get('position').getLngLat());
     }
+  },
+
+  onPositionChange: function () {
+    Map.moveIntoView(this.ship.get('position'));
   },
 
   onSelected: function (ship, selected) {
@@ -62,70 +52,11 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     }
   },
 
-  removeFromMap: function () {
-    this.stopListening(this.ship, 'moved', this.chkUpdate);
-    this.stopListening(this.ship, 'change:mouseover', this.highlite);
-    this.stopListening(this.ship, 'change:shipdata', this.chkShipdata);
-    this.stopListening(this.ship, 'change:selected', this.onSelected);
-
-    if (this.hasLayer) {
-      this.mapgl.removeLayer(this.getMapId('shape'));
-      this.hasLayer = false;
-    }
-
-    if (this.mapgl.getSource(this.getMapId('shape'))) {
-      this.mapgl.removeSource(this.getMapId('shape'));
-    }
-  },
-
-  onPositionChange: function () {
-    var lnglat = this.ship.get('position').getLngLat();
-    var bounds = this.mapgl.getBounds();
-
-    if (bounds.getNorth() < lnglat.lat) {
-      // console.log('N', bounds.getNorth(), lnglat.lat, bounds.getNorth() < lnglat.lat);
-      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
-    }
-
-    if (bounds.getEast() < lnglat.lng) {
-      // console.log('E', bounds.getEast(), lnglat.lng, bounds.getEast() < lnglat.lng);
-      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
-    }
-
-    if (bounds.getSouth() > lnglat.lat) {
-      // console.log('S', bounds.getSouth(), lnglat.lat, bounds.getSouth() > lnglat.lat);
-      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
-    }
-
-    if (bounds.getWest() > lnglat.lng) {
-      // console.log('W', bounds.getWest(), lnglat.lng, bounds.getWest() > lnglat.lng);
-      this.mapgl.flyTo({ center: this.ship.get('position').getCoordinate() });
-    }
-  },
-
-  calculateOffsetBounds: function (lnglat) {
-    var geod = GeographicLib.Geodesic.WGS84;
-
-    var padding = 500;
-
-    var N = geod.Direct(lnglat.lat, lnglat.lng, 0, padding);
-    var E = geod.Direct(lnglat.lat, lnglat.lng, 90, padding);
-    var S = geod.Direct(lnglat.lat, lnglat.lng, 180, padding);
-    var W = geod.Direct(lnglat.lat, lnglat.lng, 270, padding);
-
-    var wpx = $(this.mapgl.getContainer).width();
-    var wm = geod.Inverse(N.lat2, E.lon2, S.lat2, W.lon2).s12;
-
-    var m = 420 * wm / wpx;
-    var P = geod.Direct(S.lat2, W.lon2, 270, m);
-
-    var SW = new mapboxgl.LngLat(P.lon2, P.lat2);
-    var NE = new mapboxgl.LngLat(E.lon2, N.lat2);
-
-    return new mapboxgl.LngLatBounds(SW, NE);
-  },
-
   hasShape: function () {
+    if (!_.isEmpty(this.dimension)) {
+      return this.dimension;
+    }
+
     if (this.ship.has('shipdata')) {
       var data = this.ship.get('shipdata');
       var a = data.get('dima') || 0;
@@ -134,7 +65,8 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
       var d = data.get('dimd') || 0;
 
       if ((a || b) && (c || d)) {
-        return { a: a, b: b, c: c, d: d };
+        this.dimension = { a: a, b: b, c: c, d: d };
+        return this.dimension;
       }
     }
   },
@@ -271,41 +203,54 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
     }
   },
 
-  updateShapeLayer: function () {
+  onLoad: function () {
+    Map.addToMap({
+      name: this.getMapId('shape'),
+      data: this.toShape(),
+      layer: [{
+        name: this.getMapId('shape'),
+        behind: 'markers',
+        json: {
+          "type": "fill",
+          "minzoom": 14,
+          "paint": {
+            "fill-color": "rgba(63,63,191,0.5)",
+            "fill-outline-color": "rgba(0,0,0,0)"
+          }
+        }
+      }]
+    });
+  },
+
+  addToMap: function () {
     if (!this.ship.has('position') || !this.hasShape()) return;
 
-    if (!this.mapgl.getSource(this.getMapId('shape'))) {
-      this.mapgl.addSource(this.getMapId('shape'), {
-        "type": "geojson",
-        "data": this.toShape()
-      });
-    } else {
-      this.mapgl.getSource(this.getMapId('shape')).setData(this.toShape());
-    }
+    Map.onReady().done(_.bind(function () {
+      this.onLoad();
+    }, this));
+  },
 
-    if (this.hasLayer) return;
-    this.hasLayer = true;
+  removeFromMap: function () {
+    this.stopListening(this.ship, 'moved',            this.chkUpdate);
+    this.stopListening(this.ship, 'change:shipdata',  this.chkUpdate);
 
-    var layer = {
-      "id": this.getMapId('shape'),
-      "type": "fill",
-      "source": this.getMapId('shape'),
-      "minzoom": 14,
-      "paint": {
-        "fill-color": "rgba(63,63,191,0.5)",
-        "fill-outline-color": "rgba(0,0,0,0)"
-      }
-    }
+    this.stopListening(this.ship, 'change:mouseover', this.highlite);
+    this.stopListening(this.ship, 'change:selected',  this.onSelected);
 
-    this.mapgl.addLayer(layer, 'markers');
+    this.stopListening(this.ship, 'moved',            this.onPositionChange);
+
+    Map.removeFromMap({
+      name: this.getMapId('shape'),
+      layer: [ this.getMapId('shape') ]
+    });
   },
 
   highlite: function (ship, highlited) {
     if (!this.hasShape()) return;
     if (highlited) {
-      this.mapgl.setPaintProperty(this.getMapId('shape'), 'fill-color', 'rgba(63,191,63,0.5)');
+      Map.setPaintProperty(this.getMapId('shape'), 'fill-color', 'rgba(63,191,63,0.5)');
     } else {
-      this.mapgl.setPaintProperty(this.getMapId('shape'), 'fill-color', 'rgba(63,63,191,0.5)');
+      Map.setPaintProperty(this.getMapId('shape'), 'fill-color', 'rgba(63,63,191,0.5)');
     }
   }
 });

@@ -33,7 +33,9 @@ html/desktop.js
 html/desktop.min.js
 html/style.css
 html/style.min.css
-sprites/input
-sprites/test.html
-sprites/triangle.svg
+
+app/map/mapboxgljs/sprites/input
+app/map/mapboxgljs/sprites/test.html
+app/map/mapboxgljs/sprites/triangle.svg
+
 cordova

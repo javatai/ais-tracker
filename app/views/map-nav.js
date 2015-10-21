@@ -1,7 +1,5 @@
 'use strict';
 
-var config = require('../config').frontend.map;
-
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
@@ -21,31 +19,24 @@ var MapNav = Backbone.View.extend({
   },
 
   zoomIn: function () {
-    this.mapgl.zoomIn();
+    this.trigger('zoomIn');
   },
 
   zoomOut: function () {
-    this.mapgl.zoomOut();
+    this.trigger('zoomOut');
   },
 
   toHome: function () {
-    this.mapgl.flyTo({
-      center: config.center,
-      zoom: config.zoom
-    });
+    this.trigger('toHome');
   },
 
   toNorth: function () {
-    this.mapgl.resetNorth();
+    this.trigger('toNorth');
   },
 
   initialize: function (options) {
-    this.mapgl = options.mapgl;
-
-    this.mapgl.on('load', _.bind(function () {
-      this.container = $(options.selector);
-      this.render();
-    }, this));
+    this.container = options.container;
+    this.render();
   },
 
   render: function () {
