@@ -9,6 +9,7 @@ var fs = require('fs');
 var privateKey  = fs.readFileSync(__dirname + '/sslcert/server.key', 'utf8');
 var certificate = fs.readFileSync(__dirname + '/sslcert/server.crt', 'utf8');
 
+var compression = require('compression')
 var express = require('express');
 
 var http = require('http');
@@ -45,6 +46,7 @@ var allowCrossDomain = function(req, res, next) {
 }
 
 app.use(allowCrossDomain);
+app.use(compression());
 
 // Create REST resource
 require('./api/ship')(app);
@@ -52,8 +54,8 @@ require('./api/track')(app);
 require('./api/reception')(app);
 
 // Service static files
-app.use(config.server.public.route, express.static(config.server.public.dir));
-app.use(config.server.fonts.route, express.static(config.server.fonts.dir));
+app.use(config.server.public.route, express.static(config.server.public.dir, { maxAge: config.server.maxAge }));
+app.use(config.server.fonts.route, express.static(config.server.fonts.dir, { maxAge: config.server.maxAge }));
 
 app.use('/cordova', express.static('cordova/www'));
 
