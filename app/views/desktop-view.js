@@ -4,11 +4,6 @@ var _ = require('underscore');
 var $ = require('jquery');
 
 var BaseView = require('./base-view');
-
-var ListView = require('./list-view');
-var AboutView = require('./about-view');
-var LogView = require('./log-view');
-
 var template = require('./desktop-view.hbs');
 
 var DesktopView = BaseView.extend({
@@ -21,6 +16,17 @@ var DesktopView = BaseView.extend({
     "click .footer .toabout a": "openaboutview",
     "click .footer .tolog a":   "openlogview",
     "click .footer .toclose a": "closeview"
+  },
+
+  initialize: function (options) {
+    this.app = options.app;
+    this.isOpen = false;
+
+    this.render();
+
+    this.listenTo(this.app, 'clickout', this.closeview);
+    this.listenTo(this.app, 'startListening', this.onStart);
+    this.listenTo(this.app, 'shopListening', this.onStop);
   },
 
   closeview: function () {
@@ -45,29 +51,6 @@ var DesktopView = BaseView.extend({
       this.$el.find('.toclose').show();
     }
     this.isOpen = true;
-  },
-
-  render: function () {
-    this.$el.html(this.template());
-    this.$el.find('.carousel').carousel({
-      interval: false,
-      pause: false
-    });
-
-    this.listView = new ListView({
-      collection: this.collection,
-    });
-    this.$el.find('.carousel-inner').append(this.listView.$el);
-
-    this.logView = new LogView();
-    this.$el.find('.carousel-inner').append(this.logView.$el);
-
-    this.aboutView = new AboutView({
-      app: this.app
-    });
-    this.$el.find('.carousel-inner').append(this.aboutView.$el);
-
-    this.listenTo(this.collection, 'change:selected', this.selectShip);
   }
 });
 

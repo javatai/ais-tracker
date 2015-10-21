@@ -48,28 +48,34 @@
   "scripts": {
     "generate-sprite": "node app/map/mapboxgljs/sprites/generate.js && node_modules/spritezero-cli/bin/spritezero html/ship-marker@2x --retina app/map/mapboxgljs/sprites/input && node_modules/spritezero-cli/bin/spritezero html/ship-marker app/map/mapboxgljs/sprites/input",
 
-    "build-js": "node_modules/browserify/bin/cmd.js -t envify app/desktop.js > html/desktop.js",
-    "watch-js": "node_modules/watchify/bin/cmd.js app/desktop.js -o html/desktop.js -dv",
-    "minify-js": "node_modules/uglify-js/bin/uglifyjs -o html/desktop.min.js --compress --mangle -- html/desktop.js",
+    "build-js-desktop": "node_modules/browserify/bin/cmd.js -t envify app/desktop.js > html/desktop.js",
+    "build-js-mobile": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > html/mobile.js",
+
+    "minify-js-desktop": "node_modules/uglify-js/bin/uglifyjs -o html/desktop.min.js --compress --mangle -- html/desktop.js",
+    "minify-js-mobile": "node_modules/uglify-js/bin/uglifyjs -o html/mobile.min.js --compress --mangle -- html/mobile.js",
+
+    "watch-js-desktop": "node_modules/watchify/bin/cmd.js app/desktop.js -o html/desktop.js -dv",
+    "watch-js-mobile": "node_modules/watchify/bin/cmd.js app/mobile.js -o html/mobile.js -dv",
+
     "build-css": "node_modules/less/bin/lessc app/style/style.less html/style.css",
     "watch-css": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less html/style.css",
     "minify-css": "node node_modules/minifier/index.js -o html/style.min.css html/style.css",
-    "build": "npm run build-js && npm run build-css",
-    "watch": "npm run watch-js & npm run watch-css",
+
+    "build": "npm run build-js-desktop && npm run build-js-mobile && npm run build-css",
+    "minify-js": "npm run minify-js-desktop && npm run minify-js-mobile",
     "minify": "npm run build && npm run minify-js && npm run minify-css",
 
-    "build-mobile-js": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
-    "minify-mobile-js": "node_modules/uglify-js/bin/uglifyjs -o cordova/www/mobile.js --compress --mangle -- cordova/www/mobile.js",
-    "build-mobile-css": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
-    "minify-mobile-css": "node node_modules/minifier/index.js -o cordova/www/style.css cordova/www/style.css",
+    "build-js-cordova": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
+    "minify-js-cordova": "node_modules/uglify-js/bin/uglifyjs -o cordova/www/mobile.js --compress --mangle -- cordova/www/mobile.js",
 
-    "build-mobile-debug": "npm run build-mobile-js && npm run build-mobile-css",
+    "build-css-cordova": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
+    "minify-css-cordova": "node node_modules/minifier/index.js -o cordova/www/style.css cordova/www/style.css",
 
-    "watch-mobile-js": "node_modules/watchify/bin/cmd.js app/mobile.js -o cordova/www/mobile.js -dv",
-    "watch-mobile-css": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
+    "watch-js-cordova": "node_modules/watchify/bin/cmd.js app/mobile.js -o cordova/www/mobile.js -dv",
+    "watch-css-cordova": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less cordova/www/style.js",
 
-    "watch-mobile": "npm run watch-mobile-js && npm run watch-mobile-css",
-    "build-mobile": "npm run build-mobile-debug && npm run minify-mobile-js && npm run minify-mobile-css"
+    "build-cordova": "npm run build-js-cordova && npm run build-css-cordova",
+    "minify-cordova": "npm run build-cordova && npm run minify-js-cordova && npm run minify-css-cordova"
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",

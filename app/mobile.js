@@ -26,12 +26,10 @@ _.extend(Mobile.prototype, App.prototype, {
     });
   },
 
-  toggleMenu: function () {
-    $('#content').toggleClass('is-visible');
-  },
-
   run: function () {
     App.prototype.run.call(this);
+
+    this.listenTo(this, 'reception:layer', this.contentView.slideIn);
 
     $('html').addClass('mobile');
 
@@ -50,10 +48,8 @@ _.extend(Mobile.prototype, App.prototype, {
       Map.listenTo(nav, 'toHome', Map.toHome);
       Map.listenTo(nav, 'toNorth', Map.toNorth);
 
-      self.listenTo(nav, 'openMenu', self.toggleMenu);
+      self.contentView.listenTo(nav, 'openMenu', self.contentView.slideOut);
     });
-
-    $('.menu-close').on('click', this.toggleMenu);
   }
 });
 

@@ -5,22 +5,17 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 
 var ShipView = require('./ship-view');
+var ListView = require('./list-view');
+var AboutView = require('./about-view');
+var LogView = require('./log-view');
 
 var template = require('./desktop-view.hbs');
 
 var BaseView = Backbone.View.extend({
   template: template,
 
-  initialize: function (options) {
-    this.app = options.app;
-    this.isOpen = false;
-
-    this.render();
-
-    this.listenTo(this.app, 'clickout', this.closeview);
-    this.listenTo(this.app, 'startListening', this.onStart);
-    this.listenTo(this.app, 'shopListening', this.onStop);
-  },
+  closeview: _.noop,
+  openview: _.noop,
 
   onStart: function () {
     this.listenTo(this.collection, 'remove', this.chkShipview);
@@ -31,7 +26,7 @@ var BaseView = Backbone.View.extend({
     this.closeview();
   },
 
-  chkShipviews: function (ship) {
+  chkShipview: function (ship) {
     if (this.shipview && this.shipview.model.get('id') === ship.get('id')) {
       if (this.isOpen) {
         this.openlistview();
@@ -126,6 +121,29 @@ var BaseView = Backbone.View.extend({
       this.listView.isShown = false;
       this.updateFooter();
     }
+  },
+
+  render: function () {
+    this.$el.html(this.template());
+    this.$el.find('.carousel').carousel({
+      interval: false,
+      pause: false
+    });
+
+    this.listView = new ListView({
+      collection: this.collection,
+    });
+    this.$el.find('.carousel-inner').append(this.listView.$el);
+
+    this.logView = new LogView();
+    this.$el.find('.carousel-inner').append(this.logView.$el);
+
+    this.aboutView = new AboutView({
+      app: this.app
+    });
+    this.$el.find('.carousel-inner').append(this.aboutView.$el);
+
+    this.listenTo(this.collection, 'change:selected', this.selectShip);
   }
 });
 
