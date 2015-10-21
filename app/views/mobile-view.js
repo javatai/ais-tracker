@@ -9,9 +9,9 @@ var ListView = require('./list-view');
 var AboutView = require('./about-view');
 var LogView = require('./log-view');
 
-var template = require('./desktop-view.hbs');
+var template = require('./mobile-view.hbs');
 
-var DesktopView = BaseView.extend({
+var MobileView = BaseView.extend({
   template: template,
 
   events: {
@@ -19,8 +19,7 @@ var DesktopView = BaseView.extend({
     "focus input[type='text']": "openlistview",
     "click .footer .tolist a":  "openlistview",
     "click .footer .toabout a": "openaboutview",
-    "click .footer .tolog a":   "openlogview",
-    "click .footer .toclose a": "closeview"
+    "click .footer .tolog a":   "openlogview"
   },
 
   closeview: function () {
@@ -29,8 +28,6 @@ var DesktopView = BaseView.extend({
     }
 
     if (this.isOpen === true) {
-      this.$el.find('.collapse').collapse('hide');
-      this.$el.find('.toclose').hide();
       this.$el.find('.footer li').removeClass('active');
     }
     this.isOpen = false;
@@ -41,7 +38,6 @@ var DesktopView = BaseView.extend({
 
   openview: function () {
     if (this.isOpen === false) {
-      this.$el.find('.collapse').collapse('show');
       this.$el.find('.toclose').show();
     }
     this.isOpen = true;
@@ -57,6 +53,7 @@ var DesktopView = BaseView.extend({
     this.listView = new ListView({
       collection: this.collection,
     });
+
     this.$el.find('.carousel-inner').append(this.listView.$el);
 
     this.logView = new LogView();
@@ -67,8 +64,10 @@ var DesktopView = BaseView.extend({
     });
     this.$el.find('.carousel-inner').append(this.aboutView.$el);
 
+    this.openlistview();
+
     this.listenTo(this.collection, 'change:selected', this.selectShip);
   }
 });
 
-module.exports = DesktopView;
+module.exports = MobileView;

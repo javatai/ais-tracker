@@ -1,7 +1,6 @@
 'use strict';
 
 var config = require('../../config').frontend.map;
-var MapNav = require('../../views/map-nav');
 
 var mapboxgl = require('mapbox-gl');
 mapboxgl.accessToken = config.accessToken;
@@ -18,19 +17,6 @@ var Map = function (options) {
     center: config.center,
     zoom: config.zoom
   });
-
-  this.map.on('load', _.bind(function () {
-
-    this.nav = new MapNav({
-      container: $('.mapboxgl-ctrl-top-right')
-    });
-
-    this.listenTo(this.nav, 'zoomIn', this.zoomIn);
-    this.listenTo(this.nav, 'zoomOut', this.zoomOut);
-    this.listenTo(this.nav, 'toHome', this.toHome);
-    this.listenTo(this.nav, 'toNorth', this.toNorth);
-
-  }, this));
 
   this.perimeter = -1;
 
@@ -169,7 +155,10 @@ _.extend(Map.prototype, Backbone.Events, {
   },
 
   setPaintProperty: function (id, name, value) {
-    this.map.setPaintProperty(id, name, value);
+    var self = this;
+    this.onReady().done(function () {
+      self.map.setPaintProperty(id, name, value);
+    });
   },
 
   calculateOffsetBounds: function (lnglat) {

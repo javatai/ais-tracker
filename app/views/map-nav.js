@@ -12,35 +12,47 @@ var MapNav = Backbone.View.extend({
   className: 'map-nav',
 
   events: {
-    "click .glyphicon-zoom-in" : "zoomIn",
-    "click .glyphicon-zoom-out" : "zoomOut",
-    "click .glyphicon-home" : "toHome",
-    "click .glyphicon-screenshot" : "toNorth",
+    "click button" : "onClick"
   },
 
-  zoomIn: function () {
-    this.trigger('zoomIn');
-  },
-
-  zoomOut: function () {
-    this.trigger('zoomOut');
-  },
-
-  toHome: function () {
-    this.trigger('toHome');
-  },
-
-  toNorth: function () {
-    this.trigger('toNorth');
+  onClick: function (el) {
+    _.each(this.buttons, function (button) {
+      if ($(el.currentTarget).hasClass(button.cls)) {
+        this.trigger(button.trigger);
+      }
+    }, this);
   },
 
   initialize: function (options) {
     this.container = options.container;
+
+    this.buttons = options.buttons || [];
+
+    this.buttons.push({
+      cls: 'zoom-in',
+      trigger: 'zoomIn'
+    });
+
+    this.buttons.push({
+      cls: 'zoom-out',
+      trigger: 'zoomOut'
+    });
+
+    this.buttons.push({
+      cls: 'home',
+      trigger: 'toHome'
+    });
+
+    this.buttons.push({
+      cls: 'screenshot',
+      trigger: 'toNorth'
+    });
+
     this.render();
   },
 
   render: function () {
-    this.$el.html(this.template());
+    this.$el.html(this.template({ buttons: this.buttons }));
     this.container.append(this.$el);
   }
 });

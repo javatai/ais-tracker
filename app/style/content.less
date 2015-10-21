@@ -1,6 +1,172 @@
 @bg-col: white;
 
-#content {
+.mobile #content {
+  height: 100%;
+  z-index: 200;
+
+  position: absolute;
+  right: -320px;
+  width: 320px;
+
+  visibility: hidden;
+  transition: visibility 0s 0.6s;
+
+  &.is-visible {
+    visibility: visible;
+    transition: visibility 0s 0s;
+  }
+
+  .panel-container {
+    background-color: @bg-col;
+    position: fixed;
+    width: 320px;
+
+    height: 100%;
+    top: 0;
+    right: 0;
+
+    transition-property: transform;
+    transition-duration: 0.3s;
+    transition-delay: 0.3s;
+
+    transform: translate3d(100%, 0, 0);
+
+    .panel-content {
+      height: 100%;
+
+      > form {
+        margin: 50px 10px 10px 10px;
+      }
+    }
+  }
+
+  &.is-visible .panel-container {
+    transform: translate3d(0, 0, 0);
+    transition-delay: 0s;
+  }
+
+  .menu-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+  }
+
+  #carousel {
+    position: fixed;
+    top: 90px;
+    bottom: 60px;
+    width: 100%;
+
+    .carousel-inner {
+      height: 100%;
+      width: 100%;
+
+      >.item {
+        height: 100%;
+        >.list, >.log, >.ship {
+          height: 100%;
+          >.inner {
+            height: 100%;
+            padding: 0px 0px 0px 10px;
+          }
+        }
+      }
+    }
+  }
+
+  table {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+
+    &.fixedhead {
+      >thead {
+        width: 100%;
+      }
+
+      >thead a {
+        color: #333;
+        text-decoration: none;
+        margin-bottom: 0px;
+        background-color: @bg-col;
+      }
+
+      >tbody {
+        width: 100%;
+        height: calc(~"100% - 34px");
+        overflow-y: scroll;
+
+        cursor: pointer;
+
+        border-bottom: 2px solid #ddd;
+      }
+
+      >thead a:focus,
+      >thead a:hover {
+        color: #888;
+        text-decoration: none;
+      }
+
+      >thead,
+      >tbody {
+        display: block;
+      }
+    }
+  }
+
+  .ship {
+    h3 {
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .inner {
+      >div {
+        height: 100%;
+        .tab-content,
+        .tab-pane {
+          height: 100%;
+        }
+      }
+    }
+
+    table {
+      &.fixedhead {
+        >tbody {
+          height: calc(~"100% - 118px");
+        }
+      }
+    }
+
+    #track > div {
+      height: 100%;
+      table.track {
+        height: calc(~"100% - 170px");
+        >tbody {
+          height: calc(~"100% - 30px");
+        }
+      }
+    }
+  }
+
+  .aboutview {
+    padding: 0px 10px
+  }
+
+  .loglist form {
+    margin-right: 10%;
+  }
+
+  .footer {
+    position: fixed;
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+  }
+}
+
+.desktop #content {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -56,6 +222,29 @@
     }
   }
 
+  .ship {
+    h3 {
+      margin-top: 0px;
+      cursor: pointer;
+    }
+
+    table {
+      &.fixedhead {
+        >tbody {
+          height: 300px;
+        }
+      }
+    }
+
+    #track {
+      table.fixedhead > tbody {
+        height: 225px;
+      }
+    }
+  }
+}
+
+#content {
   .list {
     table {
       &.fixedhead {
@@ -103,12 +292,13 @@
     }
   }
 
-  .ship {
-    h3 {
-      margin-top: 0px;
-      cursor: pointer;
+  .aboutview {
+    label {
+      line-height: 34px;
     }
+  }
 
+  .ship {
     .range {
       margin: 20px 15px;
       .noUi-connect {
@@ -118,10 +308,6 @@
 
     table {
       &.fixedhead {
-        >tbody {
-          height: 300px;
-        }
-
         >thead th:nth-child(1),
         >tbody th:nth-child(1) {
           width: 120px;
@@ -164,12 +350,6 @@
           width: 345px;
         }
       }
-    }
-  }
-
-  .aboutview {
-    label {
-      line-height: 34px;
     }
   }
 }

@@ -6,8 +6,11 @@ var $ = require('jquery');
 var _ = require('underscore');
 
 var Platform = require('./lib/platform');
+var Map = require('./map/map');
 
 var DesktopView = require('./views/desktop-view');
+var MapNav = require('./views/map-nav');
+
 var App = require('./lib/app');
 
 var Desktop = function () {
@@ -21,6 +24,22 @@ _.extend(Desktop.prototype, App.prototype, {
       collection: this.ships,
       app: this
     });
+  },
+  run: function () {
+    $('html').addClass('desktop');
+
+    Map.onReady().done(function () {
+      var nav = new MapNav({
+        container: $('.mapboxgl-ctrl-top-right')
+      });
+
+      Map.listenTo(nav, 'zoomIn', Map.zoomIn);
+      Map.listenTo(nav, 'zoomOut', Map.zoomOut);
+      Map.listenTo(nav, 'toHome', Map.toHome);
+      Map.listenTo(nav, 'toNorth', Map.toNorth);
+    });
+
+    App.prototype.run.call(this);
   }
 });
 
