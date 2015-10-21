@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('underscore');
-_.diff = require('../../lib/helper/diff');
 var Backbone = require('backbone');
 var ShipdataHelper = require('./helper');
 
@@ -30,9 +29,7 @@ var Shipdatum = Backbone.RelationalModel.extend({
       delete B.raw;
     }
 
-    var diff = _.diff(A, B);
-
-    return !_.isEmpty(diff) && diff || false;
+    return _.omit(A, function(v,k) { return B[k] === v; });
   }
 });
 

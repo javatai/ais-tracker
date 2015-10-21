@@ -49,7 +49,8 @@ var ShipTrack = Backbone.View.extend({
 
     var lastTrackCoordinate = this.model.get('track').last().getCoordinate();
     var lastCoordinate = this.model.get('position').getCoordinate();
-    var diff = _.diff(lastCoordinate, lastTrackCoordinate);
+
+    var diff = _.omit(lastCoordinate, function(v,k) { return lastTrackCoordinate[k] === v; });
 
     if (!_.isEmpty(diff)) {
       this.lastPosition = this.model.get('position');
