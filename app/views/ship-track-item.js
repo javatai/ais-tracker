@@ -1,8 +1,9 @@
-var Backbone = require('backbone');
+'use strict';
 
+var View = require('../lib/view');
 var template = require('./ship-track-item.hbs');
 
-var ShipTrackItem = Backbone.View.extend({
+var ShipTrackItem = View.extend({
   template: template,
   tagName: 'tr',
 

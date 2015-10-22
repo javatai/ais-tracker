@@ -1,18 +1,18 @@
 'use strict';
 
-var _ = require('underscore');
 var $ = require('jquery');
-var Backbone = require('backbone');
+var _ = require('underscore');
 
+var View = require('../lib/view');
 var template = require('./map-nav.hbs');
 
-var MapNav = Backbone.View.extend({
+var MapNav = View.extend({
   tagName: 'div',
   template: template,
   className: 'map-nav',
 
   events: {
-    "click button" : "onClick"
+    "fastclick button" : "onClick"
   },
 
   onClick: function (el) {

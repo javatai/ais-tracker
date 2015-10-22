@@ -39,7 +39,7 @@ var Position = Backbone.RelationalModel.extend({
 
   getLabel: function () {
     if (!this.positionLabel) {
-      this.positionLabel = new PositionLabel(this);
+      this.positionLabel = new PositionLabel({ model: this });
     }
     return this.positionLabel;
   },

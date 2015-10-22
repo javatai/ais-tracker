@@ -1,24 +1,24 @@
 'use strict';
 
 var _ = require('underscore');
-var Backbone = require('backbone');
-
-var template = require('./ship-view.hbs');
 
 var ShipDetailsView = require('./ship-details');
 var ShipPositionView = require('./ship-position');
 var ShipTrackView = require('./ship-track');
 
-var ShipView = Backbone.View.extend({
+var View = require('../lib/view');
+var template = require('./ship-view.hbs');
+
+var ShipView = View.extend({
   tagName: 'div',
   className: 'item shipview',
   template: template,
 
   events: {
-    "click h3": "center",
-    "click a[href='#shipdetails']": "chkShipdata",
-    "click a[href='#lastposition']": "chkPosition",
-    "click a[href='#track']": "chkTrack"
+    "fastclick h3": "center",
+    "fastclick a[href='#shipdetails']": "chkShipdata",
+    "fastclick a[href='#lastposition']": "chkPosition",
+    "fastclick a[href='#track']": "chkTrack"
   },
 
   center: function () {
@@ -143,7 +143,7 @@ var ShipView = Backbone.View.extend({
     this.position.remove();
     this.track.remove();
 
-    Backbone.View.prototype.remove.call(this);
+    View.prototype.remove.call(this);
   }
 });
 

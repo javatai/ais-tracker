@@ -1,22 +1,21 @@
 'use strict';
 
 var $ = require('jquery');
-
-var Backbone = require('backbone');
 var bganimate = require('../lib/helper/background-animate');
 
-var template = require('./log-view.hbs');
 var LogItemView = require('./log-item');
-
 var log = require('../models/log/collection');
 
-var LogView = Backbone.View.extend({
+var View = require('../lib/view');
+var template = require('./log-view.hbs');
+
+var LogView = View.extend({
   tagName: 'div',
   className: 'item logview',
   template: template,
 
   events: {
-    'click form': 'filter',
+    'fastclick form': 'filter',
     'click tbody tr': 'select'
   },
 

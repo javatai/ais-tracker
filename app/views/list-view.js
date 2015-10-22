@@ -1,15 +1,15 @@
 'use strict';
 
-var _ = require('underscore');
 var $ = require('jquery');
-var Backbone = require('backbone');
-
-var template = require('./list-view.hbs');
+var _ = require('underscore');
 
 var ListHeaderView = require('./list-header');
 var ListItemView = require('./list-item');
 
-var ListView = Backbone.View.extend({
+var View = require('../lib/view');
+var template = require('./list-view.hbs');
+
+var ListView = View.extend({
   tagName: 'div',
   className: 'item listview',
   listItems: {},

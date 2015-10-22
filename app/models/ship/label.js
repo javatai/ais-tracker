@@ -5,13 +5,7 @@ var Backbone = require('backbone');
 
 var Label = require('../../map/label');
 
-var ShipLabel = function (ship) {
-  this.model = ship;
-
-  Label.apply(this);
-};
-
-_.extend(ShipLabel.prototype, Label.prototype, {
+var ShipLabel = Label.extend({
   classname: 'ship-label',
 
   getCoordinates: function () {

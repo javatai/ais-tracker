@@ -54,7 +54,7 @@ var Ship = Backbone.RelationalModel.extend({
     this.listenTo(this, 'add', this.onAdd);
     this.listenTo(this, 'remove', this.onRemove);
     this.listenTo(this, 'change:position', this.onPositionChange);
-    this.listenTo(this, 'change:selected', this.chkTrackRequest);
+    this.listenTo(this, 'change:selected', this.onSelect);
   },
 
   toTitle: function () {
@@ -77,7 +77,7 @@ var Ship = Backbone.RelationalModel.extend({
 
   getLabel: function () {
     if (!this.shipLabel) {
-      this.shipLabel = new ShipLabel(this);
+      this.shipLabel = new ShipLabel({ model: this });
     }
     return this.shipLabel;
   },
@@ -199,9 +199,11 @@ var Ship = Backbone.RelationalModel.extend({
     }
   },
 
-  chkTrackRequest: function (ship, selected) {
+  onSelect: function (ship, selected) {
     if (!selected && this.xhr) {
       this.xhr.abort();
+    } else {
+      this.set('mouseover', false);
     }
   },
 

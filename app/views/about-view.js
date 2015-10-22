@@ -1,10 +1,12 @@
-var _ = require('underscore');
-var $ = require('jquery');
-var Backbone = require('backbone');
+'use strict';
 
+var $ = require('jquery');
+var _ = require('underscore');
+
+var View = require('../lib/view');
 var template = require('./about-view.hbs');
 
-var AboutView = Backbone.View.extend({
+var AboutView = View.extend({
   tagName: 'div',
   className: 'item aboutview',
   template: template,

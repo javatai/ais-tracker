@@ -1,13 +1,12 @@
 'use strict';
 
 var _ = require('underscore');
-var $ = require('jquery');
-var Backbone = require('backbone');
 var bganimate = require('../lib/helper/background-animate');
 
+var View = require('../lib/view');
 var template = require('./list-item.hbs');
 
-var ListItem = Backbone.View.extend({
+var ListItem = View.extend({
   tagName: 'tr',
   template: template,
   className: 'list-item',

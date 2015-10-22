@@ -45,6 +45,8 @@ _.extend(Desktop.prototype, App.prototype, {
 
 var desktop = new Desktop();
 
+Platform.isMobile = false;
+
 Platform.onReady().done(function () {
   desktop.run();
 });

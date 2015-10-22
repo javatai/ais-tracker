@@ -2,6 +2,8 @@
 
 var config = require('../../config').frontend.map;
 
+var Platform = require('../../lib/platform');
+
 var mapboxgl = require('mapbox-gl');
 mapboxgl.accessToken = config.accessToken;
 
@@ -184,8 +186,12 @@ _.extend(Map.prototype, Backbone.Events, {
   },
 
   center: function (lnglat) {
-    var bounds = this.calculateOffsetBounds(lnglat);
-    this.map.fitBounds(bounds);
+    if (!Platform.isMobile) {
+      var bounds = this.calculateOffsetBounds(lnglat);
+      this.map.fitBounds(bounds);
+    } else {
+      this.map.flyTo({ center: lnglat, zoom: 15 });
+    }
   },
 
   getLngLat: function (position) {

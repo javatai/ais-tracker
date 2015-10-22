@@ -1,14 +1,14 @@
 'use strict';
 
 var _ = require('underscore');
-var Backbone = require('backbone');
-
 var noUiSlider = require('nouislider');
 
 var ShipTrackItemView = require('./ship-track-item');
+
+var View = require('../lib/view');
 var template = require('./ship-track.hbs');
 
-var ShipTrack = Backbone.View.extend({
+var ShipTrack = View.extend({
   template: template,
   tagName: 'div',
 
@@ -123,7 +123,7 @@ var ShipTrack = Backbone.View.extend({
   remove: function () {
     _.invoke(this.items, 'remove');
 
-    Backbone.View.prototype.remove.call(this);
+    View.prototype.remove.call(this);
   }
 });
 

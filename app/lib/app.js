@@ -1,7 +1,7 @@
 'use strict';
 
-var _ = require('underscore');
 var $ = require('jquery');
+var _ = require('underscore');
 
 var Backbone = require('backbone');
 var Platform = require('./platform');
@@ -19,6 +19,8 @@ var Notifications = require('./notifications');
 var Socket = require('../lib/socket');
 
 var App = function () {
+  this.platform = Platform;
+
   this.showSplash();
   this.loading = null;
   this.counter = 0;

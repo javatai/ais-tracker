@@ -1,11 +1,12 @@
+'use strict';
+
 var _ = require('underscore');
-var $ = require('jquery');
-var Backbone = require('backbone');
 var moment = require('moment');
 
+var View = require('../lib/view');
 var template = require('./list-header.hbs');
 
-var ListHeader = Backbone.View.extend({
+var ListHeader = View.extend({
   template: template,
 
   column: [{
@@ -26,34 +27,49 @@ var ListHeader = Backbone.View.extend({
   }],
 
   events: {
-    "click .name_asc" : "sortnameasc",
-    "click .name_desc" : "sortnamedesc",
-    "click .column_asc" : "sortcolumnasc",
-    "click .column_desc" : "sortcolumndesc",
-    "click .column_change" : "change"
+    "fastclick .name_asc" : "sortnameasc",
+    "fastclick .name_desc" : "sortnamedesc",
+    "fastclick .column_asc" : "sortcolumnasc",
+    "fastclick .column_desc" : "sortcolumndesc",
+    "fastclick .column_change" : "change"
   },
 
-  sortnameasc: function () {
+  sortnameasc: function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
     this.collection.changeSort("name", "asc");
     this.render();
   },
 
-  sortnamedesc: function () {
+  sortnamedesc: function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
     this.collection.changeSort("name", "desc");
     this.render();
   },
 
-  sortcolumnasc: function () {
+  sortcolumnasc: function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
     this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "asc");
     this.render();
   },
 
-  sortcolumndesc: function () {
+  sortcolumndesc: function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
     this.collection.changeSort(_.findWhere(this.column, { selected: true }).getter, "desc");
     this.render();
   },
 
-  change: function (evt) {
+  change: function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+
     _.each(this.column, function (item, index) {
       this.column[index].selected = !this.column[index].selected;
 

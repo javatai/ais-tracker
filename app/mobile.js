@@ -36,7 +36,7 @@ _.extend(Mobile.prototype, App.prototype, {
     var self = this;
     Map.onReady().done(function () {
       var nav = new MapNav({
-        container: $('.mapboxgl-ctrl-top-right'),
+        container: $('.mapboxgl-ctrl-top-left'),
         buttons: [{
           cls: 'menu-hamburger',
           trigger: 'openMenu'
@@ -54,6 +54,8 @@ _.extend(Mobile.prototype, App.prototype, {
 });
 
 var mobile = new Mobile();
+
+Platform.isMobile = true;
 
 Platform.onReady().done(function () {
   mobile.run();

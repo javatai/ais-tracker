@@ -1,17 +1,17 @@
 'use strict';
 
-var _ = require('underscore');
 var $ = require('jquery');
-var Backbone = require('backbone');
+var _ = require('underscore');
 
 var ShipView = require('./ship-view');
 var ListView = require('./list-view');
 var AboutView = require('./about-view');
 var LogView = require('./log-view');
 
+var View = require('../lib/view');
 var template = require('./desktop-view.hbs');
 
-var BaseView = Backbone.View.extend({
+var BaseView = View.extend({
   template: template,
 
   closeview: _.noop,

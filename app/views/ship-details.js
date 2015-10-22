@@ -1,12 +1,12 @@
 'use strict';
 
 var _ = require('underscore');
-var Backbone = require('backbone');
 var bganimate = require('../lib/helper/background-animate');
 
+var View = require('../lib/view');
 var template = require('./ship-details.hbs');
 
-var ShipDetails = Backbone.View.extend({
+var ShipDetails = View.extend({
   template: template,
   tagName: 'table',
   className: 'table table-condensed details fixedhead',

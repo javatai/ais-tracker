@@ -1,6 +1,5 @@
 'use strict';
 
-var _ = require('underscore');
 var $ = require('jquery');
 
 var BaseView = require('./base-view');
@@ -10,12 +9,15 @@ var MobileView = BaseView.extend({
   template: template,
 
   events: {
-    "keyup input[type='text']": "filter",
-    "focus input[type='text']": "openlistview",
-    "click .footer .tolist a":  "openlistview",
-    "click .footer .toabout a": "openaboutview",
-    "click .footer .tolog a":   "openlogview",
-    'click .menu-close':        "slideIn",
+    "keyup input[type='text']":     "filter",
+    "focus input[type='text']":     "openlistview",
+
+    "fastclick .footer .tolist a":  "openlistview",
+    "fastclick .footer .toabout a": "openaboutview",
+    "fastclick .footer .tolog a":   "openlogview",
+    "fastclick .menu-close":        "slideIn",
+
+    "click .shiplist tbody tr":     "slideIn"
   },
 
   initialize: function (options) {

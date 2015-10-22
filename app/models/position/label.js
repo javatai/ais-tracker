@@ -5,13 +5,7 @@ var Backbone = require('backbone');
 
 var Label = require('../../map/label');
 
-var PositionLabel = function (position) {
-  this.model = position;
-
-  Label.apply(this);
-};
-
-_.extend(PositionLabel.prototype, Label.prototype, {
+var PositionLabel = Label.extend({
   classname: 'position-label',
 
   getCoordinates: function () {

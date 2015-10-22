@@ -2,18 +2,19 @@
 
 var $ = require('jquery');
 var _ = require('underscore');
-var Backbone = require('backbone');
+var View = require('../../lib/view');
 
 var Map = require('./map');
 var Popup = require('./popup');
 
-var Label = function () {
-  this.listenTo(this.model, 'change:mouseover', this.process);
-  this.listenTo(this.model, 'remove', this.hideLabel);
-};
+var Label = View.extend({
+  onClick: _.noop,
 
-_.extend(Label.prototype, Backbone.Events, {
-  label: null,
+  initialize: function () {
+    this.label = null;
+    this.listenTo(this.model, 'change:mouseover', this.process);
+    this.listenTo(this.model, 'remove', this.hideLabel);
+  },
 
   process: function () {
     Map.onReady().done(_.bind(function () {
@@ -25,7 +26,10 @@ _.extend(Label.prototype, Backbone.Events, {
     }, this));
   },
 
-  onClick: function () { },
+  _click: function (e) {
+    this.onClick(e);
+    this.hideLabel();
+  },
 
   showLabel: function () {
     if (this.label) {
@@ -38,7 +42,7 @@ _.extend(Label.prototype, Backbone.Events, {
       .addClass(this.classname)
       .addTo(Map.getMap());
 
-      $(this.label._container).find('.mapboxgl-popup-content').on('click', _.bind(this.onClick, this));
+    $(this.label._container).find('.mapboxgl-popup-content').on('click', _.bind(this._click, this));
 
     this.label.once('remove', _.bind(function (label) {
       delete this.label;
@@ -47,7 +51,7 @@ _.extend(Label.prototype, Backbone.Events, {
 
   hideLabel: function () {
     if (this.label) {
-      $(this.label._container).find('.mapboxgl-popup-content').off('click', _.bind(this.onClick, this));
+      $(this.label._container).find('.mapboxgl-popup-content').off('click', _.bind(this._click, this));
       this.label.remove();
       delete this.label;
     }
