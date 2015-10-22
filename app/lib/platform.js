@@ -18,7 +18,9 @@ var PlatformSpecific = {
 
 var Platform = function () {
   this.isTouchDevice = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) || false;
-  this.isMobile = null;
+  this.fastclick = this.isTouchDevice ? 'touchend' : 'click';
+
+  this.isMobile = undefined;
 
   this.isCordova = typeof(cordova) !== 'undefined';
   this.type = this.isCordova ? 'cordova' : 'default';

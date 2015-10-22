@@ -1,5 +1,7 @@
 'use strict';
 
+var Platform = require('../../lib/platform');
+
 var $ = require('jquery');
 var _ = require('underscore');
 var View = require('../../lib/view');
@@ -42,7 +44,7 @@ var Label = View.extend({
       .addClass(this.classname)
       .addTo(Map.getMap());
 
-    $(this.label._container).find('.mapboxgl-popup-content').on('click', _.bind(this._click, this));
+    $(this.label._container).find('.mapboxgl-popup-content').on(Platform.fastclick, _.bind(this._click, this));
 
     this.label.once('remove', _.bind(function (label) {
       delete this.label;
@@ -51,7 +53,7 @@ var Label = View.extend({
 
   hideLabel: function () {
     if (this.label) {
-      $(this.label._container).find('.mapboxgl-popup-content').off('click', _.bind(this._click, this));
+      $(this.label._container).find('.mapboxgl-popup-content').off(Platform.fastclick, _.bind(this._click, this));
       this.label.remove();
       delete this.label;
     }
