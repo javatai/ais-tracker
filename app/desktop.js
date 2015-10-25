@@ -15,6 +15,7 @@ var App = require('./lib/app');
 
 var Desktop = function () {
   App.call(this);
+  this.map = Map;
 };
 
 _.extend(Desktop.prototype, App.prototype, {
@@ -29,14 +30,11 @@ _.extend(Desktop.prototype, App.prototype, {
     $('html').addClass('desktop');
 
     Map.onReady().done(function () {
-      var nav = new MapNav({
-        container: $('.mapboxgl-ctrl-top-right')
-      });
+      var nav = new MapNav();
 
       Map.listenTo(nav, 'zoomIn', Map.zoomIn);
       Map.listenTo(nav, 'zoomOut', Map.zoomOut);
       Map.listenTo(nav, 'toHome', Map.toHome);
-      Map.listenTo(nav, 'toNorth', Map.toNorth);
     });
 
     App.prototype.run.call(this);

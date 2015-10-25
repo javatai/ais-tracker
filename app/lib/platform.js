@@ -8,7 +8,8 @@ var Backbone = require('backbone');
 
 var PlatformSpecific = {
   'cordova': {
-    'visibility-change': require('./platform/cordova/visibility-change')
+    'visibility-change': require('./platform/cordova/visibility-change'),
+    'overrides': require('./platform/cordova/overrides')
   },
   'default': {
     'visibility-change': require('./platform/default/visibility-change'),
@@ -90,7 +91,8 @@ _.extend(Platform.prototype, Backbone.Events, {
   },
 
   setPrefix: function (suffix) {
-    if (this.isCordova || location.protocol === 'https:') {
+    // this.isCordova
+    if (location.protocol === 'https:') {
       return 'https://' + config.hostname + ':' + config.https + suffix;
     } else {
       return 'http://' + config.hostname + ':' + config.http + suffix;

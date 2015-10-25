@@ -15,23 +15,12 @@ var LogView = View.extend({
   template: template,
 
   events: {
-    'fastclick form': 'filter',
     'click tbody tr': 'select'
   },
 
   select: function (el) {
     var cls = $(el.currentTarget).attr('class');
     location.hash = 'mmsi/' + (cls.split(' ')).shift();
-  },
-
-  filter: function () {
-    if (this.$el.find('input').is(':checked')) {
-      this.$el.addClass('positions');
-      this.positionsOnly = true;
-    } else {
-      this.$el.removeClass('positions');
-      this.positionsOnly = false;
-    }
   },
 
   initialize: function () {

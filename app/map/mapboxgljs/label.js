@@ -6,7 +6,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var View = require('../../lib/view');
 
-var Map = require('./map');
+var Map = require('../map');
 var Popup = require('./popup');
 
 var Label = View.extend({

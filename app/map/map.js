@@ -1,9 +1,14 @@
 'use strict';
 
-var config = require('../config').frontend.map;
+var config = require('../config').frontend;
 
 var Maps = {
-  'default': require('./mapboxgljs/map')
+  'default': require('./mapboxgljs/map'),
+  'googlejs': require('./googlejs/map')
 }
 
-module.exports = Maps.hasOwnProperty(config.type) ? Maps[config.type] : Maps['default'];
+var map_type = process.env.MAP_TYPE || config.map_type;
+
+var map = Maps.hasOwnProperty(map_type) ? new (Maps[map_type])() : new (Maps['default'])();
+
+module.exports = map;

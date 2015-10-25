@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../../config').frontend.map;
+var config = require('../../config').frontend.mapboxgljs;
 
 var Platform = require('../../lib/platform');
 
@@ -23,7 +23,6 @@ var Map = function (options) {
   this.perimeter = -1;
 
   this.map.on('zoom', _.bind(this.onZoom, this));
-
   this.map.on('mousemove', _.bind(this.propagateMousemove, this));
   this.map.on('click', _.bind(this.propagateClick, this));
 };
@@ -110,7 +109,7 @@ _.extend(Map.prototype, Backbone.Events, {
     var geod = GeographicLib.Geodesic.WGS84;
 
     var dist = Math.round(geod.Inverse(nw.lat, nw.lng, ne.lat, ne.lng).s12);
-    var width = $(this.map.getContainer).width();
+    var width = $('body').width();
 
     this.perimeter = 10 * (dist/width);
 
@@ -173,7 +172,7 @@ _.extend(Map.prototype, Backbone.Events, {
     var S = geod.Direct(lnglat.lat, lnglat.lng, 180, padding);
     var W = geod.Direct(lnglat.lat, lnglat.lng, 270, padding);
 
-    var wpx = $(this.map.getContainer).width();
+    var wpx = $('body').width();
     var wm = geod.Inverse(N.lat2, E.lon2, S.lat2, W.lon2).s12;
 
     var m = 420 * wm / wpx;
@@ -226,4 +225,4 @@ _.extend(Map.prototype, Backbone.Events, {
   }
 });
 
-module.exports = new Map();
+module.exports = Map;

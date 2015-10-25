@@ -23,6 +23,7 @@
     "file-stream-rotator": "0.0.6",
     "geographiclib": "^1.45.0",
     "jquery": "^2.1.4",
+    "js-base64": "^2.1.9",
     "mapbox-gl-js": "git://github.com/mapbox/mapbox-gl-js.git",
     "moment": "^2.10.6",
     "morgan": "^1.6.1",
@@ -50,8 +51,12 @@
     "generate-sprite": "node app/map/mapboxgljs/sprites/generate.js && node_modules/spritezero-cli/bin/spritezero html/ship-marker@2x --retina app/map/mapboxgljs/sprites/input && node_modules/spritezero-cli/bin/spritezero html/ship-marker app/map/mapboxgljs/sprites/input",
     "build-js-desktop": "node_modules/browserify/bin/cmd.js -t envify app/desktop.js > html/desktop.js",
     "build-js-mobile": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > html/mobile.js",
+    "build-js-embedded": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > html/embedded.js",
+
     "minify-js-desktop": "node_modules/uglify-js/bin/uglifyjs -o html/desktop.min.js --compress --mangle -- html/desktop.js",
     "minify-js-mobile": "node_modules/uglify-js/bin/uglifyjs -o html/mobile.min.js --compress --mangle -- html/mobile.js",
+    "minify-js-embedded": "node_modules/uglify-js/bin/uglifyjs -o html/embedded.min.js --compress --mangle -- html/embedded.js",
+
     "watch-js-desktop": "node_modules/watchify/bin/cmd.js app/desktop.js -o html/desktop.js -dv",
     "watch-js-mobile": "node_modules/watchify/bin/cmd.js app/mobile.js -o html/mobile.js -dv",
     "build-css": "node_modules/less/bin/lessc app/style/style.less html/style.css",
@@ -60,6 +65,7 @@
     "build": "npm run build-js-desktop && npm run build-js-mobile && npm run build-css",
     "minify-js": "npm run minify-js-desktop && npm run minify-js-mobile",
     "minify": "npm run build && npm run minify-js && npm run minify-css",
+
     "build-js-cordova": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
     "minify-js-cordova": "node_modules/uglify-js/bin/uglifyjs -o cordova/www/mobile.js --compress --mangle -- cordova/www/mobile.js",
     "build-css-cordova": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",

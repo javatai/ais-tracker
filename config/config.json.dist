@@ -1,7 +1,7 @@
 {
   "development": {
     "sequelize": {
-      "dialect": "",
+      "dialect": "mysql",
       "database": "",
       "host": "",
       "username": "",
@@ -9,11 +9,17 @@
       "logging": false
     },
     "server": {
-      "port": ,
-      "hostname": "",
+      "http": 3000,
+      "https": 3443,
+      "hostname": "127.0.0.1",
+      "maxAge": 0,
       "public": {
-        "route": "/app",
-        "dir": ""
+        "route": "/html",
+        "dir": "html"
+      },
+      "fonts": {
+        "route": "/fonts",
+        "dir": "html/fonts"
       }
     },
     "receiver": {
@@ -23,7 +29,7 @@
     "setup": {
       "movemin": 50,
       "ship": {
-        "minutes": 15,
+        "minutes": 60,
         "limit": 100,
         "order": "datetime DESC"
       },
@@ -39,103 +45,18 @@
       }
     },
     "frontend": {
-      "map": {
+      "map_type": "mapboxgljs",
+      "mapboxgljs": {
         "accessToken": "",
-        "center": [ 9.996006002132162, 53.50766131847098 ],
+        "center": [ , ],
         "zoom": 12
-      }
-    }
-  },
-  "test": {
-    "sequelize": {
-      "dialect": "",
-      "database": "",
-      "host": "",
-      "username": "",
-      "password": "",
-      "logging": false
-    },
-    "server": {
-      "port": ,
-      "hostname": "",
-      "public": {
-        "route": "/app",
-        "dir": ""
-      }
-    },
-    "receiver": {
-      "port": ,
-      "address": ""
-    },
-    "setup": {
-      "movemin": 50,
-      "ship": {
-        "minutes": 15,
-        "limit": 100,
-        "order": "datetime DESC"
       },
-      "track": {
-        "limit": 100,
-        "hours": 72
-      },
-      "reception": {
-        "distancefrom": {
-          "lat": ,
-          "lng":
-        }
-      }
-    },
-    "frontend": {
-      "map": {
-        "accessToken": "",
-        "center": [ 9.996006002132162, 53.50766131847098 ],
-        "zoom": 12
-      }
-    }
-  },
-  "production": {
-    "sequelize": {
-      "dialect": "",
-      "database": "",
-      "host": "",
-      "username": "",
-      "password": "",
-      "logging": false
-    },
-    "server": {
-      "port": ,
-      "hostname": "",
-      "public": {
-        "route": "/app",
-        "dir": ""
-      }
-    },
-    "receiver": {
-      "port": ,
-      "address": ""
-    },
-    "setup": {
-      "movemin": 50,
-      "ship": {
-        "minutes": 15,
-        "limit": 100,
-        "order": "datetime DESC"
-      },
-      "track": {
-        "limit": 100,
-        "hours": 72
-       },
-      "reception": {
-        "distancefrom": {
-          "lat": ,
-          "lng":
-        }
-      }
-    },
-    "frontend": {
-      "map": {
-        "accessToken": "",
-        "center": [ 9.996006002132162, 53.50766131847098 ],
+      "googlejs": {
+        "apiKey": "",
+        "center": {
+          "lat": 53.,
+          "lng": 9.
+        },
         "zoom": 12
       }
     }
