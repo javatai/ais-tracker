@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../../config').frontend.googlejs;
+var config = require('../../config').frontend.googlemapjs;
 
 var Platform = require('../../lib/platform');
 
@@ -205,6 +205,7 @@ _.extend(Map.prototype, Backbone.Events, {
       } else {
         this.markers[symbol.id].setPosition(symbol.position);
         this.markers[symbol.id].setIcon(symbol.icon);
+        this.markers[symbol.id].maplabel.set('position', new google.maps.LatLng(symbol.position.lat, symbol.position.lng));
       }
     }, this);
 

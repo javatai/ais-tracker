@@ -23,6 +23,11 @@ var MobileView = BaseView.extend({
     "click .loglist tbody tr":      "slideIn"
   },
 
+  prevent: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
   initialize: function (options) {
     this.app = options.app;
     this.isOpen = true;

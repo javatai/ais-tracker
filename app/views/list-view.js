@@ -83,6 +83,25 @@ var ListView = View.extend({
     });
 
     this.container = this.$el.find('tbody');
+
+    this.$el.delegate('.dropdown', 'show.bs.dropdown', _.bind(this.dropdownShow, this));
+    this.$el.delegate('.dropdown', 'hide.bs.dropdown', _.bind(this.dropdownHide, this));
+
+    this.listenTo(this.listHeaderView, 'hide.bs.dropdown', this.dropdownHide);
+  },
+
+  hideing: false,
+  dropdownShow: function () {
+    if (this.hideing) return;
+    this.$el.find('.mask').show();
+  },
+
+  dropdownHide: function () {
+    this.hideing = true;
+    _.delay(_.bind(function () {
+      this.$el.find('.mask').hide();
+      this.hideing = false;
+    }, this), 250);
   },
 
   initItems: function () {

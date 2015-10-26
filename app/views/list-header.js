@@ -96,6 +96,8 @@ var ListHeader = View.extend({
       secondColumn: selected.label,
       changelabel: other.changelabel,
     }));
+
+    this.trigger('hide.bs.dropdown');
   }
 });
 

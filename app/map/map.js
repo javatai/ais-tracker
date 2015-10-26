@@ -4,7 +4,7 @@ var config = require('../config').frontend;
 
 var Maps = {
   'default': require('./mapboxgljs/map'),
-  'googlejs': require('./googlejs/map')
+  'googlemapjs': require('./googlejs/map')
 }
 
 var map_type = process.env.MAP_TYPE || config.map_type;

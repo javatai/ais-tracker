@@ -51,7 +51,7 @@
         "center": [ , ],
         "zoom": 12
       },
-      "googlejs": {
+      "googlemapjs": {
         "apiKey": "",
         "center": {
           "lat": 53.,
