@@ -1,5 +1,6 @@
 'use strict';
 
+var Platform = require('../lib/platform');
 var config = require('../config').server;
 
 var $ = require('jquery');
@@ -53,13 +54,7 @@ _.extend(ReceptionLayer.prototype, Backbone.Events, {
       data.datetime__lesser_than = today.utc().format();
     }
 
-    var url = '';
-    if (typeof(cordova) !== 'undefined' || location.protocol === 'https:') {
-      url = 'https://' + config.hostname + ':' + config.https + '/api/reception';
-    } else {
-      url = 'http://' + config.hostname + ':' + config.http + '/api/reception';
-    }
-
+    var url = Platform.setPrefix('/api/reception');;
     this.requests[options.name] = $.getJSON(url, data, _.bind(function (geojson, success) {
       if (!success) {
         this.app.trigger('reception:failed', { name: name });
