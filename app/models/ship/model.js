@@ -116,6 +116,7 @@ var Ship = Backbone.RelationalModel.extend({
 
     var distanceTo = this.distanceTo(LngLat);
     var inPolygon = this.getMarker().latLngInPolygon(LngLat);
+
     return distanceTo < min || inPolygon;
   },
 
@@ -217,7 +218,10 @@ var Ship = Backbone.RelationalModel.extend({
   },
 
   stop: function () {
+    if (!this.get('id')) return;
+
     this.set('selected', false);
+
     this.getMarker().removeFromMap();
 
     if (this.xhr) {

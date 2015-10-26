@@ -75,26 +75,10 @@ _.extend(Notifications.prototype, Backbone.Events, {
 
   onShipUpdated: function (message) {
     var ship = Ship.findOrCreate(message);
-
-    log.add({
-      type: 'ship-updated',
-      title: 'Ship updated',
-      userid: ship.get('userid'),
-      message: ship.getHelper().toTitle(),
-      datetime: moment().format('YYYY-MM-DD HH:mm:ss')
-    });
   },
 
   onShipCreated: function (message) {
     var ship = Ship.findOrCreate(message);
-
-    log.add({
-      type: 'ship-created',
-      title: 'Ship created',
-      userid: ship.get('userid'),
-      message: ship.getHelper().toTitle(),
-      datetime: moment().format('YYYY-MM-DD HH:mm:ss')
-    });
   },
 
   onTrackAdded: function (message) {

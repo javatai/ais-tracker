@@ -2,10 +2,14 @@
 
 require('./plugins');
 
+var config = require('./config').frontend;
+
 var $ = require('jquery');
 var _ = require('underscore');
 
 var Platform = require('./lib/platform');
+
+var mapboxgljs = require('./map/mapboxgljs/map');
 var Map = require('./map/map');
 
 var MobileView = require('./views/mobile-view');
@@ -15,6 +19,7 @@ var App = require('./lib/app');
 
 var Mobile = function () {
   App.call(this);
+  this.map = Map;
 };
 
 _.extend(Mobile.prototype, App.prototype, {
@@ -35,18 +40,31 @@ _.extend(Mobile.prototype, App.prototype, {
 
     var self = this;
     Map.onReady().done(function () {
-      var nav = new MapNav({
-        container: $('.mapboxgl-ctrl-top-left'),
-        buttons: [{
+      var buttons = {
+        before: [{
           cls: 'menu-hamburger',
           trigger: 'openMenu'
         }]
+      };
+
+      if (Platform.isTouchDevice && Map instanceof mapboxgljs) {
+        buttons.after = [{
+          cls: 'screenshot',
+          trigger: 'toNorth'
+        }];
+      }
+
+      var nav = new MapNav({
+        buttons: buttons
       });
 
       Map.listenTo(nav, 'zoomIn', Map.zoomIn);
       Map.listenTo(nav, 'zoomOut', Map.zoomOut);
       Map.listenTo(nav, 'toHome', Map.toHome);
-      Map.listenTo(nav, 'toNorth', Map.toNorth);
+
+      if (Platform.isTouchDevice && Map instanceof mapboxgljs) {
+        Map.listenTo(nav, 'toNorth', Map.toNorth);
+      }
 
       self.contentView.listenTo(nav, 'openMenu', self.contentView.slideOut);
     });

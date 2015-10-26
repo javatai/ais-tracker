@@ -24,16 +24,18 @@ var DesktopView = BaseView.extend({
 
     this.render();
 
-    this.listenTo(this.app, 'clickout', this.closeview);
+    this.listenTo(this.app, 'clickout', this.destroyShipview);
     this.listenTo(this.app, 'startListening', this.onStart);
     this.listenTo(this.app, 'shopListening', this.onStop);
   },
 
-  closeview: function () {
-    if (this.shipview) {
-      this.shipview.remove();
-    }
+  onStop: function () {
+    BaseView.prototype.onStop.call(this);
+    this.destroyShipview();
+    this.closeview();
+  },
 
+  closeview: function () {
     if (this.isOpen === true) {
       this.$el.find('.collapse').collapse('hide');
       this.$el.find('.toclose').hide();

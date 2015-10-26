@@ -71,10 +71,10 @@ _.extend(ReceptionLayer.prototype, Backbone.Events, {
 
   addToMap: function (name, data) {
     Map.addToMap({
-      name: name,
+      name: 'reception-' + name,
       data: data,
       layer: [{
-        name: name,
+        name:'reception-' + name,
         behind: 'markers',
         json: {
           "type": "fill",
@@ -89,8 +89,8 @@ _.extend(ReceptionLayer.prototype, Backbone.Events, {
 
   removeFromMap: function (name) {
     Map.removeFromMap({
-      name: name,
-      layer: [ name ]
+      name: 'reception-' + name,
+      layer: [ 'reception-' + name ]
     });
   }
 });

@@ -26,6 +26,11 @@ var ListView = View.extend({
     this.listenToOnce(this.collection, 'sync', this.initItems);
   },
 
+  unsetFilter: function () {
+    this.search = '';
+    _.invoke(this.listItems, 'filter');
+  },
+
   filter: function (evt) {
     evt.preventDefault();
     evt.stopPropagation();

@@ -124,7 +124,7 @@ var Ships = Backbone.Collection.extend({
   stop: function () {
     clearInterval(this.timer);
 
-    this.invoke('stopListening');
+    this.invoke('stop');
 
     if (this.socket) {
       this.socket.removeListener('ship:create', this.onShipCreated.bind(this));

@@ -24,9 +24,8 @@ var MapNav = View.extend({
   },
 
   initialize: function (options) {
-    this.container = options.container;
-
-    this.buttons = options.buttons || [];
+    options = options || {};
+    this.buttons = options.buttons && options.buttons.before || [];
 
     this.buttons.push({
       cls: 'zoom-in',
@@ -43,17 +42,16 @@ var MapNav = View.extend({
       trigger: 'toHome'
     });
 
-    this.buttons.push({
-      cls: 'screenshot',
-      trigger: 'toNorth'
-    });
+    if (options.buttons && options.buttons.after) {
+      this.buttons = this.buttons.concat(options.buttons.after);
+    }
 
     this.render();
   },
 
   render: function () {
     this.$el.html(this.template({ buttons: this.buttons }));
-    this.container.append(this.$el);
+    $('body').append(this.$el);
   }
 });
 

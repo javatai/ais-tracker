@@ -1,9 +1,8 @@
 <div class="panel-container">
+  <a href="#" class="btn btn-default menu-close">
+    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+  </a>
   <div class="panel-content">
-    <button type="button" class="btn btn-default menu-close">
-      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-    </button>
-
     <form class="form-horizontal">
       <input class="form-control" type="text" placeholder="Filter by Name or MMSI" value="{{filter}}">
     </form>
@@ -13,7 +12,8 @@
     </div>
     <div class="footer">
       <ul class="nav nav-pills">
-        <li role="presentation" class="tolist"><a href="#">Ship list</a></li>
+        <li role="presentation" class="tolist"><a href="#">List</a></li>
+        <li role="presentation" class="toship disabled"><a href="#">Details</a></li>
         <li role="presentation" class="tolog"><a href="#">Log</a></li>
         <li role="presentation" class="toabout"><a href="#">About</a></li>
       </ul>

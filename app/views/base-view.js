@@ -22,8 +22,10 @@ var BaseView = View.extend({
   },
 
   onStop: function () {
+    this.$el.find("input[type='text']").val('');
+    this.listView.unsetFilter();
+
     this.stopListening(this.collection, 'remove', this.chkShipview);
-    this.closeview();
   },
 
   chkShipview: function (ship) {
@@ -31,8 +33,9 @@ var BaseView = View.extend({
       if (this.isOpen) {
         this.openlistview();
       }
-      this.shipview.remove();
+      this.destroyShipview();
     }
+    this.updateFooter();
   },
 
   findCarouselIndexByClass: function (name) {
@@ -46,6 +49,12 @@ var BaseView = View.extend({
   },
 
   updateFooter: function (name) {
+    if (this.shipview) {
+      this.$el.find('.footer li.toship').removeClass('disabled');
+    } else {
+      this.$el.find('.footer li.toship').addClass('disabled');
+    }
+
     this.$el.find('.footer li').each(function () {
       if (name && $(this).hasClass(name)) {
         $(this).addClass('active');
@@ -82,6 +91,12 @@ var BaseView = View.extend({
     this.openviewhelper('listview', 'tolist');
   },
 
+  openshipview: function () {
+    if (!this.shipview) return;
+
+    this.openviewhelper('shipview', 'toship');
+  },
+
   openaboutview: function () {
     this.openviewhelper('aboutview', 'toabout');
   },
@@ -96,9 +111,7 @@ var BaseView = View.extend({
 
   selectShip: function (ship, selected) {
     if (selected) {
-      if (this.shipview) {
-        this.shipview.remove();
-      }
+      this.destroyShipview();
 
       this.shipview = new ShipView({
         model: ship
@@ -119,7 +132,7 @@ var BaseView = View.extend({
 
       this.logView.isShown = false;
       this.listView.isShown = false;
-      this.updateFooter();
+      this.updateFooter('toship');
     }
   },
 
@@ -144,6 +157,17 @@ var BaseView = View.extend({
     this.$el.find('.carousel-inner').append(this.aboutView.$el);
 
     this.listenTo(this.collection, 'change:selected', this.selectShip);
+  },
+
+  destroyShipview: function () {
+    if (this.shipview) {
+      this.shipview.remove();
+      delete this.shipview;
+    }
+    if (this.isOpen) {
+      this.openlistview();
+    }
+    this.updateFooter();
   }
 });
 

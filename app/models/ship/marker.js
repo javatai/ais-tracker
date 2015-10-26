@@ -5,6 +5,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var GeographicLib = require('geographiclib');
 
+var Platform = require("../../lib/platform");
+
 var Position = require('../position/model');
 var Map = require('../../map/map');
 
@@ -198,7 +200,9 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
       "properties": {
         "title": ship.getHelper().toTitle(),
         "marker-symbol": icon,
-        "id": this.getMapId('marker')
+        "angle": angle,
+        "selected": ship.get('selected'),
+        "id": this.getMapId('marker'),
       }
     }
   },
@@ -239,6 +243,8 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
 
     this.stopListening(this.ship, 'moved',            this.onPositionChange);
 
+    if (!this.ship.get('id')) return;
+
     Map.removeFromMap({
       name: this.getMapId('shape'),
       layer: [ this.getMapId('shape') ]
@@ -246,7 +252,7 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
   },
 
   highlite: function (ship, highlited) {
-    if (!this.hasShape()) return;
+    if (!this.hasShape() || Platform.isTouchDevice) return;
     if (highlited) {
       Map.setPaintProperty(this.getMapId('shape'), 'fill-color', 'rgba(63,191,63,0.5)');
     } else {

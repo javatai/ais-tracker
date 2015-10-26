@@ -42,6 +42,7 @@ _.extend(App.prototype, Backbone.Events, {
 
   stop: function () {
     this.trigger('shopListening');
+
     Socket.disconnect();
 
     this.shipsLayer.removeFromMap();
@@ -69,7 +70,7 @@ _.extend(App.prototype, Backbone.Events, {
     if (this.loading) return;
 
     this.loading = $.notify('loading', {
-      spacing: 5,
+      offset: Platform.isCordova ? 30 : 20,
       allow_dismiss: false,
       delay: 0,
       template: '<div class="loading"></div>',
