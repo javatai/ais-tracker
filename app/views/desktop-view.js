@@ -12,9 +12,12 @@ var DesktopView = BaseView.extend({
   events: {
     "keyup input[type='text']": "filter",
     "focus input[type='text']": "openlistview",
-    "click .footer .tolist a":  "openlistview",
-    "click .footer .toabout a": "openaboutview",
-    "click .footer .tolog a":   "openlogview",
+
+    "fastclick .footer .tolist a":  "openlistview",
+    "fastclick .footer .toship a":  "openshipview",
+    "fastclick .footer .toabout a": "openaboutview",
+    "fastclick .footer .tolog a":   "openlogview",
+
     "click .footer .toclose a": "closeview"
   },
 

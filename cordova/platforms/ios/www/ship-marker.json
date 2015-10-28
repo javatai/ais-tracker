@@ -1,0 +1,6848 @@
+{
+  "dlr.london-overground.london-underground.national-rail-11": {
+    "width": 75,
+    "height": 19,
+    "x": 0,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "us-interstate-duplex-5-large": {
+    "width": 43,
+    "height": 29,
+    "x": 0,
+    "y": 19,
+    "pixelRatio": 1
+  },
+  "us-interstate-duplex-4-large": {
+    "width": 40,
+    "height": 29,
+    "x": 75,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "us-highway-business-3-large": {
+    "width": 30,
+    "height": 37,
+    "x": 0,
+    "y": 48,
+    "pixelRatio": 1
+  },
+  "us-highway-alternate-3-large": {
+    "width": 30,
+    "height": 37,
+    "x": 30,
+    "y": 48,
+    "pixelRatio": 1
+  },
+  "dlr.london-underground.national-rail-11": {
+    "width": 57,
+    "height": 19,
+    "x": 0,
+    "y": 85,
+    "pixelRatio": 1
+  },
+  "london-overground.london-underground.national-rail-11": {
+    "width": 57,
+    "height": 19,
+    "x": 57,
+    "y": 85,
+    "pixelRatio": 1
+  },
+  "us-highway-truck-3-large": {
+    "width": 30,
+    "height": 35,
+    "x": 60,
+    "y": 48,
+    "pixelRatio": 1
+  },
+  "marsh-32": {
+    "width": 32,
+    "height": 32,
+    "x": 115,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "us-interstate-duplex-3-large": {
+    "width": 35,
+    "height": 29,
+    "x": 0,
+    "y": 104,
+    "pixelRatio": 1
+  },
+  "us-interstate-3-large": {
+    "width": 35,
+    "height": 29,
+    "x": 35,
+    "y": 104,
+    "pixelRatio": 1
+  },
+  "us-interstate-business-3-large": {
+    "width": 35,
+    "height": 29,
+    "x": 70,
+    "y": 104,
+    "pixelRatio": 1
+  },
+  "us-highway-business-2-large": {
+    "width": 27,
+    "height": 37,
+    "x": 115,
+    "y": 32,
+    "pixelRatio": 1
+  },
+  "us-highway-alternate-2-large": {
+    "width": 27,
+    "height": 37,
+    "x": 147,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "us-state-6-large": {
+    "width": 54,
+    "height": 18,
+    "x": 0,
+    "y": 133,
+    "pixelRatio": 1
+  },
+  "mx-federal-4-large": {
+    "width": 37,
+    "height": 26,
+    "x": 105,
+    "y": 104,
+    "pixelRatio": 1
+  },
+  "us-highway-truck-2-large": {
+    "width": 27,
+    "height": 35,
+    "x": 147,
+    "y": 37,
+    "pixelRatio": 1
+  },
+  "default-6-large": {
+    "width": 50,
+    "height": 18,
+    "x": 54,
+    "y": 133,
+    "pixelRatio": 1
+  },
+  "mx-state-4-large": {
+    "width": 36,
+    "height": 25,
+    "x": 174,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "us-interstate-duplex-5-small": {
+    "width": 36,
+    "height": 25,
+    "x": 174,
+    "y": 25,
+    "pixelRatio": 1
+  },
+  "us-state-5-large": {
+    "width": 48,
+    "height": 18,
+    "x": 104,
+    "y": 133,
+    "pixelRatio": 1
+  },
+  "us-interstate-duplex-4-small": {
+    "width": 34,
+    "height": 25,
+    "x": 174,
+    "y": 50,
+    "pixelRatio": 1
+  },
+  "us-interstate-business-2-large": {
+    "width": 29,
+    "height": 29,
+    "x": 174,
+    "y": 75,
+    "pixelRatio": 1
+  },
+  "us-interstate-2-large": {
+    "width": 29,
+    "height": 29,
+    "x": 174,
+    "y": 104,
+    "pixelRatio": 1
+  },
+  "us-highway-duplex-5-large": {
+    "width": 37,
+    "height": 22,
+    "x": 0,
+    "y": 151,
+    "pixelRatio": 1
+  },
+  "default-5-large": {
+    "width": 45,
+    "height": 18,
+    "x": 37,
+    "y": 151,
+    "pixelRatio": 1
+  },
+  "us-highway-truck-1-large": {
+    "width": 23,
+    "height": 35,
+    "x": 147,
+    "y": 72,
+    "pixelRatio": 1
+  },
+  "mx-federal-3-large": {
+    "width": 30,
+    "height": 26,
+    "x": 115,
+    "y": 69,
+    "pixelRatio": 1
+  },
+  "us-highway-alternate-1-large": {
+    "width": 21,
+    "height": 37,
+    "x": 0,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "us-highway-alternate-3-small": {
+    "width": 25,
+    "height": 31,
+    "x": 90,
+    "y": 48,
+    "pixelRatio": 1
+  },
+  "us-highway-business-3-small": {
+    "width": 25,
+    "height": 31,
+    "x": 21,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "us-highway-truck-3-small": {
+    "width": 25,
+    "height": 31,
+    "x": 46,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "mx-state-3-large": {
+    "width": 31,
+    "height": 25,
+    "x": 43,
+    "y": 19,
+    "pixelRatio": 1
+  },
+  "us-state-4-large": {
+    "width": 42,
+    "height": 18,
+    "x": 82,
+    "y": 151,
+    "pixelRatio": 1
+  },
+  "us-interstate-3-small": {
+    "width": 30,
+    "height": 25,
+    "x": 71,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "us-interstate-duplex-3-small": {
+    "width": 30,
+    "height": 25,
+    "x": 101,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "us-interstate-business-3-small": {
+    "width": 30,
+    "height": 25,
+    "x": 131,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "us-highway-duplex-4-large": {
+    "width": 34,
+    "height": 22,
+    "x": 161,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "london-overground.national-rail-11": {
+    "width": 39,
+    "height": 19,
+    "x": 75,
+    "y": 29,
+    "pixelRatio": 1
+  },
+  "london-overground.london-underground-11": {
+    "width": 39,
+    "height": 19,
+    "x": 210,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "dlr.national-rail-11": {
+    "width": 39,
+    "height": 19,
+    "x": 210,
+    "y": 19,
+    "pixelRatio": 1
+  },
+  "london-underground.national-rail-11": {
+    "width": 39,
+    "height": 19,
+    "x": 210,
+    "y": 38,
+    "pixelRatio": 1
+  },
+  "dlr.london-underground-11": {
+    "width": 39,
+    "height": 19,
+    "x": 210,
+    "y": 57,
+    "pixelRatio": 1
+  },
+  "us-highway-business-1-large": {
+    "width": 20,
+    "height": 37,
+    "x": 210,
+    "y": 76,
+    "pixelRatio": 1
+  },
+  "us-interstate-1-large": {
+    "width": 25,
+    "height": 29,
+    "x": 210,
+    "y": 113,
+    "pixelRatio": 1
+  },
+  "us-interstate-business-1-large": {
+    "width": 25,
+    "height": 29,
+    "x": 210,
+    "y": 142,
+    "pixelRatio": 1
+  },
+  "us-highway-duplex-3-large": {
+    "width": 32,
+    "height": 22,
+    "x": 210,
+    "y": 171,
+    "pixelRatio": 1
+  },
+  "default-4-large": {
+    "width": 39,
+    "height": 18,
+    "x": 124,
+    "y": 151,
+    "pixelRatio": 1
+  },
+  "mx-federal-4-small": {
+    "width": 31,
+    "height": 22,
+    "x": 0,
+    "y": 210,
+    "pixelRatio": 1
+  },
+  "us-state-6-small": {
+    "width": 45,
+    "height": 15,
+    "x": 163,
+    "y": 151,
+    "pixelRatio": 1
+  },
+  "default-6-small": {
+    "width": 44,
+    "height": 15,
+    "x": 31,
+    "y": 210,
+    "pixelRatio": 1
+  },
+  "us-highway-alternate-2-small": {
+    "width": 21,
+    "height": 31,
+    "x": 249,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "us-highway-truck-2-small": {
+    "width": 21,
+    "height": 31,
+    "x": 249,
+    "y": 31,
+    "pixelRatio": 1
+  },
+  "us-highway-business-2-small": {
+    "width": 21,
+    "height": 31,
+    "x": 249,
+    "y": 62,
+    "pixelRatio": 1
+  },
+  "mx-federal-2-large": {
+    "width": 25,
+    "height": 26,
+    "x": 147,
+    "y": 107,
+    "pixelRatio": 1
+  },
+  "us-state-3-large": {
+    "width": 35,
+    "height": 18,
+    "x": 174,
+    "y": 133,
+    "pixelRatio": 1
+  },
+  "us-highway-3-large": {
+    "width": 30,
+    "height": 21,
+    "x": 0,
+    "y": 232,
+    "pixelRatio": 1
+  },
+  "metro.rer-11": {
+    "width": 37,
+    "height": 17,
+    "x": 210,
+    "y": 193,
+    "pixelRatio": 1
+  },
+  "us-interstate-business-2-small": {
+    "width": 25,
+    "height": 25,
+    "x": 270,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "us-interstate-2-small": {
+    "width": 25,
+    "height": 25,
+    "x": 270,
+    "y": 25,
+    "pixelRatio": 1
+  },
+  "mx-state-2-large": {
+    "width": 25,
+    "height": 24,
+    "x": 270,
+    "y": 50,
+    "pixelRatio": 1
+  },
+  "us-state-5-small": {
+    "width": 40,
+    "height": 15,
+    "x": 75,
+    "y": 210,
+    "pixelRatio": 1
+  },
+  "rer.transilien-11": {
+    "width": 35,
+    "height": 17,
+    "x": 30,
+    "y": 232,
+    "pixelRatio": 1
+  },
+  "mx-state-4-small": {
+    "width": 29,
+    "height": 20,
+    "x": 0,
+    "y": 253,
+    "pixelRatio": 1
+  },
+  "default-3-large": {
+    "width": 32,
+    "height": 18,
+    "x": 29,
+    "y": 253,
+    "pixelRatio": 1
+  },
+  "default-5-small": {
+    "width": 38,
+    "height": 15,
+    "x": 115,
+    "y": 210,
+    "pixelRatio": 1
+  },
+  "us-highway-2-large": {
+    "width": 27,
+    "height": 21,
+    "x": 0,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "mx-federal-3-small": {
+    "width": 25,
+    "height": 22,
+    "x": 270,
+    "y": 74,
+    "pixelRatio": 1
+  },
+  "bar-15": {
+    "width": 23,
+    "height": 23,
+    "x": 270,
+    "y": 96,
+    "pixelRatio": 1
+  },
+  "america-football-15": {
+    "width": 23,
+    "height": 23,
+    "x": 270,
+    "y": 119,
+    "pixelRatio": 1
+  },
+  "embassy-15": {
+    "width": 23,
+    "height": 23,
+    "x": 270,
+    "y": 142,
+    "pixelRatio": 1
+  },
+  "circle-15": {
+    "width": 23,
+    "height": 23,
+    "x": 270,
+    "y": 165,
+    "pixelRatio": 1
+  },
+  "baseball-15": {
+    "width": 23,
+    "height": 23,
+    "x": 270,
+    "y": 188,
+    "pixelRatio": 1
+  },
+  "fast-food-15": {
+    "width": 23,
+    "height": 23,
+    "x": 270,
+    "y": 211,
+    "pixelRatio": 1
+  },
+  "restaurant-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "ferry-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 23,
+    "pixelRatio": 1
+  },
+  "circle-stroked-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 46,
+    "pixelRatio": 1
+  },
+  "fire-station-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 69,
+    "pixelRatio": 1
+  },
+  "heliport-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 92,
+    "pixelRatio": 1
+  },
+  "alcohol-shop-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 115,
+    "pixelRatio": 1
+  },
+  "clothing-store-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 138,
+    "pixelRatio": 1
+  },
+  "garden-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 161,
+    "pixelRatio": 1
+  },
+  "basketball-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 184,
+    "pixelRatio": 1
+  },
+  "golf-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 207,
+    "pixelRatio": 1
+  },
+  "college-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 230,
+    "pixelRatio": 1
+  },
+  "grocery-15": {
+    "width": 23,
+    "height": 23,
+    "x": 295,
+    "y": 253,
+    "pixelRatio": 1
+  },
+  "town-hall-15": {
+    "width": 23,
+    "height": 23,
+    "x": 0,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "hairdresser-15": {
+    "width": 23,
+    "height": 23,
+    "x": 23,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "cafe-15": {
+    "width": 23,
+    "height": 23,
+    "x": 46,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "harbor-15": {
+    "width": 23,
+    "height": 23,
+    "x": 69,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "beer-15": {
+    "width": 23,
+    "height": 23,
+    "x": 92,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "swimming-15": {
+    "width": 23,
+    "height": 23,
+    "x": 115,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "airport-15": {
+    "width": 23,
+    "height": 23,
+    "x": 138,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "hospital-15": {
+    "width": 23,
+    "height": 23,
+    "x": 161,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "bicycle-15": {
+    "width": 23,
+    "height": 23,
+    "x": 184,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "ice-cream-15": {
+    "width": 23,
+    "height": 23,
+    "x": 207,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "suitcase-15": {
+    "width": 23,
+    "height": 23,
+    "x": 230,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "laundry-15": {
+    "width": 23,
+    "height": 23,
+    "x": 253,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "religious-muslim-15": {
+    "width": 23,
+    "height": 23,
+    "x": 276,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "library-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-stroked-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 23,
+    "pixelRatio": 1
+  },
+  "religious-jewish-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 46,
+    "pixelRatio": 1
+  },
+  "lodging-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 69,
+    "pixelRatio": 1
+  },
+  "zoo-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 92,
+    "pixelRatio": 1
+  },
+  "star-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 115,
+    "pixelRatio": 1
+  },
+  "bus-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 138,
+    "pixelRatio": 1
+  },
+  "bakery-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 161,
+    "pixelRatio": 1
+  },
+  "shop-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 184,
+    "pixelRatio": 1
+  },
+  "marker-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 207,
+    "pixelRatio": 1
+  },
+  "cinema-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 230,
+    "pixelRatio": 1
+  },
+  "art-gallery-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 253,
+    "pixelRatio": 1
+  },
+  "monument-15": {
+    "width": 23,
+    "height": 23,
+    "x": 318,
+    "y": 276,
+    "pixelRatio": 1
+  },
+  "museum-15": {
+    "width": 23,
+    "height": 23,
+    "x": 0,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "dentist-15": {
+    "width": 23,
+    "height": 23,
+    "x": 23,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "music-15": {
+    "width": 23,
+    "height": 23,
+    "x": 46,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "religious-christian-15": {
+    "width": 23,
+    "height": 23,
+    "x": 69,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "campsite-15": {
+    "width": 23,
+    "height": 23,
+    "x": 92,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "rail-metro-15": {
+    "width": 23,
+    "height": 23,
+    "x": 115,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "theatre-15": {
+    "width": 23,
+    "height": 23,
+    "x": 138,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "car-15": {
+    "width": 23,
+    "height": 23,
+    "x": 161,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "bank-15": {
+    "width": 23,
+    "height": 23,
+    "x": 184,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "cemetery-15": {
+    "width": 23,
+    "height": 23,
+    "x": 207,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "rail-light-15": {
+    "width": 23,
+    "height": 23,
+    "x": 230,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "school-15": {
+    "width": 23,
+    "height": 23,
+    "x": 253,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "rail-15": {
+    "width": 23,
+    "height": 23,
+    "x": 276,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "dog-park-15": {
+    "width": 23,
+    "height": 23,
+    "x": 299,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "prison-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "airfield-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 23,
+    "pixelRatio": 1
+  },
+  "rocket-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 46,
+    "pixelRatio": 1
+  },
+  "park-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 69,
+    "pixelRatio": 1
+  },
+  "pharmacy-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 92,
+    "pixelRatio": 1
+  },
+  "post-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 115,
+    "pixelRatio": 1
+  },
+  "place-of-worship-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 138,
+    "pixelRatio": 1
+  },
+  "playground-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 161,
+    "pixelRatio": 1
+  },
+  "police-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 184,
+    "pixelRatio": 1
+  },
+  "fuel-15": {
+    "width": 23,
+    "height": 23,
+    "x": 341,
+    "y": 207,
+    "pixelRatio": 1
+  },
+  "us-highway-truck-1-small": {
+    "width": 17,
+    "height": 31,
+    "x": 341,
+    "y": 230,
+    "pixelRatio": 1
+  },
+  "us-highway-business-1-small": {
+    "width": 17,
+    "height": 31,
+    "x": 341,
+    "y": 261,
+    "pixelRatio": 1
+  },
+  "us-highway-alternate-1-small": {
+    "width": 17,
+    "height": 31,
+    "x": 341,
+    "y": 292,
+    "pixelRatio": 1
+  },
+  "us-interstate-1-small": {
+    "width": 21,
+    "height": 25,
+    "x": 249,
+    "y": 93,
+    "pixelRatio": 1
+  },
+  "us-interstate-business-1-small": {
+    "width": 21,
+    "height": 25,
+    "x": 249,
+    "y": 118,
+    "pixelRatio": 1
+  },
+  "us-state-4-small": {
+    "width": 35,
+    "height": 15,
+    "x": 153,
+    "y": 210,
+    "pixelRatio": 1
+  },
+  "mx-federal-1-large": {
+    "width": 20,
+    "height": 26,
+    "x": 249,
+    "y": 143,
+    "pixelRatio": 1
+  },
+  "us-state-2-large": {
+    "width": 28,
+    "height": 18,
+    "x": 61,
+    "y": 253,
+    "pixelRatio": 1
+  },
+  "mx-state-3-small": {
+    "width": 25,
+    "height": 20,
+    "x": 27,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "default-4-small": {
+    "width": 33,
+    "height": 15,
+    "x": 188,
+    "y": 210,
+    "pixelRatio": 1
+  },
+  "us-highway-duplex-5-small": {
+    "width": 29,
+    "height": 17,
+    "x": 65,
+    "y": 232,
+    "pixelRatio": 1
+  },
+  "mx-state-1-large": {
+    "width": 20,
+    "height": 24,
+    "x": 249,
+    "y": 169,
+    "pixelRatio": 1
+  },
+  "us-highway-duplex-4-small": {
+    "width": 28,
+    "height": 17,
+    "x": 94,
+    "y": 232,
+    "pixelRatio": 1
+  },
+  "mx-federal-2-small": {
+    "width": 21,
+    "height": 22,
+    "x": 249,
+    "y": 193,
+    "pixelRatio": 1
+  },
+  "us-highway-duplex-3-small": {
+    "width": 27,
+    "height": 17,
+    "x": 122,
+    "y": 232,
+    "pixelRatio": 1
+  },
+  "default-2-large": {
+    "width": 25,
+    "height": 18,
+    "x": 270,
+    "y": 234,
+    "pixelRatio": 1
+  },
+  "us-highway-3-small": {
+    "width": 25,
+    "height": 18,
+    "x": 89,
+    "y": 253,
+    "pixelRatio": 1
+  },
+  "rail-11": {
+    "width": 21,
+    "height": 21,
+    "x": 0,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "us-state-3-small": {
+    "width": 29,
+    "height": 15,
+    "x": 149,
+    "y": 232,
+    "pixelRatio": 1
+  },
+  "us-highway-1-large": {
+    "width": 20,
+    "height": 21,
+    "x": 21,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "mx-state-2-small": {
+    "width": 21,
+    "height": 20,
+    "x": 52,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "default-3-small": {
+    "width": 27,
+    "height": 15,
+    "x": 221,
+    "y": 210,
+    "pixelRatio": 1
+  },
+  "triangle-92-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 73,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-91": {
+    "width": 20,
+    "height": 20,
+    "x": 93,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-91-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 113,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-237-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 133,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-94": {
+    "width": 20,
+    "height": 20,
+    "x": 153,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-94-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 173,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-238": {
+    "width": 20,
+    "height": 20,
+    "x": 193,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-96-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 213,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-9-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 233,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-95": {
+    "width": 20,
+    "height": 20,
+    "x": 253,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-89": {
+    "width": 20,
+    "height": 20,
+    "x": 273,
+    "y": 273,
+    "pixelRatio": 1
+  },
+  "triangle-24": {
+    "width": 20,
+    "height": 20,
+    "x": 41,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-270": {
+    "width": 20,
+    "height": 20,
+    "x": 61,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-89-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 81,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-262": {
+    "width": 20,
+    "height": 20,
+    "x": 101,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-88": {
+    "width": 20,
+    "height": 20,
+    "x": 121,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-242-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 141,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-244": {
+    "width": 20,
+    "height": 20,
+    "x": 161,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-247-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 181,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-88-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 201,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-95-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 221,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-87": {
+    "width": 20,
+    "height": 20,
+    "x": 241,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-25-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 261,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-90": {
+    "width": 20,
+    "height": 20,
+    "x": 281,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-99": {
+    "width": 20,
+    "height": 20,
+    "x": 301,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-252": {
+    "width": 20,
+    "height": 20,
+    "x": 321,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-259": {
+    "width": 20,
+    "height": 20,
+    "x": 341,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-84": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-98-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-85-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-256-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-275-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-232-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-98": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-81-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-232": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-83": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-83-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-233-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-82": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-234-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-82-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-97": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-86": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-85": {
+    "width": 20,
+    "height": 20,
+    "x": 364,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-267-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-86-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-235": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-97-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-93": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-80": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-28-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-106-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-106": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-8": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-0-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-0": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-1-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-1": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-10-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-10": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-100-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-100": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-101-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "triangle-101": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-102-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-102": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-103-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-103": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-104-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-104": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-105-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-105": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-284": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-116-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-116": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-107-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-107": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-108-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-108": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-109-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-109": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-11-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 384,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-11": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-110-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-110": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-111-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-111": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-112-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-112": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-113-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-113": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-114-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-114": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-115-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-115": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-29": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-126": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-117-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-117": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-118-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-118": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-119-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 381,
+    "pixelRatio": 1
+  },
+  "triangle-119": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-12-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-12": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-120-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-120": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-121-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-121": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-122-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-122": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-123-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-123": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-124-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-124": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-125-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-125": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-295-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-136": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-127-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-127": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-128-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 404,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-128": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-129-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-129": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-13-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-13": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-130-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-130": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-131-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-131": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-132-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-132": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-133-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-133": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-134-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-134": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-135-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-135": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-126-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-3": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-147-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-147": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 401,
+    "pixelRatio": 1
+  },
+  "triangle-137-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-137": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-138-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-138": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-139-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-139": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-14-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-14": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-140-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-140": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-141-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-141": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-142-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-142": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-143-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-143": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-144-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-144": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-145-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-145": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-146-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 424,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-136-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-146": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-305-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-159-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-159": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-148-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-148": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-149-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-149": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-15-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-15": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-150-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-150": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-151-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-151": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-152-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-152": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-153-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-153": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-154-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-154": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-155-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 421,
+    "pixelRatio": 1
+  },
+  "triangle-155": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-156-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-156": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-157-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-157": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-158-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-158": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-311-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-170": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-16-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-16": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-160-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-160": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-161-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-161": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-162-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-162": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-163-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-163": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-164-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-164": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-165-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 444,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-165": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-166-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-166": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-167-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-167": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-168-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-168": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-169-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-169": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-17-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-17": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-317": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-182": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-171-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-171": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-172-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-172": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-173-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-173": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-174-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-174": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-175-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-175": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 441,
+    "pixelRatio": 1
+  },
+  "triangle-176-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-176": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-177-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-177": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-178-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-178": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-179-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-179": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-18-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-18": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-180-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-180": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-181-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-181": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-170-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-323-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-195-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-195": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-183-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-183": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-184-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-184": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-185-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 464,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-185": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-186-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-186": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-187-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-187": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-188-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-188": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-189-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-189": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-19-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-19": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-190-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-190": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-191-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-191": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-192-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-192": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-193-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-193": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-194-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-182-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-194": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-33": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-208-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 461,
+    "pixelRatio": 1
+  },
+  "triangle-208": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-196-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-196": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-197-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-197": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-198-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-198": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-199-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-199": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-2-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-2": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-20-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-20": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-200-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-200": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-201-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-201": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-202-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-202": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-203-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-203": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-204-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-204": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-205-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 484,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-205": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-206-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-206": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-207-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-207": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-337": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-221": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-209-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-209": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-21-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-21": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-210-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-210": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-211-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-211": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-212-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-212": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-213-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-213": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-214-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-214": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-215-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-215": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-216-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-216": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 481,
+    "pixelRatio": 1
+  },
+  "triangle-217-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-217": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-218-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-8-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-220": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-220-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-219-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-22": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-219": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-22-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-344-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-235-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-222-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-234": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-222": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-223-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-233": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-223": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-224-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-224": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-221-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-225-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-225": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-226-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-226": {
+    "width": 20,
+    "height": 20,
+    "x": 504,
+    "y": 480,
+    "pixelRatio": 1
+  },
+  "triangle-231": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-227-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-227": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-228-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-228": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-231-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-229-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-229": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-23-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-23": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-230": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-230-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-35": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-248-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-248": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-236-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-247": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-236": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-237": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-238-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-239-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-239": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-24-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-246": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-240-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-240": {
+    "width": 20,
+    "height": 20,
+    "x": 500,
+    "y": 501,
+    "pixelRatio": 1
+  },
+  "triangle-241-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-241": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-242": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-243-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-246-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-243": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-244-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-245-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-245": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-355": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-258": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-249-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-249": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-25": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-250-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-250": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-251-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-251": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-252-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-257": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-253-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-253": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-254-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-254": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-255-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 480,
+    "pixelRatio": 1
+  },
+  "triangle-255": {
+    "width": 20,
+    "height": 20,
+    "x": 524,
+    "y": 500,
+    "pixelRatio": 1
+  },
+  "triangle-256": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-257-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-36-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-266": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-259-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-258-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-26-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-26": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-260-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-260": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-261-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-261": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-262-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-263-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-263": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-264-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-264": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-265-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-265": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-4": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-274": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-267": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-268-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-268": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-269-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-269": {
+    "width": 20,
+    "height": 20,
+    "x": 500,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-27-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 520,
+    "y": 521,
+    "pixelRatio": 1
+  },
+  "triangle-27": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-270-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-266-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-273": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-271-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-271": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-272-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-272": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-273-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-43": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-282-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-282": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-274-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-275": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-281": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-276-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-276": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-277-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-277": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-278-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-278": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-279-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-279": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-28": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-280-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 480,
+    "pixelRatio": 1
+  },
+  "triangle-280": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 500,
+    "pixelRatio": 1
+  },
+  "triangle-281-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 544,
+    "y": 520,
+    "pixelRatio": 1
+  },
+  "triangle-48-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-290-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-290": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-283-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-283": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-284-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-285-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-285": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-286-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-286": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-29-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-287-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-287": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-288-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-288": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-289-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-289": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-51": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-298": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-291-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-291": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-292-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-292": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-293-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-293": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-294-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 500,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-294": {
+    "width": 20,
+    "height": 20,
+    "x": 520,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-295": {
+    "width": 20,
+    "height": 20,
+    "x": 540,
+    "y": 541,
+    "pixelRatio": 1
+  },
+  "triangle-296-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-296": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-297-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-297": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-55-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-304-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-303": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-304": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-299-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-299": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-3-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-298-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-30-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-30": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-300-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-300": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-301-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-301": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-302-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-302": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-303-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-59": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-311": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-305": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-306-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 480,
+    "pixelRatio": 1
+  },
+  "triangle-306": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 500,
+    "pixelRatio": 1
+  },
+  "triangle-307-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 520,
+    "pixelRatio": 1
+  },
+  "triangle-307": {
+    "width": 20,
+    "height": 20,
+    "x": 564,
+    "y": 540,
+    "pixelRatio": 1
+  },
+  "triangle-308-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-308": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-309-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-309": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-31-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-310": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-31": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-310-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-62-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-319-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-319": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-312-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-312": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-313-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-313": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-314-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-314": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-315-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-318": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-315": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-316-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-316": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-317-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-318-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-66-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-326-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 500,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-326": {
+    "width": 20,
+    "height": 20,
+    "x": 520,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-32-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 540,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-32": {
+    "width": 20,
+    "height": 20,
+    "x": 560,
+    "y": 561,
+    "pixelRatio": 1
+  },
+  "triangle-320-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-320": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-321-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-321": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-325": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-322-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-322": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-323": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-324-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-324": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-325-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-7-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-333-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-333": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-327-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-327": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-328-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-328": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-329-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-329": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-332": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-33-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-330-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-330": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-331-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 480,
+    "pixelRatio": 1
+  },
+  "triangle-331": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 500,
+    "pixelRatio": 1
+  },
+  "triangle-332-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 520,
+    "pixelRatio": 1
+  },
+  "triangle-73-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 540,
+    "pixelRatio": 1
+  },
+  "triangle-340-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 584,
+    "y": 560,
+    "pixelRatio": 1
+  },
+  "triangle-340": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-334-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-334": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-335-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-335": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-336-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-34": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-336": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-337-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-338-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-338": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-339-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-339": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-34-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-77-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-348-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-348": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-341-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-341": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-347": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-342-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-342": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-343-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-343": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-344": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-345-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 500,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-345": {
+    "width": 20,
+    "height": 20,
+    "x": 520,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-346-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 540,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-346": {
+    "width": 20,
+    "height": 20,
+    "x": 560,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-347-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 580,
+    "y": 581,
+    "pixelRatio": 1
+  },
+  "triangle-80-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-355-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-354": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-349-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-349": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-35-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-350-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-350": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-351-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-351": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-354-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-352-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-352": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-353-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-353": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-84-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-38": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-356-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-356": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-357-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-357": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-358-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-358": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-359-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-359": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 480,
+    "pixelRatio": 1
+  },
+  "triangle-36": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 500,
+    "pixelRatio": 1
+  },
+  "triangle-37-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 520,
+    "pixelRatio": 1
+  },
+  "triangle-37": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 540,
+    "pixelRatio": 1
+  },
+  "triangle-87-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 560,
+    "pixelRatio": 1
+  },
+  "triangle-44-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 604,
+    "y": 580,
+    "pixelRatio": 1
+  },
+  "triangle-44": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-39-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-39": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-4-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-38-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-40-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-43-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-40": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-41-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-41": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-42-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-42": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-9": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-50-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-50": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-5": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-45-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-45": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-46-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-46": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-47-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-47": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-5-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-48": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-49-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-49": {
+    "width": 20,
+    "height": 20,
+    "x": 500,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-93-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 520,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-57-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 540,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-57": {
+    "width": 20,
+    "height": 20,
+    "x": 560,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-51-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 580,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-52-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 600,
+    "y": 601,
+    "pixelRatio": 1
+  },
+  "triangle-56": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "triangle-52": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "triangle-53-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 40,
+    "pixelRatio": 1
+  },
+  "triangle-53": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 60,
+    "pixelRatio": 1
+  },
+  "triangle-54-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 80,
+    "pixelRatio": 1
+  },
+  "triangle-54": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 100,
+    "pixelRatio": 1
+  },
+  "triangle-55": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 120,
+    "pixelRatio": 1
+  },
+  "triangle-56-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "triangle-96": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 160,
+    "pixelRatio": 1
+  },
+  "triangle-62": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 180,
+    "pixelRatio": 1
+  },
+  "triangle-58-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 200,
+    "pixelRatio": 1
+  },
+  "triangle-58": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 220,
+    "pixelRatio": 1
+  },
+  "triangle-59-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 240,
+    "pixelRatio": 1
+  },
+  "triangle-6-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 260,
+    "pixelRatio": 1
+  },
+  "triangle-6": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 280,
+    "pixelRatio": 1
+  },
+  "triangle-61": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 300,
+    "pixelRatio": 1
+  },
+  "triangle-60-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 320,
+    "pixelRatio": 1
+  },
+  "triangle-60": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 340,
+    "pixelRatio": 1
+  },
+  "triangle-61-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 360,
+    "pixelRatio": 1
+  },
+  "triangle-99-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "triangle-68-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 400,
+    "pixelRatio": 1
+  },
+  "triangle-68": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 420,
+    "pixelRatio": 1
+  },
+  "triangle-63-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 440,
+    "pixelRatio": 1
+  },
+  "triangle-67": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 460,
+    "pixelRatio": 1
+  },
+  "triangle-63": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 480,
+    "pixelRatio": 1
+  },
+  "triangle-64-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 500,
+    "pixelRatio": 1
+  },
+  "triangle-64": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 520,
+    "pixelRatio": 1
+  },
+  "triangle-65-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 540,
+    "pixelRatio": 1
+  },
+  "triangle-65": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 560,
+    "pixelRatio": 1
+  },
+  "triangle-66": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 580,
+    "pixelRatio": 1
+  },
+  "triangle-67-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 624,
+    "y": 600,
+    "pixelRatio": 1
+  },
+  "triangle-79": {
+    "width": 20,
+    "height": 20,
+    "x": 0,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-72": {
+    "width": 20,
+    "height": 20,
+    "x": 20,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-69-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 40,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-69": {
+    "width": 20,
+    "height": 20,
+    "x": 60,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-7": {
+    "width": 20,
+    "height": 20,
+    "x": 80,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-70-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 100,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-70": {
+    "width": 20,
+    "height": 20,
+    "x": 120,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-71-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 140,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-71": {
+    "width": 20,
+    "height": 20,
+    "x": 160,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-90-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 180,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-77": {
+    "width": 20,
+    "height": 20,
+    "x": 200,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-73": {
+    "width": 20,
+    "height": 20,
+    "x": 220,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-74-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 240,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-74": {
+    "width": 20,
+    "height": 20,
+    "x": 260,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-75-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 280,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-75": {
+    "width": 20,
+    "height": 20,
+    "x": 300,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-72-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 320,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-76-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 340,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-76": {
+    "width": 20,
+    "height": 20,
+    "x": 360,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-92": {
+    "width": 20,
+    "height": 20,
+    "x": 380,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-81": {
+    "width": 20,
+    "height": 20,
+    "x": 400,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-78-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 420,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-78": {
+    "width": 20,
+    "height": 20,
+    "x": 440,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-79-stroked": {
+    "width": 20,
+    "height": 20,
+    "x": 460,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "triangle-218": {
+    "width": 20,
+    "height": 20,
+    "x": 480,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "us-state-1-large": {
+    "width": 22,
+    "height": 18,
+    "x": 318,
+    "y": 299,
+    "pixelRatio": 1
+  },
+  "us-highway-2-small": {
+    "width": 21,
+    "height": 18,
+    "x": 295,
+    "y": 276,
+    "pixelRatio": 1
+  },
+  "mx-federal-1-small": {
+    "width": 17,
+    "height": 22,
+    "x": 230,
+    "y": 76,
+    "pixelRatio": 1
+  },
+  "heliport-11": {
+    "width": 19,
+    "height": 19,
+    "x": 299,
+    "y": 294,
+    "pixelRatio": 1
+  },
+  "swimming-11": {
+    "width": 19,
+    "height": 19,
+    "x": 322,
+    "y": 317,
+    "pixelRatio": 1
+  },
+  "suitcase-11": {
+    "width": 19,
+    "height": 19,
+    "x": 500,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "zoo-11": {
+    "width": 19,
+    "height": 19,
+    "x": 519,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "star-11": {
+    "width": 19,
+    "height": 19,
+    "x": 538,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "shop-11": {
+    "width": 19,
+    "height": 19,
+    "x": 557,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "school-11": {
+    "width": 19,
+    "height": 19,
+    "x": 576,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "airport-11": {
+    "width": 19,
+    "height": 19,
+    "x": 595,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "rocket-11": {
+    "width": 19,
+    "height": 19,
+    "x": 614,
+    "y": 621,
+    "pixelRatio": 1
+  },
+  "alcohol-shop-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "religious-muslim-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 19,
+    "pixelRatio": 1
+  },
+  "religious-jewish-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 38,
+    "pixelRatio": 1
+  },
+  "religious-christian-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 57,
+    "pixelRatio": 1
+  },
+  "rail-metro-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 76,
+    "pixelRatio": 1
+  },
+  "rail-light-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 95,
+    "pixelRatio": 1
+  },
+  "prison-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 114,
+    "pixelRatio": 1
+  },
+  "restaurant-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 133,
+    "pixelRatio": 1
+  },
+  "police-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 152,
+    "pixelRatio": 1
+  },
+  "playground-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 171,
+    "pixelRatio": 1
+  },
+  "place-of-worship-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 190,
+    "pixelRatio": 1
+  },
+  "pharmacy-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 209,
+    "pixelRatio": 1
+  },
+  "park-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 228,
+    "pixelRatio": 1
+  },
+  "america-football-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 247,
+    "pixelRatio": 1
+  },
+  "art-gallery-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 266,
+    "pixelRatio": 1
+  },
+  "bar-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 285,
+    "pixelRatio": 1
+  },
+  "bakery-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 304,
+    "pixelRatio": 1
+  },
+  "bank-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 323,
+    "pixelRatio": 1
+  },
+  "post-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 342,
+    "pixelRatio": 1
+  },
+  "beer-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 361,
+    "pixelRatio": 1
+  },
+  "town-hall-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 380,
+    "pixelRatio": 1
+  },
+  "museum-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 399,
+    "pixelRatio": 1
+  },
+  "baseball-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 418,
+    "pixelRatio": 1
+  },
+  "monument-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 437,
+    "pixelRatio": 1
+  },
+  "basketball-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 456,
+    "pixelRatio": 1
+  },
+  "bicycle-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 475,
+    "pixelRatio": 1
+  },
+  "marker-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 494,
+    "pixelRatio": 1
+  },
+  "london-underground-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 513,
+    "pixelRatio": 1
+  },
+  "music-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 532,
+    "pixelRatio": 1
+  },
+  "london-overground-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 551,
+    "pixelRatio": 1
+  },
+  "lodging-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 570,
+    "pixelRatio": 1
+  },
+  "triangle-stroked-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 589,
+    "pixelRatio": 1
+  },
+  "bus-11": {
+    "width": 19,
+    "height": 19,
+    "x": 644,
+    "y": 608,
+    "pixelRatio": 1
+  },
+  "cafe-11": {
+    "width": 19,
+    "height": 19,
+    "x": 0,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "library-11": {
+    "width": 19,
+    "height": 19,
+    "x": 19,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "laundry-11": {
+    "width": 19,
+    "height": 19,
+    "x": 38,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "ice-cream-11": {
+    "width": 19,
+    "height": 19,
+    "x": 57,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "airfield-11": {
+    "width": 19,
+    "height": 19,
+    "x": 76,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "hospital-11": {
+    "width": 19,
+    "height": 19,
+    "x": 95,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "theatre-11": {
+    "width": 19,
+    "height": 19,
+    "x": 114,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "harbor-11": {
+    "width": 19,
+    "height": 19,
+    "x": 133,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "hairdresser-11": {
+    "width": 19,
+    "height": 19,
+    "x": 152,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "grocery-11": {
+    "width": 19,
+    "height": 19,
+    "x": 171,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "golf-11": {
+    "width": 19,
+    "height": 19,
+    "x": 190,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "garden-11": {
+    "width": 19,
+    "height": 19,
+    "x": 209,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "fire-station-11": {
+    "width": 19,
+    "height": 19,
+    "x": 228,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "ferry-11": {
+    "width": 19,
+    "height": 19,
+    "x": 247,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "fast-food-11": {
+    "width": 19,
+    "height": 19,
+    "x": 266,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "campsite-11": {
+    "width": 19,
+    "height": 19,
+    "x": 285,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "embassy-11": {
+    "width": 19,
+    "height": 19,
+    "x": 304,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "car-11": {
+    "width": 19,
+    "height": 19,
+    "x": 323,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "cemetery-11": {
+    "width": 19,
+    "height": 19,
+    "x": 342,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "fuel-11": {
+    "width": 19,
+    "height": 19,
+    "x": 361,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "dog-park-11": {
+    "width": 19,
+    "height": 19,
+    "x": 380,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "dlr-11": {
+    "width": 19,
+    "height": 19,
+    "x": 399,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "dentist-11": {
+    "width": 19,
+    "height": 19,
+    "x": 418,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "cinema-11": {
+    "width": 19,
+    "height": 19,
+    "x": 437,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "circle-11": {
+    "width": 19,
+    "height": 19,
+    "x": 456,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "circle-stroked-11": {
+    "width": 19,
+    "height": 19,
+    "x": 475,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "college-11": {
+    "width": 19,
+    "height": 19,
+    "x": 494,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "clothing-store-11": {
+    "width": 19,
+    "height": 19,
+    "x": 513,
+    "y": 641,
+    "pixelRatio": 1
+  },
+  "us-state-2-small": {
+    "width": 23,
+    "height": 15,
+    "x": 341,
+    "y": 323,
+    "pixelRatio": 1
+  },
+  "mx-state-1-small": {
+    "width": 17,
+    "height": 20,
+    "x": 663,
+    "y": 0,
+    "pixelRatio": 1
+  },
+  "default-1-large": {
+    "width": 18,
+    "height": 18,
+    "x": 152,
+    "y": 133,
+    "pixelRatio": 1
+  },
+  "default-2-small": {
+    "width": 21,
+    "height": 15,
+    "x": 249,
+    "y": 215,
+    "pixelRatio": 1
+  },
+  "us-highway-1-small": {
+    "width": 17,
+    "height": 18,
+    "x": 663,
+    "y": 20,
+    "pixelRatio": 1
+  },
+  "rer-11": {
+    "width": 17,
+    "height": 17,
+    "x": 663,
+    "y": 38,
+    "pixelRatio": 1
+  },
+  "s-bahn-11": {
+    "width": 17,
+    "height": 17,
+    "x": 663,
+    "y": 55,
+    "pixelRatio": 1
+  },
+  "light-11": {
+    "width": 17,
+    "height": 17,
+    "x": 663,
+    "y": 72,
+    "pixelRatio": 1
+  },
+  "transilien-11": {
+    "width": 17,
+    "height": 17,
+    "x": 663,
+    "y": 89,
+    "pixelRatio": 1
+  },
+  "washington-metro-11": {
+    "width": 17,
+    "height": 17,
+    "x": 663,
+    "y": 106,
+    "pixelRatio": 1
+  },
+  "subway-11": {
+    "width": 17,
+    "height": 17,
+    "x": 663,
+    "y": 123,
+    "pixelRatio": 1
+  },
+  "u-bahn-11": {
+    "width": 17,
+    "height": 17,
+    "x": 663,
+    "y": 140,
+    "pixelRatio": 1
+  },
+  "marsh-16": {
+    "width": 16,
+    "height": 16,
+    "x": 663,
+    "y": 157,
+    "pixelRatio": 1
+  },
+  "moscow-metro-11": {
+    "width": 17,
+    "height": 15,
+    "x": 663,
+    "y": 173,
+    "pixelRatio": 1
+  },
+  "us-state-1-small": {
+    "width": 17,
+    "height": 15,
+    "x": 663,
+    "y": 188,
+    "pixelRatio": 1
+  },
+  "national-rail-11": {
+    "width": 17,
+    "height": 15,
+    "x": 663,
+    "y": 203,
+    "pixelRatio": 1
+  },
+  "entrance-11": {
+    "width": 15,
+    "height": 15,
+    "x": 663,
+    "y": 218,
+    "pixelRatio": 1
+  },
+  "default-1-small": {
+    "width": 15,
+    "height": 15,
+    "x": 663,
+    "y": 233,
+    "pixelRatio": 1
+  },
+  "weiner-linien-11": {
+    "width": 15,
+    "height": 15,
+    "x": 663,
+    "y": 248,
+    "pixelRatio": 1
+  },
+  "metro-11": {
+    "width": 13,
+    "height": 13,
+    "x": 663,
+    "y": 263,
+    "pixelRatio": 1
+  },
+  "dot-11": {
+    "width": 11,
+    "height": 11,
+    "x": 663,
+    "y": 276,
+    "pixelRatio": 1
+  },
+  "dot-10": {
+    "width": 10,
+    "height": 10,
+    "x": 663,
+    "y": 287,
+    "pixelRatio": 1
+  },
+  "oneway-spaced-white-large": {
+    "width": 14,
+    "height": 6,
+    "x": 663,
+    "y": 297,
+    "pixelRatio": 1
+  },
+  "oneway-spaced-large": {
+    "width": 14,
+    "height": 6,
+    "x": 663,
+    "y": 303,
+    "pixelRatio": 1
+  },
+  "dot-9": {
+    "width": 9,
+    "height": 9,
+    "x": 663,
+    "y": 309,
+    "pixelRatio": 1
+  },
+  "oneway-spaced-white-small": {
+    "width": 11,
+    "height": 5,
+    "x": 663,
+    "y": 318,
+    "pixelRatio": 1
+  },
+  "oneway-spaced-small": {
+    "width": 11,
+    "height": 5,
+    "x": 663,
+    "y": 323,
+    "pixelRatio": 1
+  }
+}

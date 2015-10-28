@@ -41,5 +41,3 @@ html/embedded.min.js
 app/map/mapboxgljs/sprites/input
 app/map/mapboxgljs/sprites/test.html
 app/map/mapboxgljs/sprites/triangle.svg
-
-cordova

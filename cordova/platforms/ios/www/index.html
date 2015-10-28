@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>AIS Tracker (&beta;)</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <meta name="format-detection" content="telephone=no">
+  <style>
+    @font-face {
+      font-family: 'mapboxgl';
+      src:url('font/icon.eot?v=1');
+      src:url('font/icon.eot?v=1#iefix-lwq1d6') format('embedded-opentype'),
+        url('font/icon.woff?v=1') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Glyphicons Halflings';
+      src:url('fonts/glyphicons-halflings-regular.eot');
+      src:url('fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('fonts/glyphicons-halflings-regular.woff') format('woff'), url('fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+    }
+  </style>
+  <link href='style.css' rel='stylesheet' />
+  <link href='overrides.css' rel='stylesheet' />
+</head>
+<body>
+  <div id='map'></div>
+  <div id='content'></div>
+  <div id='splash'>
+    <div class="loading-progress carousel slide">
+      <div class="carousel-inner" role="listbox">
+        <div class="item active">
+          <img width="300" height="150" alt="" src="ship-1a.svg">
+        </div>
+        <div class="item">
+          <img width="300" height="150" alt="" src="ship-2a.svg">
+        </div>
+        <div class="item">
+          <img width="300" height="150" alt="" src="ship-3a.svg">
+        </div>
+        <div class="item">
+          <img width="300" height="150" alt="" src="ship-4a.svg">
+        </div>
+        <div class="item">
+          <img width="300" height="150" alt="" src="ship-5a.svg">
+        </div>
+      </div>
+      <div class="carousel-mask-left"></div>
+      <div class="carousel-mask-right"></div>
+    </div>
+  </div>
+  <script src='cordova.js'></script>
+  <script src='mobile.js'></script>
+</body>
+</html>

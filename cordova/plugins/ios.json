@@ -1,0 +1,36 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {
+            "config.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<feature name=\"CDVCertificate\"><param name=\"ios-package\" value=\"CDVCertificate\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "installed_plugins": {
+        "cordova-plugin-certificates": {
+            "PACKAGE_NAME": "de.3epnm.aistracker"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "de.3epnm.aistracker"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "de.3epnm.aistracker"
+        }
+    },
+    "dependent_plugins": {}
+}
