@@ -3,17 +3,8 @@
 var $ = require('jquery');
 var socket, io = require('socket.io-client');
 
+var config = require('../config').server;
 var Platform = require('./platform');
-
-var create = function (location) {
-  var url = location.protocol + '//' + location.hostname + ':' + location.port;
-
-  if (location.protocol === 'https:') {
-    return io.connect(url, { secure: true });
-  }
-
-  return io.connect(url);
-}
 
 module.exports = {
   disconnect: function () {
@@ -36,7 +27,17 @@ module.exports = {
       dfd.resolve(socket);
     } else {
       Platform.onReady().done(function (platform) {
-        socket = create(platform.socketConfig());
+        var config = Platform.socketConfig();
+        var url = config.protocol + '//' + config.hostname + ':' + config.port;
+
+        console.log(url, Platform.isCordova);
+
+        if (location.protocol === 'https:' || Platform.isCordova) {
+          socket = io.connect(url, { secure: true });
+        } else {
+          socket = io.connect(url);
+        }
+
         dfd.resolve(socket);
       });
     }

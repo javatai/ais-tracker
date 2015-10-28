@@ -64,35 +64,23 @@ _.extend(Platform.prototype, Backbone.Events, {
   },
 
   socketConfig: function () {
-    if (this.isCordova) {
-
+    if (location.protocol === 'https:' || this.isCordova) {
+      return {
+        protocol: 'https:',
+        hostname: config.hostname,
+        port: config.https
+      };
+    } else {
       return {
         protocol: 'http:',
         hostname: config.hostname,
         port: config.http
-      }
-
-    } else {
-
-      if (location.protocol === 'https:') {
-        return {
-          protocol: 'https:',
-          hostname: config.hostname,
-          port: config.https
-        };
-      } else {
-        return {
-          protocol: 'http:',
-          hostname: config.hostname,
-          port: config.http
-        };
-      }
+      };
     }
   },
 
   setPrefix: function (suffix) {
-    // this.isCordova
-    if (location.protocol === 'https:') {
+    if (location.protocol === 'https:' || this.isCordova) {
       return 'https://' + config.hostname + ':' + config.https + suffix;
     } else {
       return 'http://' + config.hostname + ':' + config.http + suffix;
