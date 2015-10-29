@@ -9,10 +9,6 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"CertificatesPlugin\"><param name=\"android-package\" value=\"de.martinreinhardt.cordova.plugins.CertificatesPlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
                             "count": 1
                         },
@@ -26,9 +22,6 @@
         }
     },
     "installed_plugins": {
-        "cordova-plugin-certificates": {
-            "PACKAGE_NAME": "de.bepnm.aistracker"
-        },
         "cordova-plugin-device": {
             "PACKAGE_NAME": "de.bepnm.aistracker"
         },
