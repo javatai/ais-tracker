@@ -30,8 +30,6 @@ module.exports = {
         var config = Platform.socketConfig();
         var url = config.protocol + '//' + config.hostname + ':' + config.port;
 
-        console.log(url, Platform.isCordova);
-
         if (location.protocol === 'https:' || Platform.isCordova) {
           socket = io.connect(url, { secure: true });
         } else {

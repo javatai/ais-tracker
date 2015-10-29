@@ -71,7 +71,7 @@
     "build-css-cordova": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
     "minify-css-cordova": "node node_modules/minifier/index.js -o cordova/www/style.css cordova/www/style.css",
     "watch-js-cordova": "node_modules/watchify/bin/cmd.js app/mobile.js -o cordova/www/mobile.js -dv",
-    "watch-css-cordova": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less cordova/www/style.js",
+    "watch-css-cordova": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
     "build-cordova": "npm run build-js-cordova && npm run build-css-cordova",
     "minify-cordova": "npm run build-cordova && npm run minify-js-cordova && npm run minify-css-cordova"
   },
