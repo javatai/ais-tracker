@@ -12,13 +12,22 @@ var AboutView = View.extend({
   template: template,
 
   events: {
-    "switchChange.bootstrapSwitch input[type='checkbox']": 'changereceptionlayer'
+    "switchChange.bootstrapSwitch input[type='checkbox']": 'changereceptionlayer',
+    "fastclick a": 'external'
   },
 
   initialize: function (options) {
     this.app = options.app;
+    this.base = options.base;
 
     this.render();
+  },
+
+  external: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.base.modal($(e.target).attr('href'));
   },
 
   changereceptionlayer: function (evt, state) {
