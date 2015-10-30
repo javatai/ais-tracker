@@ -18,6 +18,15 @@
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
+        <icon src="res/android/drawable-hdpi/appicon.png" density="hdpi" />
+        <icon src="res/android/drawable-mdpi/appicon.png" density="mdpi" />
+        <icon src="res/android/drawable-xhdpi/appicon.png" density="xhdpi" />
+        <icon src="res/android/drawable-xxhdpi/appicon.png" density="xxhdpi" />
+
+        <splash src="res/android/drawable-hdpi/background.9.png" density="port-hdpi"/>
+        <splash src="res/android/drawable-mdpi/background.9.png" density="port-mdpi"/>
+        <splash src="res/android/drawable-xhdpi/background.9.png" density="port-xhdpi"/>
+        <splash src="res/android/drawable-xxhdpi/background.9.png" density="port-xxhdpi"/>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
