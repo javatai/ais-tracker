@@ -22,7 +22,7 @@ _.extend(Notifications.prototype, Backbone.Events, {
   notify: function (message, type, delay) {
     $.notify(message, {
       type: type || 'info',
-      delay: delay  === undefined ? 2000 : delay,
+      delay: delay  === undefined ? 1000 : delay,
       newest_on_top: true,
       spacing: 5,
       url_target: '_self',
@@ -95,7 +95,7 @@ _.extend(Notifications.prototype, Backbone.Events, {
     this.notify({
       title: 'Expired',
       message: ship.getHelper().toTitle(),
-    }, 'alert', 5000);
+    }, 'alert', 1000);
 
     log.add({
       type: 'ship-expired',

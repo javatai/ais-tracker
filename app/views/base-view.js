@@ -136,6 +136,18 @@ var BaseView = View.extend({
     }
   },
 
+  modal: function (url) {
+    var $f = $('<iframe></iframe>');
+    $f.attr('src', url);
+
+    $f.attr('frameborder', 0);
+    $f.attr('width', '100%');
+    $f.attr('height', '100%');
+
+    $('.modal .modal-content').append($f);
+    $('.modal').modal('show');
+  },
+
   render: function () {
     this.$el.html(this.template());
     this.$el.find('.carousel').carousel({
@@ -152,11 +164,34 @@ var BaseView = View.extend({
     this.$el.find('.carousel-inner').append(this.logView.$el);
 
     this.aboutView = new AboutView({
-      app: this.app
+      app: this.app,
+      base: this
     });
     this.$el.find('.carousel-inner').append(this.aboutView.$el);
 
     this.listenTo(this.collection, 'change:selected', this.selectShip);
+
+    var self = this;
+    $('#map').delegate( "a", "click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!$(e.target).attr('href')) return;
+
+      var isGoogle = $(e.target).attr('href').indexOf('google') > -1;
+      var isTerms = $(e.target).attr('href').indexOf('term') > -1;
+
+      if (isGoogle && !isTerms) {
+        window.open($(e.target).attr('href'), "_system");
+        return;
+      }
+
+      self.modal($(e.target).attr('href'));
+    });
+
+    $('.modal').on('hidden.bs.modal', function () {
+      $('.modal .modal-content').empty();
+    });
   },
 
   destroyShipview: function () {

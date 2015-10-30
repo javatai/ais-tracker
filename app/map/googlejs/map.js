@@ -205,6 +205,7 @@ _.extend(Map.prototype, Backbone.Events, {
       } else {
         this.markers[symbol.id].setPosition(symbol.position);
         this.markers[symbol.id].setIcon(symbol.icon);
+        this.markers[symbol.id].maplabel.set('text', symbol._title);
         this.markers[symbol.id].maplabel.set('position', new google.maps.LatLng(symbol.position.lat, symbol.position.lng));
       }
     }, this);
