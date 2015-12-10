@@ -490,6 +490,10 @@ _.extend(Map.prototype, Backbone.Events, {
       // console.log('W', bounds.getWest(), lnglat.lng, bounds.getWest() > lnglat.lng);
       this.map.panTo(lnglat);
     }
+  },
+
+  getBounds: function () {
+    return { }
   }
 });
 

@@ -13,12 +13,14 @@ var ShipsLayer = function (options) {
 
 _.extend(ShipsLayer.prototype, Backbone.Events, {
   setViewport: function (socket) {
-    var bounds = Map.getBounds();
-    socket.emit('viewport', bounds);
+    Map.onReady().done(_.bind(function () {
+      var bounds = Map.getBounds();
+      socket.emit('viewport', bounds);
+    }, this));
   },
 
   updateViewport: function (bounds) {
-    Socket.socket.emit('viewport', bounds);
+    //Socket.socket.emit('viewport', bounds);
   },
 
   onClick: function (e) {

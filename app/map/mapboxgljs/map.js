@@ -232,6 +232,8 @@ _.extend(Map.prototype, Backbone.Events, {
   getBounds: function () {
     var bounds = this.map.getBounds();
 
+    if (!bounds) return;
+
     return {
       north: bounds.getNorth(),
       east: bounds.getEast(),
