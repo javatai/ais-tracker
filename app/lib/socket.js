@@ -6,40 +6,53 @@ var socket, io = require('socket.io-client');
 var config = require('../config').server;
 var Platform = require('./platform');
 
-module.exports = {
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+var Socket = function (options) {
+  this.socket = socket;
+};
+
+_.extend(Socket.prototype, Backbone.Events, {
   disconnect: function () {
-    if (socket) {
-      socket.removeAllListeners();
-      socket.disconnect();
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+
+      this.trigger('disconnected', this.socket);
     }
   },
 
   reconnect: function () {
-    if (socket) {
-      socket.connect();
+    if (this.socket) {
+      this.socket.connect();
+      this.trigger('connected', this.socket);
     }
   },
 
   connect: function () {
-    var dfd = $.Deferred();
+    var self = this, dfd = $.Deferred();
 
-    if (socket) {
-      dfd.resolve(socket);
+    if (this.socket) {
+      dfd.resolve(this.socket);
     } else {
       Platform.onReady().done(function (platform) {
         var config = Platform.socketConfig();
         var url = config.protocol + '//' + config.hostname + ':' + config.port;
 
         if (location.protocol === 'https:' || Platform.isCordova) {
-          socket = io.connect(url, { secure: true });
+          self.socket = io.connect(url, { secure: true });
         } else {
-          socket = io.connect(url);
+          self.socket = io.connect(url);
         }
 
-        dfd.resolve(socket);
+        dfd.resolve(self.socket);
       });
     }
 
     return dfd.promise();
   }
-}
+});
+
+module.exports = new Socket();
+

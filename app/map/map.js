@@ -11,4 +11,6 @@ var map_type = process.env.MAP_TYPE || config.map_type;
 
 var map = Maps.hasOwnProperty(map_type) ? new (Maps[map_type])() : new (Maps['default'])();
 
+global.map = map;
+
 module.exports = map;

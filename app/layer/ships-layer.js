@@ -4,6 +4,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var Map = require('../map/map');
+var Socket = require('../lib/socket');
 
 var ShipsLayer = function (options) {
   this.ships = options.ships;
@@ -11,6 +12,15 @@ var ShipsLayer = function (options) {
 };
 
 _.extend(ShipsLayer.prototype, Backbone.Events, {
+  setViewport: function (socket) {
+    var bounds = Map.getBounds();
+    socket.emit('viewport', bounds);
+  },
+
+  updateViewport: function (bounds) {
+    Socket.socket.emit('viewport', bounds);
+  },
+
   onClick: function (e) {
     var perimeter = Map.calculatePerimeter();
     var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
@@ -119,18 +129,20 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.updateLayer();
 
     this.listenTo(this.app,   'clickout',        this.updateLayer);
-    this.listenTo(this.ships, 'add',             this.updateLayer);
+    this.listenTo(this.ships, 'sync:socket',     this.updateLayer);
     this.listenTo(this.ships, 'change:selected', this.updateLayer);
-    this.listenTo(this.ships, 'moved',           this.updateLayer);
-    this.listenTo(this.ships, 'remove',          this.onRemoveShip);
+
   },
 
   addToMap: function () {
     this.mouseoverid = 0;
     this.clickid = 0;
 
-    this.listenTo(Map, 'mousemove', this.onMousemove);
-    this.listenTo(Map, 'click', this.onClick);
+    this.listenTo(Map,    'mousemove', this.onMousemove);
+    this.listenTo(Map,    'click', this.onClick);
+
+    this.listenTo(Socket, 'connected', this.setViewport);
+    this.listenTo(Map,    'boundschanged', this.updateViewport);
 
     Map.onReady().done(_.bind(function () {
       this.onLoad();
@@ -139,10 +151,11 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
 
   removeFromMap: function () {
     this.stopListening(this.app,   'clickout',        this.updateLayer);
-    this.stopListening(this.ships, 'add',             this.updateLayer);
+    this.stopListening(this.ships, 'sync:socket',     this.updateLayer);
     this.stopListening(this.ships, 'change:selected', this.updateLayer);
-    this.stopListening(this.ships, 'moved',           this.updateLayer);
-    this.stopListening(this.ships, 'remove',         this.onRemoveShip);
+
+    this.stopListening(Socket,     'connected',       this.setViewport);
+    this.stopListening(Map,        'boundschanged',   this.updateViewport);
 
     this.stopListening(Map, 'mousemove', this.onMousemove);
     this.stopListening(Map, 'click', this.onClick);

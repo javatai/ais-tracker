@@ -1,7 +1,6 @@
 'use strict';
 
 var config = require('../../config').frontend.mapboxgljs;
-
 var Platform = require('../../lib/platform');
 
 var mapboxgl = require('mapbox-gl');
@@ -25,6 +24,8 @@ var Map = function (options) {
   this.map.on('zoom', _.bind(this.onZoom, this));
   this.map.on('mousemove', _.bind(this.propagateMousemove, this));
   this.map.on('click', _.bind(this.propagateClick, this));
+
+  this.map.on('moveend', _.bind(this.propagateBoundsChanged, this));
 };
 
 _.extend(Map.prototype, Backbone.Events, {
@@ -42,6 +43,10 @@ _.extend(Map.prototype, Backbone.Events, {
 
   propagateClick: function (e) {
     this.trigger('click', e);
+  },
+
+  propagateBoundsChanged: function () {
+    this.trigger('boundschanged', this.getBounds());
   },
 
   onReady: function () {
@@ -221,6 +226,17 @@ _.extend(Map.prototype, Backbone.Events, {
     if (bounds.getWest() > lnglat.lng) {
       // console.log('W', bounds.getWest(), lnglat.lng, bounds.getWest() > lnglat.lng);
       this.map.flyTo({ center: center });
+    }
+  },
+
+  getBounds: function () {
+    var bounds = this.map.getBounds();
+
+    return {
+      north: bounds.getNorth(),
+      east: bounds.getEast(),
+      south: bounds.getSouth(),
+      west: bounds.getWest()
     }
   }
 });

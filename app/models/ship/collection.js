@@ -99,21 +99,41 @@ var Ships = Backbone.Collection.extend({
     });
 
     this.listenTo(this.options.app, 'shopListening', function () {
-      console.log('abort');
       if (this.xhr.abort) this.xhr.abort();
     });
   },
 
-  start: function () {
-    this.fetch();
+  onShipsReceived: function (ships) {
+    var toRemove = _.difference(this.pluck("userid"), _.pluck(ships, 'userid'));
 
+    this.remove(_.map(toRemove, function (userid) {
+      return this.findWhere({ userid: userid });
+    }, this));
+
+    _.each(ships, function (ship) {
+      var ship = Ship.findOrCreate(ship);
+      this.add(ship);
+    }, this);
+
+    this.trigger('sync:socket');
+  },
+
+  onShipsRefreshed: function (ships) {
+    _.each(ships, function (ship) {
+      var ship = Ship.findOrCreate(ship);
+      this.add(ship);
+    }, this);
+
+    this.trigger('sync:socket');
+  },
+
+  start: function () {
     if (this.socket) return;
 
     Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
-
-      this.socket.on('ship:create', this.onShipCreated.bind(this));
-      this.socket.on('ship:update', this.onShipUpdated.bind(this));
+      this.socket.on('init', this.onShipsReceived.bind(this));
+      this.socket.on('refresh', this.onShipsRefreshed.bind(this));
     }, this));
 
     this.timer = setInterval(_.bind(function () {
@@ -127,9 +147,6 @@ var Ships = Backbone.Collection.extend({
     this.invoke('stop');
 
     if (this.socket) {
-      this.socket.removeListener('ship:create', this.onShipCreated.bind(this));
-      this.socket.removeListener('ship:update', this.onShipUpdated.bind(this));
-
       this.socket = null;
     }
 
@@ -164,17 +181,6 @@ var Ships = Backbone.Collection.extend({
 
     if (!options.silent) this.trigger('reset', this, options);
     return this;
-  },
-
-  onShipCreated: function (message) {
-    this.add(Ship.findOrCreate(message));
-  },
-
-  onShipUpdated: function (message) {
-    if (!this.get(message.id)) {
-      var ship = Ship.findOrCreate(message);
-      this.add(ship);
-    }
   },
 
   selectShip: function (idOrModel) {
