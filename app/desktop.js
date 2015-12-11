@@ -4,6 +4,7 @@ require('./plugins');
 
 var $ = require('jquery');
 var _ = require('underscore');
+var Backbone = require('backbone');
 
 var Platform = require('./lib/platform');
 var Map = require('./map/map');
@@ -42,6 +43,8 @@ _.extend(Desktop.prototype, App.prototype, {
 });
 
 var desktop = new Desktop();
+
+Backbone.history.start();
 
 Platform.isMobile = false;
 

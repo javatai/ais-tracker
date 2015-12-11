@@ -38,16 +38,8 @@ var Listener = function (socket) {
 
   socket.emit('connected', { id: socket.id });
 
-  var initdebounced = _.debounce(function (bounds) {
-    this.bounds = bounds;
-
-    this.datetime = new Date();
-    this.datetime.setMinutes(this.datetime.getMinutes() - config.setup.ship.minutes);
-
-    this.init();
-  }.bind(this), 300);
-
-  socket.on('viewport', initdebounced);
+  this.refresh();
+  this.timer = setInterval(this.refresh.bind(this), 10000);
 }
 
 Listener.prototype = {
@@ -96,6 +88,9 @@ Listener.prototype = {
   },
 
   refresh: function () {
+    this.datetime = new Date();
+    this.datetime.setMinutes(this.datetime.getMinutes() - config.setup.ship.minutes);
+
     var q = "SELECT p1.id"
     + " FROM position p1"
     + " INNER JOIN"
@@ -103,62 +98,15 @@ Listener.prototype = {
     + "     SELECT max(datetime) MaxDateTime, userid"
     + "     FROM position"
     + "     WHERE datetime >= '" + this.datetime.toISOString() + "'"
-//    + "       AND (longitude <= " + this.bounds.east + " AND longitude >= " + this.bounds.west + ")"
-//    + "       AND (latitude <= " + this.bounds.north + " AND latitude >= " + this.bounds.south + ")"
-//    + "       AND userid IN (" + _.pluck(ferries, 'mmsi') + ")"
     + "     GROUP BY userid"
     + " ) p2"
     + "   ON p1.userid = p2.userid"
     + "   AND p1.datetime = p2.MaxDateTime"
     + " WHERE"
     + "   p1.datetime >= '" + this.datetime.toISOString() + "'"
-//    + "   AND p1.userid IN (" + _.pluck(ferries, 'mmsi') + ")"
     + " ORDER BY p1.datetime desc";
 
     this.query(q, 'refresh');
-  },
-
-  init: function () {
-    var q = "SELECT p1.id"
-    + " FROM position p1"
-    + " INNER JOIN"
-    + " ("
-    + "     SELECT max(datetime) MaxDateTime, userid"
-    + "     FROM position"
-    + "     WHERE datetime >= '" + this.datetime.toISOString() + "'"
-//    + "       AND (longitude <= " + this.bounds.east + " AND longitude >= " + this.bounds.west + ")"
-//    + "       AND (latitude <= " + this.bounds.north + " AND latitude >= " + this.bounds.south + ")"
-//    + "       AND userid IN (" + _.pluck(ferries, 'mmsi') + ")"
-    + "     GROUP BY userid"
-    + " ) p2"
-    + "   ON p1.userid = p2.userid"
-    + "   AND p1.datetime = p2.MaxDateTime"
-    + " WHERE"
-    + "   p1.datetime >= '" + this.datetime.toISOString() + "'"
-//    + "   AND p1.userid IN (" + _.pluck(ferries, 'mmsi') + ")"
-    + " ORDER BY p1.datetime desc";
-
-    this.query(q, 'init');
-
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-
-    this.timer = setInterval(this.refresh.bind(this), 10000);
-  },
-
-
-  onShipUpdate: function (ship) {
-    // findoneShip(ship.id).done(function (json) {
-    //   this.socket.emit('ship:update:' + json.userid, json);
-    //   this.socket.emit('ship:update', json);
-    // }.bind(this));
-  },
-
-  onShipCreate: function (ship) {
-    // findoneShip(ship.id).done(function (json) {
-    //   this.socket.emit('ship:create', json);
-    // }.bind(this));
   },
 
   onTrackAdd: function (json) {
@@ -170,14 +118,10 @@ Listener.prototype = {
   },
 
   connect: function () {
-    // events.on('ship:update', this.onShipUpdate.bind(this));
-    // events.on('ship:create', this.onShipCreate.bind(this));
     events.on('track:add', this.onTrackAdd.bind(this));
   },
 
   disconnect: function () {
-    // events.removeListener('ship:update', this.onShipUpdate.bind(this));
-    // events.removeListener('ship:create', this.onShipCreate.bind(this));
     events.removeListener('track:add', this.onTrackAdd.bind(this));
   }
 };

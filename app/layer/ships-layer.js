@@ -20,7 +20,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
   },
 
   updateViewport: function (bounds) {
-    //Socket.socket.emit('viewport', bounds);
+    Socket.socket.emit('viewport', bounds);
   },
 
   onClick: function (e) {

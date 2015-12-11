@@ -23,7 +23,8 @@ var ListView = View.extend({
 
     this.listenTo(this.collection, 'add', this.addItemView);
     this.listenTo(this.collection, 'remove', this.removeItemView);
-    this.listenToOnce(this.collection, 'sync', this.initItems);
+
+    this.listenToOnce(this.collection, 'sync:socket', this.initItems);
   },
 
   unsetFilter: function () {
@@ -124,7 +125,8 @@ var ListView = View.extend({
     var ids = this.collection.pluck('id');
     ids.reverse();
     _.each(ids, function (id) {
-      this.listItems[id].prepend();
+      if (this.listItems[id])
+        this.listItems[id].prepend();
     }, this);
   }
 });

@@ -103,20 +103,20 @@ var Ships = Backbone.Collection.extend({
     });
   },
 
-  onShipsReceived: function (ships) {
-    var toRemove = _.difference(this.pluck("userid"), _.pluck(ships, 'userid'));
+  // onShipsReceived: function (ships) {
+  //   var toRemove = _.difference(this.pluck("userid"), _.pluck(ships, 'userid'));
 
-    this.remove(_.map(toRemove, function (userid) {
-      return this.findWhere({ userid: userid });
-    }, this));
+  //   this.remove(_.map(toRemove, function (userid) {
+  //     return this.findWhere({ userid: userid });
+  //   }, this));
 
-    _.each(ships, function (ship) {
-      var ship = Ship.findOrCreate(ship);
-      this.add(ship);
-    }, this);
+  //   _.each(ships, function (ship) {
+  //     var ship = Ship.findOrCreate(ship);
+  //     this.add(ship);
+  //   }, this);
 
-    this.trigger('sync:socket');
-  },
+  //   this.trigger('sync:socket');
+  // },
 
   onShipsRefreshed: function (ships) {
     _.each(ships, function (ship) {
@@ -132,7 +132,7 @@ var Ships = Backbone.Collection.extend({
 
     Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
-      this.socket.on('init', this.onShipsReceived.bind(this));
+      // this.socket.on('init', this.onShipsReceived.bind(this));
       this.socket.on('refresh', this.onShipsRefreshed.bind(this));
     }, this));
 
