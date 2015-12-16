@@ -14,6 +14,8 @@ var PositionMarker = require('./marker');
 var PositionLabel = require('./label');
 
 var Position = Backbone.RelationalModel.extend({
+  idAttribute: "userid",
+
   positionHelper: null,
   positionLabel: null,
   positionMarker: null,

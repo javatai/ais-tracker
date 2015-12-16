@@ -55,16 +55,16 @@ var ListView = View.extend({
 
     listItem.render();
 
-    this.listItems[ship.get('id')] = listItem;
+    this.listItems[ship.id] = listItem;
 
     this.renderItem(ship);
   },
 
   removeItemView: function (ship) {
-    if (!this.listItems[ship.get('id')]) return;
+    if (!this.listItems[ship.id]) return;
 
-    this.listItems[ship.get('id')].remove();
-    delete this.listItems[ship.get('id')];
+    this.listItems[ship.id].remove();
+    delete this.listItems[ship.id];
   },
 
   render: function () {
@@ -112,7 +112,7 @@ var ListView = View.extend({
 
   renderItem: function (ship) {
     var index = this.collection.indexOf(ship);
-    var id = ship.get('id');
+    var id = ship.id;
     var before = this.container.children().eq(index-1);
     if (before.length > 0) {
       this.listItems[id].after(before);

@@ -102,7 +102,7 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
   },
 
   getMapId: function (prefix) {
-    return prefix + '-' + this.ship.get('id');
+    return prefix + '-' + this.ship.id;
   },
 
   toShape: function () {
@@ -243,7 +243,7 @@ _.extend(ShipMarker.prototype, Backbone.Events, {
 
     this.stopListening(this.ship, 'moved',            this.onPositionChange);
 
-    if (!this.ship.get('id')) return;
+    if (!this.ship.id) return;
 
     Map.removeFromMap({
       name: this.getMapId('shape'),

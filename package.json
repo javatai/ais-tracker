@@ -12,9 +12,9 @@
   "bugs": {
     "url": "https://github.com/3epnm/ais-server/issues"
   },
-  "homepage": "https://github.com/3epnm/ais-server#readme",
+  "homepage": "https://github.com/3epnm/ais-tracker#readme",
   "dependencies": {
-    "ais-receiver": "git://github.com/3epnm/ais-receiver.git",
+    "ais-receiver": "0.1.0",
     "backbone": "^1.2.3",
     "backbone-relational": "^0.10.0",
     "bootstrap-switch": "^3.3.2",

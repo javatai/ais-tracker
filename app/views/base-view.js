@@ -29,7 +29,7 @@ var BaseView = View.extend({
   },
 
   chkShipview: function (ship) {
-    if (this.shipview && this.shipview.model.get('id') === ship.get('id')) {
+    if (this.shipview && this.shipview.model.id === ship.id) {
       if (this.isOpen) {
         this.openlistview();
       }

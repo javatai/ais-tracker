@@ -12,13 +12,10 @@ var Socket = require('../../lib/socket');
 
 var Ship = require('./model');
 var ShipData = require('../shipdata/model');
+var Position = require('../position/model');
 
 var Ships = Backbone.Collection.extend({
   model: Ship,
-
-  url: function () {
-    return Platform.setPrefix('/api/ships');
-  },
 
   currentSort: { strategy: "name", direction: "asc" },
   selectedStrategy: null,
@@ -79,7 +76,7 @@ var Ships = Backbone.Collection.extend({
     this.initSort(this.currentSort.strategy, this.currentSort.direction);
 
     this.on('remove', function (ship) {
-      if (ship.get('id') === this.selectedId) {
+      if (ship.id === this.selectedId) {
         this.selectedId = 0;
       }
     }, this);
@@ -87,36 +84,21 @@ var Ships = Backbone.Collection.extend({
     this.on('change:selected', function (ship, selected) {
       if (selected) {
         this.each(function (_ship) {
-          if (_ship.get('id') !== ship.get('id')) {
+          if (_ship.id !== ship.id) {
             _ship.set('selected', false);
           }
         });
       }
 
-      if (ship.get('id') === this.selectedId) {
+      if (ship.id === this.selectedId) {
         this.selectedId = 0;
       }
     });
-
-    this.listenTo(this.options.app, 'shopListening', function () {
-      if (this.xhr.abort) this.xhr.abort();
-    });
   },
 
-  // onShipsReceived: function (ships) {
-  //   var toRemove = _.difference(this.pluck("userid"), _.pluck(ships, 'userid'));
+  onShipsInit: function (payload) {
 
-  //   this.remove(_.map(toRemove, function (userid) {
-  //     return this.findWhere({ userid: userid });
-  //   }, this));
-
-  //   _.each(ships, function (ship) {
-  //     var ship = Ship.findOrCreate(ship);
-  //     this.add(ship);
-  //   }, this);
-
-  //   this.trigger('sync:socket');
-  // },
+  },
 
   onShipsRefreshed: function (ships) {
     _.each(ships, function (ship) {
@@ -132,8 +114,8 @@ var Ships = Backbone.Collection.extend({
 
     Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
-      // this.socket.on('init', this.onShipsReceived.bind(this));
-      this.socket.on('refresh', this.onShipsRefreshed.bind(this));
+      this.socket.on('init', this.onShipsInit.bind(this));
+      //this.socket.on('update', this.onShipsUpdate.bind(this));
     }, this));
 
     this.timer = setInterval(_.bind(function () {
@@ -186,7 +168,7 @@ var Ships = Backbone.Collection.extend({
   selectShip: function (idOrModel) {
     var id;
     if (idOrModel instanceof Ship) {
-      id = idOrModel.get('id');
+      id = idOrModel.id;
     } else {
       id = idOrModel;
     }

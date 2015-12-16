@@ -21,7 +21,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     if (this.track && this.track.length > 2) {
       var position = _.first(this.track.getPositionsForLngLat(e.lngLat, perimeter));
 
-      if (!position || (position && position.get('id') !== this.mouseoverid)) {
+      if (!position || (position && position.id !== this.mouseoverid)) {
         this.track.invoke('set', 'mouseover', false);
         this.mouseoverid = 0;
       }
@@ -30,7 +30,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
         Map.setCursor("pointer");
 
         position.set('mouseover', true);
-        this.mouseoverid = position.get('id');
+        this.mouseoverid = position.id;
       }
     }
   },
@@ -48,7 +48,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   onRemovePosition: function (position) {
-    var id = position.get('id');
+    var id = position.id;
 
     if (this.mouseoverid === id) {
       this.mouseoverid = 0;

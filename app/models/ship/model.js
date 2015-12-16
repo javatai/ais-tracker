@@ -20,6 +20,8 @@ var ShipMarker = require('./marker');
 var ShipLabel = require('./label');
 
 var Ship = Backbone.RelationalModel.extend({
+  idAttribute: "userid",
+
   shipHelper: null,
   shipLabel: null,
   shipMarker: null,
@@ -27,10 +29,6 @@ var Ship = Backbone.RelationalModel.extend({
   defaults: {
     'mouseover': false,
     'selected': false
-  },
-
-  url: function () {
-    return '/api/ship/' + this.get('id');
   },
 
   relations: [{
@@ -87,7 +85,6 @@ var Ship = Backbone.RelationalModel.extend({
     collection.reset();
 
     this.xhr = collection.fetch(this);
-    this.xhr.done(_.bind(collection.startListening, collection));
 
     return this.xhr;
   },
@@ -201,9 +198,7 @@ var Ship = Backbone.RelationalModel.extend({
   },
 
   onSelect: function (ship, selected) {
-    if (!selected && this.xhr) {
-      this.xhr.abort();
-    } else {
+    if (selected) {
       this.set('mouseover', false);
     }
   },
@@ -223,10 +218,6 @@ var Ship = Backbone.RelationalModel.extend({
     this.set('selected', false);
 
     this.getMarker().removeFromMap();
-
-    if (this.xhr) {
-      this.xhr.abort();
-    }
 
     if (this.socket) {
       this.socket.removeListener('ship:update:' + this.get('userid'), _.bind(this.onSocket, this));

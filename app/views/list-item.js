@@ -17,7 +17,7 @@ var ListItem = View.extend({
 
   attributes: function () {
     return {
-      id: 'ship-item-' + this.model.get('id'),
+      id: 'ship-item-' + this.model.id,
     }
   },
 

@@ -18,7 +18,6 @@ var https = require('https');
 var morgan = require('morgan');
 
 var app = express();
-var sequelize = require('./lib/init');
 
 // create a write stream (in append mode)
 var logDirectory = __dirname + '/logs'
@@ -47,11 +46,6 @@ var allowCrossDomain = function(req, res, next) {
 
 app.use(allowCrossDomain);
 app.use(compression());
-
-// Create REST resource
-require('./api/ship')(app);
-require('./api/track')(app);
-require('./api/reception')(app);
 
 // Service static files
 app.use(config.server.public.route, express.static(config.server.public.dir, { maxAge: config.server.maxAge }));

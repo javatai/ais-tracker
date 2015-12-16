@@ -19,7 +19,7 @@ _.extend(PositionMarker.prototype, Backbone.Events, {
       },
       "properties": {
         "title": this.position.getHelper().toTitle(),
-        "id": 'p' + this.position.get('id'),
+        "id": 'p' + this.position.id,
         "angle": angle
       }
     }

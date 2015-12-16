@@ -3,6 +3,7 @@
 var config = require('../../config').server;
 
 var _ = require('underscore');
+var Backbone = require('backbone');
 
 var Platform = require('../../lib/platform');
 var Socket = require('../../lib/socket');
@@ -15,17 +16,10 @@ var Track = Positions.extend({
     return new Date(a.get('datetime')) - new Date(b.get('datetime'));
   },
 
-  url: function () {
-    if (!this.ship) {
-      throw 'Track: No Id specified';
-    }
-
-    return Platform.setPrefix('/api/track/' + this.ship.get('id'));
-  },
-
   fetch: function (ship) {
-    this.ship = ship;
-    return Positions.prototype.fetch.call(this);
+    var dfd = Backbone.$.Deferred();
+    dfd.done(null);
+    return dfd;
   },
 
   startListening: function () {

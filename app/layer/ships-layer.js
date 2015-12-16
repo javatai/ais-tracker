@@ -12,29 +12,18 @@ var ShipsLayer = function (options) {
 };
 
 _.extend(ShipsLayer.prototype, Backbone.Events, {
-  setViewport: function (socket) {
-    Map.onReady().done(_.bind(function () {
-      var bounds = Map.getBounds();
-      socket.emit('viewport', bounds);
-    }, this));
-  },
-
-  updateViewport: function (bounds) {
-    Socket.socket.emit('viewport', bounds);
-  },
-
   onClick: function (e) {
     var perimeter = Map.calculatePerimeter();
     var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
 
-    if (!ship || (ship && ship.get('id') !== this.clickid)) {
+    if (!ship || (ship && ship.id !== this.clickid)) {
       this.ships.invoke('set', 'selected', false);
       this.clickid = 0;
     }
 
     if (ship) {
       ship.set('selected', true);
-      this.clickid = ship.get('id');
+      this.clickid = ship.id;
     } else {
       this.app.trigger('clickout');
     }
@@ -46,7 +35,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     var perimeter = Map.calculatePerimeter();
     var ship = _.first(this.ships.getShipsForLngLat(e.lngLat, perimeter));
 
-    if (!ship || (ship && ship.get('id') !== this.mouseoverid)) {
+    if (!ship || (ship && ship.id !== this.mouseoverid)) {
       this.ships.invoke('set', 'mouseover', false);
       this.mouseoverid = 0;
     }
@@ -55,7 +44,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
       Map.setCursor("pointer");
 
       ship.set('mouseover', true);
-      this.mouseoverid = ship.get('id');
+      this.mouseoverid = ship.id;
     }
   },
 
@@ -115,7 +104,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
   },
 
   onRemoveShip: function (ship) {
-    var id = ship.get('id');
+    var id = ship.id;
 
     if (this.mouseoverid === id) {
       this.mouseoverid = 0;
@@ -133,18 +122,14 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.listenTo(this.app,   'clickout',        this.updateLayer);
     this.listenTo(this.ships, 'sync:socket',     this.updateLayer);
     this.listenTo(this.ships, 'change:selected', this.updateLayer);
-
   },
 
   addToMap: function () {
     this.mouseoverid = 0;
     this.clickid = 0;
 
-    this.listenTo(Map,    'mousemove', this.onMousemove);
-    this.listenTo(Map,    'click', this.onClick);
-
-    this.listenTo(Socket, 'connected', this.setViewport);
-    this.listenTo(Map,    'boundschanged', this.updateViewport);
+    this.listenTo(Map, 'mousemove', this.onMousemove);
+    this.listenTo(Map, 'click', this.onClick);
 
     Map.onReady().done(_.bind(function () {
       this.onLoad();
@@ -155,9 +140,6 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.stopListening(this.app,   'clickout',        this.updateLayer);
     this.stopListening(this.ships, 'sync:socket',     this.updateLayer);
     this.stopListening(this.ships, 'change:selected', this.updateLayer);
-
-    this.stopListening(Socket,     'connected',       this.setViewport);
-    this.stopListening(Map,        'boundschanged',   this.updateViewport);
 
     this.stopListening(Map, 'mousemove', this.onMousemove);
     this.stopListening(Map, 'click', this.onClick);

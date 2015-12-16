@@ -77,7 +77,7 @@ var ShipTrack = View.extend({
     var shipTrackItem = new ShipTrackItemView({
       model: position
     });
-    this.items[position.get('id')] = shipTrackItem;
+    this.items[position.id] = shipTrackItem;
 
     shipTrackItem.render();
     this.$el.find('> table > tbody').prepend(shipTrackItem.$el);
@@ -101,9 +101,9 @@ var ShipTrack = View.extend({
   },
 
   removePosition: function (remove) {
-    if (remove && this.items[remove.get('id')]) {
-      this.items[remove.get('id')].remove();
-      delete this.items[remove.get('id')];
+    if (remove && this.items[remove.id]) {
+      this.items[remove.id].remove();
+      delete this.items[remove.id];
     }
 
     this.updateSlider();
