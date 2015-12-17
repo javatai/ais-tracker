@@ -453,13 +453,7 @@ _.extend(Map.prototype, Backbone.Events, {
 
   center: function (lnglat) {
     this.onReady().done(_.bind(function () {
-      if (!Platform.isMobile) {
-        var bounds = this.calculateOffsetBounds(lnglat);
-        this.map.fitBounds(bounds);
-      } else {
-        this.map.panTo(lnglat);
-        this.map.setZoom(15);
-      }
+      this.map.panTo(lnglat);
     }, this));
   },
 

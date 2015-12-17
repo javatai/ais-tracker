@@ -10,7 +10,6 @@ var PositionMarker = function (position) {
 _.extend(PositionMarker.prototype, Backbone.Events, {
   toMarker: function () {
     var angle = Math.round(this.position.has('cog') && this.position.get('cog') || 0);
-
     return {
       "type": "Feature",
       "geometry": {
@@ -19,7 +18,7 @@ _.extend(PositionMarker.prototype, Backbone.Events, {
       },
       "properties": {
         "title": this.position.getHelper().toTitle(),
-        "id": 'p' + this.position.id,
+        "id": _.uniqueId('p'),
         "angle": angle
       }
     }

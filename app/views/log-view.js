@@ -6,6 +6,8 @@ var bganimate = require('../lib/helper/background-animate');
 var LogItemView = require('./log-item');
 var log = require('../models/log/collection');
 
+var Ship = require('../models/ship/model');
+
 var View = require('../lib/view');
 var template = require('./log-view.hbs');
 
@@ -20,7 +22,10 @@ var LogView = View.extend({
 
   select: function (el) {
     var cls = $(el.currentTarget).attr('class');
-    location.hash = 'mmsi/' + (cls.split(' ')).shift();
+    var mmsi = (cls.split(' ')).shift();
+
+    var ship = Ship.findOrCreate({ userid: mmsi });
+    ship.collection.selectShip(ship);
   },
 
   initialize: function () {

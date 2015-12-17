@@ -44,8 +44,6 @@ _.extend(Desktop.prototype, App.prototype, {
 
 var desktop = new Desktop();
 
-Backbone.history.start();
-
 Platform.isMobile = false;
 
 Platform.onReady().done(function () {

@@ -24,7 +24,7 @@ var ListView = View.extend({
     this.listenTo(this.collection, 'add', this.addItemView);
     this.listenTo(this.collection, 'remove', this.removeItemView);
 
-    this.listenToOnce(this.collection, 'sync:socket', this.initItems);
+    this.listenToOnce(this.collection, 'sync', this.initItems);
   },
 
   unsetFilter: function () {
@@ -122,7 +122,7 @@ var ListView = View.extend({
   },
 
   renderItems: function () {
-    var ids = this.collection.pluck('id');
+    var ids = this.collection.pluck('userid');
     ids.reverse();
     _.each(ids, function (id) {
       if (this.listItems[id])

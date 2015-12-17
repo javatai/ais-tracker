@@ -158,6 +158,7 @@ var BaseView = View.extend({
     this.listView = new ListView({
       collection: this.collection,
     });
+
     this.$el.find('.carousel-inner').append(this.listView.$el);
 
     this.logView = new LogView();

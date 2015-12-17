@@ -34,14 +34,21 @@ _.extend(Notifications.prototype, Backbone.Events, {
     });
   },
 
-  onTrackAdded: function (message) {
-    log.add({
-      type: 'position-added',
-      title: 'Position added',
-      userid: message.position.userid,
-      message: 'Ship: ' + message.shipname + '<br/>Distance moved: ' + Number(message.distancemoved).toFixed(2) + 'm',
-      datetime: moment().format('YYYY-MM-DD HH:mm:ss')
+  onUpdate: function (message) {
+    _.each(message, function (item) {
+      if (item.type === 'position') {
+        var ship = Ship.findOrCreate({ userid: item.mmsi });
+
+        log.add({
+          type: 'position-added',
+          title: 'Position added',
+          userid: item.mmsi,
+          message: 'Ship: ' + ship.getHelper().toTitle() + '<br/>Distance moved: ' + Number(item.distancemoved).toFixed(0) + ' m',
+          datetime: moment(item.datetime).format('YYYY-MM-DD HH:mm:ss')
+        });
+      }
     });
+
   },
 
   onShipExpire: function (ship) {
@@ -72,7 +79,7 @@ _.extend(Notifications.prototype, Backbone.Events, {
 
     Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
-      this.socket.on('track:add', this.onTrackAdded.bind(this));
+      this.socket.on('update', this.onUpdate.bind(this));
     }, this));
   },
 
@@ -81,7 +88,7 @@ _.extend(Notifications.prototype, Backbone.Events, {
     log.reset();
 
     if (!this.socket) return;
-    this.socket.removeListener('track:add', this.onTrackAdded.bind(this));
+    this.socket.removeListener('update', this.onUpdate.bind(this));
 
     this.socket = null;
   }

@@ -4,6 +4,7 @@ var config = require('../../config').server;
 
 var _ = require('underscore');
 var Backbone = require('backbone');
+var moment = require('moment');
 
 var Platform = require('../../lib/platform');
 var Socket = require('../../lib/socket');
@@ -17,24 +18,31 @@ var Track = Positions.extend({
   },
 
   fetch: function (ship) {
+    this.ship = ship;
+
     var dfd = Backbone.$.Deferred();
-    dfd.done(null);
+
+    this.socket = null;
+    Socket.connect().done(function (socket) {
+      this.socket = socket;
+      this.socket.emit('track', this.ship.id);
+      this.socket.once('track:' + this.ship.id, function (positions) {
+        _.each(positions, function (position) {
+          this.add(position);
+        }, this);
+        dfd.done();
+        this.trigger('sync');
+        this.listenTo(this.ship.get('position'), 'change', this.changed);
+      }.bind(this));
+    }.bind(this));
+
     return dfd;
   },
 
-  startListening: function () {
-    this.socket = null;
-    Socket.connect().done(_.bind(function (socket) {
-      this.socket = socket;
-      this.socket.on('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
-    }, this));
-  },
-
-  stopListening: function () {
-    if (this.socket) {
-      this.socket.removeListener('track:add:' + this.ship.get('userid'), this.onPositionAdded.bind(this));
-      this.socket = null;
-    }
+  changed: function (position) {
+    var p = position.toJSON();
+    delete p.userid;
+    this.add(new Position(p));
   },
 
   getPositionsForLngLat: function (LngLat, min) {
@@ -58,7 +66,9 @@ var Track = Positions.extend({
   },
 
   reset: function () {
-    this.stopListening();
+    if (this.ship) {
+      this.stopListening(this.ship.get('position'), 'change', this.changed);
+    }
     Positions.prototype.reset.call(this);
   }
 });

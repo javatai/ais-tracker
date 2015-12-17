@@ -16,13 +16,8 @@ var ShipPosition = View.extend({
     this.position = this.model.get('position');
   },
 
-  render: function (model) {
-    var diff = {};
-    if (model && this.position) {
-      diff = model.get('position').diff(this.position);
-      this.model = model;
-      this.position = model.get('position');
-    }
+  render: function () {
+    var diff = this.position.changed;
 
     this.$el.html(this.template({
       properties: this.position && this.position.getHelper().toPropertyList()

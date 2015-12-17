@@ -58,7 +58,7 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
   },
 
   updateLayer: function () {
-    var range = _(this.track.slice(this.track.from, this.track.length-1)).map(function (position, index) {
+    var range = _(this.track.slice(this.track.from, this.track.length)).map(function (position, index) {
       return {
         coordinate: position.getCoordinate(),
         marker: position.getMarker().toMarker()
@@ -69,7 +69,6 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     var behind = marker.hasShape() && marker.getMapId('shape') || 'markers';
 
     var coordinates = _.pluck(range, 'coordinate');
-    coordinates.push(this.ship.get('position').getCoordinate());
 
     Map.addToMap({
       name: 'track',
@@ -91,7 +90,6 @@ _.extend(TrackLayer.prototype, Backbone.Events, {
     });
 
     var positions = _.pluck(range, 'marker');
-    positions.push(this.ship.get('position').getMarker().toMarker());
 
     Map.addToMap({
       name: 'positions',

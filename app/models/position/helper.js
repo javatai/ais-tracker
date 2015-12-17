@@ -130,6 +130,12 @@ _.extend(PositionHelper.prototype, {
         cls: 'positionaccuracy',
         value: this.aismessage.lookup('positionaccuracy', data.get('positionaccuracy'))
       }
+    },
+    'Distance Moved': function (data) {
+      return {
+        cls: 'distancemoved',
+        value: data.get('distancemoved') + 'm'
+      }
     }
   },
 

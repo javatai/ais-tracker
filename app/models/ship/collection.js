@@ -96,17 +96,36 @@ var Ships = Backbone.Collection.extend({
     });
   },
 
-  onShipsInit: function (payload) {
+  onShipsReceived: function (payload) {
+    _.each(payload, function (item) {
+      var type = item.type;
+      delete item.type;
 
-  },
+      var userid = item.mmsi;
+      item.userid = item.mmsi;
 
-  onShipsRefreshed: function (ships) {
-    _.each(ships, function (ship) {
-      var ship = Ship.findOrCreate(ship);
+      var ship = Ship.findOrCreate({ userid: userid });
+      ship.set('datetime', moment.utc().toISOString());
+      ship.collection = this;
+
+      if (type === 'ship') {
+        var shipdata = ShipData.findOrCreate({ userid: userid });
+        shipdata.set(item);
+
+        ship.set('shipdata', shipdata);
+      }
+
+      if (type === 'position') {
+        var position = Position.findOrCreate({ userid: userid });
+        position.set(item);
+
+        ship.set('position', position);
+      }
+
       this.add(ship);
     }, this);
 
-    this.trigger('sync:socket');
+    this.trigger('sync');
   },
 
   start: function () {
@@ -114,13 +133,13 @@ var Ships = Backbone.Collection.extend({
 
     Socket.connect().done(_.bind(function (socket) {
       this.socket = socket;
-      this.socket.on('init', this.onShipsInit.bind(this));
-      //this.socket.on('update', this.onShipsUpdate.bind(this));
+      this.socket.on('init', this.onShipsReceived.bind(this));
+      this.socket.on('update', this.onShipsReceived.bind(this));
     }, this));
 
     this.timer = setInterval(_.bind(function () {
       this.removeExpiredModels();
-    }, this), 15 * 6000);
+    }, this), 6000);
   },
 
   stop: function () {
@@ -198,6 +217,7 @@ var Ships = Backbone.Collection.extend({
       strategy: sortProperty,
       direction: direction
     }
+
     this.comparator = this.strategies[direction || 'asc'][sortProperty];
   },
 

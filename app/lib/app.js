@@ -95,7 +95,7 @@ _.extend(App.prototype, Backbone.Events, {
       complete: _.bind(this.hideLoading, this)
     });
 
-    this.ships = new Ships({ app: this.app });
+    this.ships = new Ships();
 
     this.notifications = new Notifications({
       ships: this.ships

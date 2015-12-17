@@ -30,6 +30,7 @@
     "mysql": "^2.9.0",
     "nouislider": "leongersen/noUiSlider",
     "q": "^1.4.1",
+    "redis": "^2.4.2",
     "sequelize": "^3.9.0",
     "socket.io": "^1.3.7",
     "sqlite3": "^3.1.0",
@@ -52,11 +53,9 @@
     "build-js-desktop": "node_modules/browserify/bin/cmd.js -t envify app/desktop.js > html/desktop.js",
     "build-js-mobile": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > html/mobile.js",
     "build-js-embedded": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > html/embedded.js",
-
     "minify-js-desktop": "node_modules/uglify-js/bin/uglifyjs -o html/desktop.min.js --compress --mangle -- html/desktop.js",
     "minify-js-mobile": "node_modules/uglify-js/bin/uglifyjs -o html/mobile.min.js --compress --mangle -- html/mobile.js",
     "minify-js-embedded": "node_modules/uglify-js/bin/uglifyjs -o html/embedded.min.js --compress --mangle -- html/embedded.js",
-
     "watch-js-desktop": "node_modules/watchify/bin/cmd.js app/desktop.js -o html/desktop.js -dv",
     "watch-js-mobile": "node_modules/watchify/bin/cmd.js app/mobile.js -o html/mobile.js -dv",
     "build-css": "node_modules/less/bin/lessc app/style/style.less html/style.css",
@@ -65,7 +64,6 @@
     "build": "npm run build-js-desktop && npm run build-js-mobile && npm run build-css",
     "minify-js": "npm run minify-js-desktop && npm run minify-js-mobile",
     "minify": "npm run build && npm run minify-js && npm run minify-css",
-
     "build-js-cordova": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
     "minify-js-cordova": "node_modules/uglify-js/bin/uglifyjs -o cordova/www/mobile.js --compress --mangle -- cordova/www/mobile.js",
     "build-css-cordova": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",

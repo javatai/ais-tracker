@@ -128,8 +128,8 @@ var ShipView = View.extend({
     this.addPosition();
     this.addTrack();
 
-    this.listenTo(this.model, 'change:shipdata', this.updateShipdata);
-    this.listenTo(this.model, 'change:position', this.updatePosition);
+    this.listenTo(this.model.get('shipdata'), 'change', this.updateShipdata);
+    this.listenTo(this.model.get('position'), 'change', this.updatePosition);
 
     this.listenToOnce(this.model.get('track'), "sync", function () {
       this.updateTrack();

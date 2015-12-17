@@ -5,7 +5,7 @@ var config = require(__dirname + '/config/config.json')[env];
 
 var receiver = require('./receiver');
 var server = require('./server');
-var socket = require('ais-receiver/socket')(server, receiver);
+var socket = require('./socket/socket')(server, receiver);
 
 server.http.listen(config.server.http, config.server.hostname, function() {
   var host = server.http.address().address,

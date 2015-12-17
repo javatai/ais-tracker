@@ -42,6 +42,7 @@ var ListItem = View.extend({
 
   render: function () {
     var s = this.listview.selectedColumn;
+
     this.$el.html(this.template({
       name: this.model.getHelper().toTitle(),
       value: s.format && s.format(this.model.get(s.getter)) || this.model.get(s.getter)

@@ -17,12 +17,7 @@ var ShipDetails = View.extend({
   },
 
   render: function (model) {
-    var diff = {};
-    if (model && this.shipdata) {
-      diff = model.get('shipdata').diff(this.shipdata);
-      this.model = model;
-      this.shipdata = model.get('shipdata');
-    }
+    var diff = this.shipdata.changed;
 
     this.$el.html(this.template({
       properties: this.shipdata && this.shipdata.getHelper().toPropertyList()

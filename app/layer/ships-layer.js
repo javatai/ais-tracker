@@ -120,7 +120,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
     this.updateLayer();
 
     this.listenTo(this.app,   'clickout',        this.updateLayer);
-    this.listenTo(this.ships, 'sync:socket',     this.updateLayer);
+    this.listenTo(this.ships, 'sync',            this.updateLayer);
     this.listenTo(this.ships, 'change:selected', this.updateLayer);
   },
 
@@ -138,7 +138,7 @@ _.extend(ShipsLayer.prototype, Backbone.Events, {
 
   removeFromMap: function () {
     this.stopListening(this.app,   'clickout',        this.updateLayer);
-    this.stopListening(this.ships, 'sync:socket',     this.updateLayer);
+    this.stopListening(this.ships, 'sync',            this.updateLayer);
     this.stopListening(this.ships, 'change:selected', this.updateLayer);
 
     this.stopListening(Map, 'mousemove', this.onMousemove);

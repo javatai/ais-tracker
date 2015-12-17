@@ -16,6 +16,7 @@ var ShipTrackItem = View.extend({
       latitude: this.model.getHelper().format('Latitude').value,
       longitude: this.model.getHelper().format('Longitude').value,
       nav: this.model.getHelper().getNav(),
+      moved: this.model.getHelper().format('Distance Moved').value,
       timestamp: this.model.getHelper().format('Timestamp').value
     }));
   }
