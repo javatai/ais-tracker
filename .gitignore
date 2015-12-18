@@ -29,15 +29,4 @@ node_modules
 docs
 test.js
 config/config.json
-html/desktop.js
-html/desktop.min.js
-html/style.css
-html/style.min.css
-html/mobile.js
-html/mobile.min.js
-html/embedded.js
-html/embedded.min.js
-
-app/map/mapboxgljs/sprites/input
-app/map/mapboxgljs/sprites/test.html
-app/map/mapboxgljs/sprites/triangle.svg
+html/index.js

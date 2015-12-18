@@ -5,11 +5,9 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var Platform = require('./platform');
 
-var io, ws = require('socket.io-client');
+var ws = require('socket.io-client');
 
-var Socket = function (options) {
-  this.io = io;
-};
+var Socket = function (options) { };
 
 _.extend(Socket.prototype, Backbone.Events, {
   disconnect: function () {
