@@ -1,0 +1,83 @@
+{
+  "development": {
+    "redis": {
+      "port": 6379,
+      "host": "127.0.0.1"
+    },
+    "server": {
+      "http": 3000,
+      "https": 3443,
+      "hostname": "127.0.0.1",
+      "maxAge": 0,
+      "ssl": {
+        "privateKey": "server.key",
+        "certificate": "server.crt"
+      },
+      "public": {
+        "route": "/html",
+        "dir": "html"
+      },
+      "fonts": {
+        "route": "/fonts",
+        "dir": "html/fonts"
+      }
+    },
+    "frontend": {
+      "map_type": "googlemapjs",
+      "mapboxgljs": {
+        "accessToken": "pk.eyJ1IjoiYnJldHNjaG4iLCJhIjoiY2lldmU5ZjA3MDA5cHQxbTBsenF4OTN6NCJ9.k-N7xO9qfKgI6aBjxFgGKw",
+        "center": [ 9.965683555681778, 53.543321811526 ],
+        "zoom": 16
+      },
+      "googlemapjs": {
+        "apiKey": "AIzaSyCrzfGzddblnADYww8eipsTncvk7F_HTCc",
+        "center": {
+          "lat": 53.543321811526,
+          "lng": 9.965683555681778
+        },
+        "zoom": 16
+      }
+    }
+  },
+  "production": {
+    "redis": {
+      "port": 64909,
+      "host": "127.0.0.1"
+    },
+    "server": {
+      "http": 64486,
+      "https": 64485,
+      "hostname": "ais.3epnm.de",
+      "maxAge": 0,
+      "ssl": {
+        "privateKey": "ais.3epnm.de.key",
+        "certificate": "ais.3epnm.de.crt",
+        "ca": "sub.class1.server.ca.pem"
+      },
+      "public": {
+        "route": "/html",
+        "dir": "/home/mb/ais-tracker/html"
+      },
+      "fonts": {
+        "route": "/fonts",
+        "dir": "/home/mb/ais-tracker/html/fonts"
+      }
+    },
+    "frontend": {
+      "map_type": "googlemapjs",
+      "mapboxgljs": {
+        "accessToken": "pk.eyJ1IjoiYnJldHNjaG4iLCJhIjoiY2lldmU5ZjA3MDA5cHQxbTBsenF4OTN6NCJ9.k-N7xO9qfKgI6aBjxFgGKw",
+        "center": [ 9.965683555681778, 53.543321811526 ],
+        "zoom": 16
+      },
+      "googlemapjs": {
+        "apiKey": "AIzaSyCrzfGzddblnADYww8eipsTncvk7F_HTCc",
+        "center": {
+          "lat": 53.543321811526,
+          "lng": 9.965683555681778
+        },
+        "zoom": 16
+      }
+    }
+  }
+}
