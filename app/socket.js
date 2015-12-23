@@ -40,6 +40,10 @@ _.extend(Socket.prototype, Backbone.Events, {
           this.io = ws.connect(url);
         }
 
+        this.io.on('disconnect', function () {
+          this.trigger('disconnected', this.io);
+        }.bind(this));
+
         dfd.resolve(this.io);
       }.bind(this));
     }

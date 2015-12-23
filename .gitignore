@@ -30,5 +30,6 @@ docs
 test.js
 config/config.json
 html/index.js
+html/index.min.js
 sslcert
 

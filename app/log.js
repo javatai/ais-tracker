@@ -19,10 +19,13 @@ var Log = function (ships) {
       if (level >= 2) console.log('sync', collection.length);
     },
     'socket:update': function (model, collection) {
-      if (level >= 1) console.log('update', model.toTitle(), model.get('position').get('distancemoved'));
+      if (level >= 1) console.log('update', model.toTitle() + ' (' + model.id + ')', model.get('position').get('distancemoved'));
     },
     'socket:add': function (model, collection) {
-      if (level >= 2) console.log('add', model.toTitle(), model.get('position').get('distancemoved'));
+      if (level >= 1) console.log('add', model.toTitle() + ' (' + model.id + ')', model.get('position').get('distancemoved'));
+    },
+    'socket:expire': function (model, collection) {
+      if (level >= 1) console.log('expire', model.toTitle() + ' (' + model.id + ')');
     },
     'remove': function (model, collection) {
       if (level >= 2) console.log('remove', model.toTitle(), model.get('datetime'));

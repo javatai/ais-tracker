@@ -71,11 +71,15 @@ var Ships = Backbone.Collection.extend({
   initialize: function () {
     this.initSort(this.currentSort.strategy, this.currentSort.direction);
     Socket.on('disconnected', this.teardown.bind(this));
+
+    global.ships = this;
+    global.ShipDatum = ShipDatum;
   },
 
   run: function () {
     Socket.connect().done(function (io) {
-      io.on('init', this.onInit.bind(this));
+      this.io = io;
+      this.io.on('init', this.onInit.bind(this));
     }.bind(this));
   },
 
@@ -94,52 +98,54 @@ var Ships = Backbone.Collection.extend({
     this.trigger('socket:init', this);
     this.add(payload);
 
-    Socket.connect().done(function (io) {
-      io.on('update', this.onUpdate.bind(this));
-    }.bind(this));
+    this.io.on('update', this.onUpdate.bind(this));
   },
 
   doUpdate: function (item) {
     var userid = item.data.userid;
-
-    var ship = Ship.findOrCreate({ userid: userid });
+    var ship = this.get(userid);
 
     var log = 'update';
-    if (!ship.has('position')) {
-      log = 'add'
-    }
-
     if (item.model === 'position') {
       var position = Position.findOrCreate({ userid: userid });
       position.set(item.data);
+
+      if (!ship) {
+        ship = Ship.findOrCreate({ userid: userid });
+        ship.set('shipdata', ShipDatum.findOrCreate({ userid: userid }));
+        this.add(ship);
+
+        log = 'add';
+      }
 
       ship.set('position', position);
       ship.get('track').update(position);
 
       this.trigger('change:ship:position', ship, position.changed, this);
+      this.trigger('socket:' + log, ship, this);
     }
 
-    if (item.model === 'shipdata') {
+    if (ship && item.model === 'shipdata') {
       var shipdatum = ShipDatum.findOrCreate({ userid: userid });
       shipdatum.set(item.data);
 
       ship.set('shipdata', shipdatum);
+      ship.set('datetime', moment.utc().toISOString());
 
       this.trigger('change:ship:shipdata', ship, shipdatum.changed, this);
+      this.trigger('socket:' + log, ship, this);
     }
-
-    this.trigger('socket:' + log, ship, this);
-
-    ship.set('datetime', moment.utc().toISOString());
   },
 
   doExpire: function (item) {
     var userid = item.data.userid;
-    var expired = Ship.findOrCreate({ userid: userid });
+    var ship = this.get(userid);
 
-    if (expired) {
-      this.trigger('expired', expired, this);
-      this.remove(expired);
+    if (ship) {
+      this.trigger('socket:expire', ship, this);
+      this.trigger('expired', ship, this);
+
+      this.remove(ship);
     }
   },
 
