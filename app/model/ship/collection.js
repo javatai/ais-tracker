@@ -81,8 +81,6 @@ var Ships = Backbone.Collection.extend({
 
   teardown: function (io) {
     io.removeAllListeners('update');
-
-    clearInterval(this.timer);
     this.reset();
 
     this.trigger('socket:sync', this);
@@ -91,10 +89,6 @@ var Ships = Backbone.Collection.extend({
   onInit: function (payload) {
     this.once('update', function () {
       this.trigger('socket:sync', this);
-
-      this.timer = setInterval(_.bind(function () {
-        this.removeExpiredModels();
-      }, this), 5000);
     }, this);
 
     this.trigger('socket:init', this);
@@ -105,57 +99,62 @@ var Ships = Backbone.Collection.extend({
     }.bind(this));
   },
 
+  doUpdate: function (item) {
+    var userid = item.data.userid;
+
+    var ship = Ship.findOrCreate({ userid: userid });
+
+    var log = 'update';
+    if (!ship.has('position')) {
+      log = 'add'
+    }
+
+    if (item.model === 'position') {
+      var position = Position.findOrCreate({ userid: userid });
+      position.set(item.data);
+      ship.set('position', position);
+      ship.get('track').update(position);
+      this.trigger('change:ship:position', ship, position.changed, this);
+    }
+
+    if (item.model === 'shipdata') {
+      var shipdatum = ShipDatum.findOrCreate({ userid: userid });
+      shipdatum.set(item.data);
+      ship.set('shipdata', shipdatum);
+
+      this.trigger('change:ship:shipdata', ship, shipdatum.changed, this);
+    }
+
+    this.trigger('socket:' + log, ship, this);
+
+    ship.set('datetime', moment.utc().toISOString());
+  },
+
+  doExpire: function (item) {
+    var userid = item.data.userid;
+    var expired = Ship.findOrCreate({ userid: userid });
+
+    if (expired) {
+      this.trigger('expired', expired, this);
+      this.remove(expired);
+    }
+  },
+
   onUpdate: function (payload) {
     if (_.isEmpty(payload)) {
       return;
     }
 
     _.each(payload, function (item) {
-      var userid = item.data.userid;
-
-      var ship = Ship.findOrCreate({ userid: userid });
-
-      var log = 'update';
-      if (!ship.has('position')) {
-        log = 'add'
+      if (item.method == 'update') {
+        this.doUpdate(item);
       }
-
-      if (item.model === 'position') {
-        var position = Position.findOrCreate({ userid: userid });
-        position.set(item.data);
-        ship.set('position', position);
-        ship.get('track').update(position);
-        this.trigger('change:ship:position', ship, position.changed, this);
+      if (item.method == 'expire') {
+        this.doExpire(item);
       }
-
-      if (item.model === 'shipdata') {
-        var shipdatum = ShipDatum.findOrCreate({ userid: userid });
-        shipdatum.set(item.data);
-        ship.set('shipdata', shipdatum);
-
-        this.trigger('change:ship:shipdata', ship, shipdatum.changed, this);
-      }
-
-      this.trigger('socket:' + log, ship, this);
-
-      ship.set('datetime', moment.utc().toISOString());
     }, this);
 
     this.trigger('socket:sync', this);
-  },
-
-  removeExpiredModels: function () {
-    var expired = this.filter(function (ship) {
-      var now = moment.utc();
-      var d = moment.utc(ship.get('datetime'));
-      var diff = now.diff(d, 'seconds');
-      return diff > config.expire;
-    });
-
-    if (!_.isEmpty(expired)) {
-      this.trigger('expired', expired, this);
-      this.remove(expired);
-    }
   },
 
   initSort: function (sortProperty, direction) {
