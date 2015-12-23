@@ -112,14 +112,17 @@ var Ships = Backbone.Collection.extend({
     if (item.model === 'position') {
       var position = Position.findOrCreate({ userid: userid });
       position.set(item.data);
+
       ship.set('position', position);
       ship.get('track').update(position);
+
       this.trigger('change:ship:position', ship, position.changed, this);
     }
 
     if (item.model === 'shipdata') {
       var shipdatum = ShipDatum.findOrCreate({ userid: userid });
       shipdatum.set(item.data);
+
       ship.set('shipdata', shipdatum);
 
       this.trigger('change:ship:shipdata', ship, shipdatum.changed, this);

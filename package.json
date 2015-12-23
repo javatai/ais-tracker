@@ -47,7 +47,8 @@
   },
   "scripts": {
     "build-js": "node_modules/browserify/bin/cmd.js -t envify app/index.js > html/index.js",
-    "watch-js": "node_modules/watchify/bin/cmd.js app/index.js -o html/index.js -dv"
+    "watch-js": "node_modules/watchify/bin/cmd.js app/index.js -o html/index.js -dv",
+    "minify-js": "node_modules/uglify-js/bin/uglifyjs -o html/index.min.js --compress --mangle -- html/index.js"
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
