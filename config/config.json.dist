@@ -1,18 +1,18 @@
 {
   "development": {
-    "sequelize": {
-      "dialect": "mysql",
-      "database": "",
-      "host": "",
-      "username": "",
-      "password": "",
-      "logging": false
+    "redis": {
+      "port": 6379,
+      "host": "127.0.0.1"
     },
     "server": {
       "http": 3000,
       "https": 3443,
       "hostname": "127.0.0.1",
       "maxAge": 0,
+      "ssl": {
+        "privateKey": "server.key",
+        "certificate": "server.crt"
+      },
       "public": {
         "route": "/html",
         "dir": "html"
@@ -22,42 +22,61 @@
         "dir": "html/fonts"
       }
     },
-    "receiver": {
-      "port": ,
-      "address": ""
+    "frontend": {
+      "map_type": "googlemapjs",
+      "mapboxgljs": {
+        "accessToken": "pk.eyJ1IjoiYnJldHNjaG4iLCJhIjoiY2lldmU5ZjA3MDA5cHQxbTBsenF4OTN6NCJ9.k-N7xO9qfKgI6aBjxFgGKw",
+        "center": [ 9.965683555681778, 53.543321811526 ],
+        "zoom": 16
+      },
+      "googlemapjs": {
+        "apiKey": "AIzaSyCrzfGzddblnADYww8eipsTncvk7F_HTCc",
+        "center": {
+          "lat": 53.543321811526,
+          "lng": 9.965683555681778
+        },
+        "zoom": 16
+      }
+    }
+  },
+  "production": {
+    "redis": {
+      "port": 64909,
+      "host": "127.0.0.1"
     },
-    "setup": {
-      "movemin": 50,
-      "ship": {
-        "minutes": 60,
-        "limit": 100,
-        "order": "datetime DESC"
+    "server": {
+      "http": 64486,
+      "https": 64485,
+      "hostname": "ais.3epnm.de",
+      "maxAge": 0,
+      "ssl": {
+        "privateKey": "ais.3epnm.de.key",
+        "certificate": "ais.3epnm.de.crt",
+        "ca": "sub.class1.server.ca.pem"
       },
-      "track": {
-        "limit": 100,
-        "hours": 72
+      "public": {
+        "route": "/html",
+        "dir": "/home/mb/ais-tracker/html"
       },
-      "reception": {
-        "distancefrom": {
-          "lat": ,
-          "lng":
-        }
+      "fonts": {
+        "route": "/fonts",
+        "dir": "/home/mb/ais-tracker/html/fonts"
       }
     },
     "frontend": {
-      "map_type": "mapboxgljs",
+      "map_type": "googlemapjs",
       "mapboxgljs": {
-        "accessToken": "",
-        "center": [ , ],
-        "zoom": 12
+        "accessToken": "pk.eyJ1IjoiYnJldHNjaG4iLCJhIjoiY2lldmU5ZjA3MDA5cHQxbTBsenF4OTN6NCJ9.k-N7xO9qfKgI6aBjxFgGKw",
+        "center": [ 9.965683555681778, 53.543321811526 ],
+        "zoom": 16
       },
       "googlemapjs": {
-        "apiKey": "",
+        "apiKey": "AIzaSyCrzfGzddblnADYww8eipsTncvk7F_HTCc",
         "center": {
-          "lat": 53.,
-          "lng": 9.
+          "lat": 53.543321811526,
+          "lng": 9.965683555681778
         },
-        "zoom": 12
+        "zoom": 16
       }
     }
   }

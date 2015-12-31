@@ -3,26 +3,19 @@
 var env = process.env.NODE_ENV || "development";
 var config = require(__dirname + '/config/config.json')[env];
 
-var sequelize = require('./lib/init');
+var server = require('./lib/server');
+var socket = require('./lib/socket')(server);
 
-var receiver = require('./receiver');
-var server = require('./server');
-var socket = require('./socket')(server);
+server.http.listen(config.server.http, config.server.hostname, function() {
+  var host = server.http.address().address,
+      port = server.http.address().port;
 
-sequelize.sync({ force: false }).then(function() {
-  receiver.start();
+  console.log('listening at http://%s:%s', host, port);
+});
 
-  server.http.listen(config.server.http, config.server.hostname, function() {
-    var host = server.http.address().address,
-        port = server.http.address().port;
+server.https.listen(config.server.https, config.server.hostname, function() {
+  var host = server.https.address().address,
+      port = server.https.address().port;
 
-    console.log('listening at http://%s:%s', host, port);
-  });
-
-  server.https.listen(config.server.https, config.server.hostname, function() {
-    var host = server.https.address().address,
-        port = server.https.address().port;
-
-    console.log('listening at https://%s:%s', host, port);
-  });
+  console.log('listening at https://%s:%s', host, port);
 });

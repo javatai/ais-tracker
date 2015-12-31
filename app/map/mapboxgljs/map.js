@@ -1,16 +1,13 @@
-'use strict';
-
 var config = require('../../config').frontend.mapboxgljs;
-
-var Platform = require('../../lib/platform');
-
-var mapboxgl = require('mapbox-gl');
-mapboxgl.accessToken = config.accessToken;
+var Platform = require('../../platform');
 
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var GeographicLib = require('geographiclib');
+
+var mapboxgl = require('mapbox-gl');
+mapboxgl.accessToken = config.accessToken;
 
 var Map = function (options) {
   this.map = new mapboxgl.Map({
@@ -20,67 +17,53 @@ var Map = function (options) {
     zoom: config.zoom
   });
 
-  this.perimeter = -1;
-
-  this.map.on('zoom', _.bind(this.onZoom, this));
-  this.map.on('mousemove', _.bind(this.propagateMousemove, this));
-  this.map.on('click', _.bind(this.propagateClick, this));
-};
+  this.map.on('mousemove', this.onMousemove.bind(this));
+  this.map.on('click', this.onClick.bind(this));
+}
 
 _.extend(Map.prototype, Backbone.Events, {
-  resetCursor: function () {
-    this.map.getCanvas().style.cursor = "";
+  setFilter: function (layer, filter) {
+    try {
+      this.map.setFilter(layer, filter);
+    } catch (ex) { }
   },
 
-  setCursor: function (style) {
-    this.map.getCanvas().style.cursor = style;
+  onClick: function (e) {
+    this.map.featuresAt(e.point, {
+        radius: 5,
+        layers: [ 'markers', 'shapes' ]
+    }, function (err, features) {
+      if (!err && features.length) {
+        this.trigger('click', _.first(features).properties.id);
+      } else {
+        this.trigger('clickout');
+      }
+    }.bind(this));
   },
 
-  propagateMousemove: function (e) {
-    this.trigger('mousemove', e);
-  },
-
-  propagateClick: function (e) {
-    this.trigger('click', e);
+  onMousemove: function (e) {
+    this.map.featuresAt(e.point, {
+        radius: 5,
+        layers: [ 'markers', 'shapes', 'track', 'positions' ]
+    }, function (err, features) {
+      if (!err && features.length) {
+        this.trigger('mouseover', _.first(features).properties.id);
+        this.map.getCanvas().style.cursor = "pointer";
+      } else {
+        this.trigger('mouseout');
+        this.map.getCanvas().style.cursor = "";
+      }
+    }.bind(this));
   },
 
   onReady: function () {
     var dfd = $.Deferred();
-
-    if (this.map._loaded) {
-      dfd.resolve();
-    }
-
     this.map.on('load', dfd.resolve);
-
     return dfd.promise();
   },
 
   getMap: function () {
     return this.map;
-  },
-
-  zoomIn: function () {
-    this.map.zoomIn();
-  },
-
-  zoomOut: function () {
-    this.map.zoomOut();
-  },
-
-  toHome: function () {
-    this.map.flyTo({
-      center: config.center,
-      zoom: config.zoom
-    });
-  },
-
-  toNorth: function () {
-    this.map.resetNorth();
-  },
-
-  onZoom: function () {
-    this.perimeter = -1;
   },
 
   inView: function (lnglat) {
@@ -95,25 +78,6 @@ _.extend(Map.prototype, Backbone.Events, {
     }
 
     return false;
-  },
-
-  calculatePerimeter: function () {
-    if (this.perimeter > 0) {
-      return this.perimeter;
-    }
-
-    var bounds = this.map.getBounds();
-    var nw = bounds.getNorthWest();
-    var ne = bounds.getNorthEast();
-
-    var geod = GeographicLib.Geodesic.WGS84;
-
-    var dist = Math.round(geod.Inverse(nw.lat, nw.lng, ne.lat, ne.lng).s12);
-    var width = $('body').width();
-
-    this.perimeter = 10 * (dist/width);
-
-    return this.perimeter;
   },
 
   addToMap: function (conf) {
@@ -152,75 +116,6 @@ _.extend(Map.prototype, Backbone.Events, {
 
     if (this.map.getSource(conf.name)) {
       this.map.removeSource(conf.name);
-    }
-  },
-
-  setPaintProperty: function (id, name, value) {
-    var self = this;
-    this.onReady().done(function () {
-      self.map.setPaintProperty(id, name, value);
-    });
-  },
-
-  calculateOffsetBounds: function (lnglat) {
-    var geod = GeographicLib.Geodesic.WGS84;
-
-    var padding = 500;
-
-    var N = geod.Direct(lnglat.lat, lnglat.lng, 0, padding);
-    var E = geod.Direct(lnglat.lat, lnglat.lng, 90, padding);
-    var S = geod.Direct(lnglat.lat, lnglat.lng, 180, padding);
-    var W = geod.Direct(lnglat.lat, lnglat.lng, 270, padding);
-
-    var wpx = $('body').width();
-    var wm = geod.Inverse(N.lat2, E.lon2, S.lat2, W.lon2).s12;
-
-    var m = 420 * wm / wpx;
-    var P = geod.Direct(S.lat2, W.lon2, 270, m);
-
-    var SW = new mapboxgl.LngLat(P.lon2, P.lat2);
-    var NE = new mapboxgl.LngLat(E.lon2, N.lat2);
-
-    return new mapboxgl.LngLatBounds(SW, NE);
-  },
-
-  center: function (lnglat) {
-    if (!Platform.isMobile) {
-      var bounds = this.calculateOffsetBounds(lnglat);
-      this.map.fitBounds(bounds);
-    } else {
-      this.map.flyTo({ center: lnglat, zoom: 15 });
-    }
-  },
-
-  getLngLat: function (position) {
-    return new mapboxgl.LngLat(position.get('longitude'), position.get('latitude'));
-  },
-
-  moveIntoView: function (position) {
-    var lnglat = position.getLngLat();
-    var center = position.getCoordinate();
-
-    var bounds = this.map.getBounds();
-
-    if (bounds.getNorth() < lnglat.lat) {
-      // console.log('N', bounds.getNorth(), lnglat.lat, bounds.getNorth() < lnglat.lat);
-      this.map.flyTo({ center: center });
-    }
-
-    if (bounds.getEast() < lnglat.lng) {
-      // console.log('E', bounds.getEast(), lnglat.lng, bounds.getEast() < lnglat.lng);
-      this.map.flyTo({ center: center });
-    }
-
-    if (bounds.getSouth() > lnglat.lat) {
-      // console.log('S', bounds.getSouth(), lnglat.lat, bounds.getSouth() > lnglat.lat);
-      this.map.flyTo({ center: center });
-    }
-
-    if (bounds.getWest() > lnglat.lng) {
-      // console.log('W', bounds.getWest(), lnglat.lng, bounds.getWest() > lnglat.lng);
-      this.map.flyTo({ center: center });
     }
   }
 });

@@ -1,0 +1,10 @@
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+}
+
+html, body { overflow: hidden; height: 100%; }
+body { margin: 0; padding: 0; background-color: #FDFDFD; }
+
+#map { position: absolute; top:0; bottom:0; width:100%; }

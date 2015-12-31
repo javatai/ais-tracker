@@ -12,9 +12,8 @@
   "bugs": {
     "url": "https://github.com/3epnm/ais-server/issues"
   },
-  "homepage": "https://github.com/3epnm/ais-server#readme",
+  "homepage": "https://github.com/3epnm/ais-tracker#readme",
   "dependencies": {
-    "ais-receiver": "git://github.com/3epnm/ais-receiver.git",
     "backbone": "^1.2.3",
     "backbone-relational": "^0.10.0",
     "bootstrap-switch": "^3.3.2",
@@ -27,16 +26,15 @@
     "mapbox-gl-js": "git://github.com/mapbox/mapbox-gl-js.git",
     "moment": "^2.10.6",
     "morgan": "^1.6.1",
-    "mysql": "^2.9.0",
     "nouislider": "leongersen/noUiSlider",
     "q": "^1.4.1",
-    "sequelize": "^3.9.0",
+    "redis": "^2.4.2",
     "socket.io": "^1.3.7",
-    "sqlite3": "^3.1.0",
     "underscore": "^1.8.3",
     "underscore.string": "^3.2.2"
   },
   "devDependencies": {
+    "hbsfy": "^2.4.1",
     "brfs": "^1.4.1",
     "browserify": "^11.2.0",
     "browserify-shim": "^3.8.10",
@@ -48,32 +46,9 @@
     "watchify": "^3.4.0"
   },
   "scripts": {
-    "generate-sprite": "node app/map/mapboxgljs/sprites/generate.js && node_modules/spritezero-cli/bin/spritezero html/ship-marker@2x --retina app/map/mapboxgljs/sprites/input && node_modules/spritezero-cli/bin/spritezero html/ship-marker app/map/mapboxgljs/sprites/input",
-    "build-js-desktop": "node_modules/browserify/bin/cmd.js -t envify app/desktop.js > html/desktop.js",
-    "build-js-mobile": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > html/mobile.js",
-    "build-js-embedded": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > html/embedded.js",
-
-    "minify-js-desktop": "node_modules/uglify-js/bin/uglifyjs -o html/desktop.min.js --compress --mangle -- html/desktop.js",
-    "minify-js-mobile": "node_modules/uglify-js/bin/uglifyjs -o html/mobile.min.js --compress --mangle -- html/mobile.js",
-    "minify-js-embedded": "node_modules/uglify-js/bin/uglifyjs -o html/embedded.min.js --compress --mangle -- html/embedded.js",
-
-    "watch-js-desktop": "node_modules/watchify/bin/cmd.js app/desktop.js -o html/desktop.js -dv",
-    "watch-js-mobile": "node_modules/watchify/bin/cmd.js app/mobile.js -o html/mobile.js -dv",
-    "build-css": "node_modules/less/bin/lessc app/style/style.less html/style.css",
-    "watch-css": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less html/style.css",
-    "minify-css": "node node_modules/minifier/index.js -o html/style.min.css html/style.css",
-    "build": "npm run build-js-desktop && npm run build-js-mobile && npm run build-css",
-    "minify-js": "npm run minify-js-desktop && npm run minify-js-mobile",
-    "minify": "npm run build && npm run minify-js && npm run minify-css",
-
-    "build-js-cordova": "node_modules/browserify/bin/cmd.js -t envify app/mobile.js > cordova/www/mobile.js",
-    "minify-js-cordova": "node_modules/uglify-js/bin/uglifyjs -o cordova/www/mobile.js --compress --mangle -- cordova/www/mobile.js",
-    "build-css-cordova": "node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
-    "minify-css-cordova": "node node_modules/minifier/index.js -o cordova/www/style.css cordova/www/style.css",
-    "watch-js-cordova": "node_modules/watchify/bin/cmd.js app/mobile.js -o cordova/www/mobile.js -dv",
-    "watch-css-cordova": "node_modules/watch-run/bin/watch -p 'app/style/**/*.less' node_modules/less/bin/lessc app/style/style.less cordova/www/style.css",
-    "build-cordova": "npm run build-js-cordova && npm run build-css-cordova",
-    "minify-cordova": "npm run build-cordova && npm run minify-js-cordova && npm run minify-css-cordova"
+    "build-js": "node_modules/browserify/bin/cmd.js -t envify app/index.js > html/index.js",
+    "watch-js": "node_modules/watchify/bin/cmd.js app/index.js -o html/index.js -dv",
+    "minify-js": "node_modules/uglify-js/bin/uglifyjs -o html/index.min.js --compress --mangle -- html/index.js"
   },
   "browser": {
     "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
